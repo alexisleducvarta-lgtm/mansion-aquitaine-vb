@@ -35,10 +35,12 @@ body{background:var(--bg0);color:var(--txt);font-family:'Segoe UI',system-ui,san
 input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .shell{display:flex;height:100vh;}
 .sb{width:185px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--border);padding:.5rem 0;display:flex;flex-direction:column;overflow-y:auto;}
-.sb-logo{padding:0 .8rem .6rem;border-bottom:1px solid var(--border);margin-bottom:.3rem;}
+/* MODIFICATION : On ajuste le logo pour y insérer le bouton Nuit/Jour visible sur mobile */
+.sb-logo{padding:0 .8rem .6rem;border-bottom:1px solid var(--border);margin-bottom:.3rem; display:flex; justify-content:space-between; align-items:center;}
 .lm{display:flex;align-items:center;gap:7px;}
 .li{width:26px;height:26px;background:var(--bxl);border-radius:6px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bxb);flex-shrink:0;}
 .bn{font-family:Georgia,serif;font-size:11px;color:var(--or);letter-spacing:.5px;line-height:1.3;}
+.btn-theme { background:var(--bg2); border:1px solid var(--borderor); color:var(--or); border-radius:5px; padding:3px 6px; font-size:10px; cursor:pointer; }
 .ng{padding:0 4px;margin-bottom:2px;}
 .ngl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;padding:4px 6px 2px;}
 .ni{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:7px;cursor:pointer;font-size:11px;color:var(--txt2);border:1px solid transparent;transition:all .15s;user-select:none;}
@@ -153,24 +155,40 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .kb-card-fee{font-size:11px;color:var(--or);font-weight:500;margin-top:2px;}
 .kb-add{width:100%;background:transparent;border:1px dashed var(--border);color:var(--txt3);border-radius:6px;padding:5px;font-size:10px;cursor:pointer;margin-top:3px;}
 .kb-add:hover{border-color:var(--borderor);color:var(--or);}
+.tl-dossier{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.9rem;margin-bottom:.7rem;}
+.tl-dossier.urgent{border-color:rgba(192,68,74,.4);}
+.tl-dossier.soon{border-color:var(--borderor);}
+.tl-steps{display:flex;align-items:flex-start;gap:0;position:relative;margin:.7rem 0 .5rem;}
+.tl-step{flex:1;text-align:center;position:relative;}
+.tl-step-line{position:absolute;top:10px;left:50%;right:-50%;height:2px;z-index:0;}
+.tl-step:last-child .tl-step-line{display:none;}
+.tl-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:10px;position:relative;z-index:1;}
+.tl-lbl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px;}
+.tl-date{font-size:10px;color:var(--txt2);font-weight:500;}
+.tl-alert{font-size:9px;padding:1px 5px;border-radius:3px;display:inline-block;margin-top:2px;}
 
-/* LA MODALE EST MAINTENANT CONFIGURÉE POUR RESTER TOUJOURS AU DESSUS */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999999;}
+/* MODIFICATION Z-INDEX ICI POUR FORCER L'AFFICHAGE MOBILE (999999) */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999999 !important;}
 .modal-bx{background:var(--bg2);border:1px solid var(--borderor);border-radius:13px;padding:1.1rem;min-width:300px;max-width:520px;width:92%;max-height:90vh;overflow-y:auto;}
 .modal-t{font-family:Georgia,serif;font-size:14px;color:var(--or);margin-bottom:.7rem;}
-.gcal-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#6aa4f5;border-radius:5px;padding:2px 6px;font-size:10px;text-decoration:none;white-space:nowrap;}
 
+.gcal-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#6aa4f5;border-radius:5px;padding:2px 6px;font-size:10px;text-decoration:none;white-space:nowrap;}
+.enc-month{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:7px 9px;}
+.enc-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:3px;}
+.enc-barf{height:100%;border-radius:2px;}
+.export-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:10px;color:var(--txt2);font-family:'Courier New',monospace;white-space:pre-wrap;line-height:1.6;max-height:260px;overflow-y:auto;}
 .cp{background:#E6F1FB;color:#185FA5;}.cb{background:#EAF3DE;color:#3B6D11;}
 .cpt{background:#FAEEDA;color:#854F0B;}.ct{background:#FBEAF0;color:#993556;}
 .cr2{background:#EEEDFE;color:#534AB7;}.ca{background:rgba(255,255,255,.05);color:var(--txt3);}
 .na{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:11px;color:var(--txt2);resize:vertical;min-height:40px;margin-top:4px;font-family:inherit;outline:none;}
 .na:focus{border-color:var(--or);}
 
-/* --- RESPONSIVITÉ MOBILE & BOUTONS SPÉCIAUX --- */
 @media (max-width: 768px) {
   .shell { flex-direction: column; }
   .sb { width: 100%; height: auto; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 0.5rem; flex-wrap: nowrap; align-items: center; }
   .sb-logo, .sep { display: none; }
+  /* Exception: On affiche le logo sur mobile pour voir le bouton Thème */
+  .sb-logo { display: flex; border:none; margin:0; padding:0 10px; }
   .sbf { display:none; }
   .ng { display: flex; align-items: center; margin-bottom: 0; padding: 0; }
   .ngl { display: none; }
@@ -179,15 +197,16 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   .kanban { grid-template-columns: 1fr; gap: 15px; }
   .wr { grid-template-columns: 1fr; }
   .fg { grid-template-columns: 1fr; }
-  .modal-bx { width: 95%; padding: 1.2rem; }
-  .modal-bx > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
 }
 </style>
 </head>
 <body>
 <div class="shell">
 <div class="sb">
-  <div class="sb-logo"><div class="lm"><div class="li"><svg viewBox="0 0 80 70" width="17" height="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 46 Q40 39 60 46" fill="#c9a84c"/><rect x="22" y="20" width="36" height="26" fill="#7a2228"/><rect x="14" y="26" width="12" height="20" fill="#7a2228"/><rect x="54" y="26" width="12" height="20" fill="#7a2228"/><path d="M18 26 L40 12 L62 26" fill="#5a1a1e"/><rect x="27" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="36" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="45" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/></svg></div><div><div class="bn">Mansion<br>Aquitaine</div></div></div></div>
+  <div class="sb-logo">
+      <div class="lm"><div class="li"><svg viewBox="0 0 80 70" width="17" height="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 46 Q40 39 60 46" fill="#c9a84c"/><rect x="22" y="20" width="36" height="26" fill="#7a2228"/><rect x="14" y="26" width="12" height="20" fill="#7a2228"/><rect x="54" y="26" width="12" height="20" fill="#7a2228"/><path d="M18 26 L40 12 L62 26" fill="#5a1a1e"/><rect x="27" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="36" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="45" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/></svg></div><div class="bn" style="display:none;">Mansion<br>Aquitaine</div></div>
+      <button class="btn-theme" onclick="toggleTheme()">🌓 Nuit/Jour</button>
+  </div>
   <div class="ng"><div class="ngl">Salariée</div><div class="ni" id="nav-swan" onclick="goNeg('swan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Swan Dumas</div></div>
   <div class="ng"><div class="ngl">Agents</div>
     <div class="ni" id="nav-pauline" onclick="goNeg('pauline',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Pauline</div>
@@ -205,7 +224,6 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="ng" style="margin-top:3px;"><div class="ngl">Vision Board</div>
     <div class="ni active" id="nav-prosp" onclick="goProsp(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Prospection</div>
     <div class="ni" id="nav-pipeline" onclick="goPipeline(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="13" height="5" rx="1"/><rect x="2" y="17" width="8" height="5" rx="1"/></svg>Pipeline</div>
-    <div class="ni" onclick="toggleTheme()" style="background:var(--bg2); border:1px solid var(--border); margin-top:5px;">🌓 Thème Nuit/Jour</div>
   </div>
   <div class="sbf"><div class="ac2"><div class="ava" id="cur-av" style="background:var(--orb);border:1px solid var(--borderor);color:var(--or);">MA</div><div><div class="an" id="cur-name">Mansion Aquitaine</div><div class="aro" id="cur-role">Vision Board</div></div></div></div>
 </div>
@@ -228,6 +246,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-neg">
   <div class="ph"><div><div class="pt" id="neg-title">—</div><div class="pss" id="neg-sub">—</div></div><div style="font-size:10px;color:var(--txt3);" id="neg-date"></div></div>
+  
   <div class="kg k4" id="neg-kpis"></div>
   
   <div id="neg-alert" style="margin-bottom:.6rem;"></div>
@@ -260,19 +279,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">PIN : 1234</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;">
-      <div class="ph">
-          <div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div>
-          <div style="display:flex;gap:5px;">
-              <button class="bs" onclick="exportCSV()" style="border-color:var(--greenl);color:var(--green);">⬇️ Excel (CSV)</button>
-              <button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button>
-          </div>
-      </div>
-      <div class="kg k4" id="dir-kpis"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div>
-  </div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div><div class="kg k4" id="dir-kpis"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
-
-</div></div>
 
 <div class="modal-ov" id="modal-ov" style="display:none;">
   <div class="modal-bx">
@@ -290,13 +298,16 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   </div>
 </div>
 
+</div></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// --- GESTION DU THÈME ---
-if(localStorage.getItem('mansion-theme') === 'light') document.body.classList.add('light-theme');
+// --- GESTION DU THEME NUIT / JOUR ---
+if(localStorage.getItem('mansion-theme') === 'light') { document.body.classList.add('light-theme'); }
 function toggleTheme() {
   document.body.classList.toggle('light-theme');
-  localStorage.setItem('mansion-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+  var isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('mansion-theme', isLight ? 'light' : 'dark');
 }
 
 var TVA=1.2,OBJ_J=12,OBJ_FEES=7000;
@@ -329,7 +340,7 @@ var dirPinCode='1234',dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
 var charts={prosp:null,mens:null,dir:null};
 
-// --- LE SYSTEME DE SAUVEGARDE ORIGINAL EST CONSERVÉ INTACT ICI ---
+// Storage
 async function loadAll(){
   if(!window.storage)return;
   try{
@@ -342,7 +353,6 @@ async function loadAll(){
 }
 async function save(w){try{await window.storage.set('ma9_'+w,JSON.stringify(D[w]));}catch(e){}}
 async function saveDoss(){try{await window.storage.set('ma9_dossiers',JSON.stringify(dossiers));}catch(e){}}
-// ------------------------------------------------------------------
 
 function fmt(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v||0);}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -359,26 +369,6 @@ function fixeCom(ttc,bin,t){return ttc*(t/100)*(bin?.5:1);}
 function comForWho(who,c,caB){if(who==='swan')return swanCom(c.ttc,c.type,c.bin);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
 function getStats(who){var d=D[who],ca=0,com=0;if(who==='swan'){d.compromis.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});}else if(PROG.indexOf(who)>=0){var r=calcProg(who);ca=r.ca;com=r.com;}else{var t=TAUX_FIXE[who]||50;d.compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});}return{ca:ca,com:com,nb:d.compromis.length};}
 
-// EXPORT EXCEL (CSV)
-function exportCSV(){
-    var csv="Collaborateur;Reference;TTC;Commission;Date\n";
-    ALL.forEach(function(w){
-        var caA=0;
-        D[w].compromis.forEach(function(c){
-            var com=comForWho(w,c,caA);
-            caA+=c.ttc*(c.bin?.5:1);
-            csv+='"'+NAMES[w]+'";"'+c.nom+'";'+c.ttc+';'+Math.round(com)+';"'+(c.date||'')+'"\n';
-        });
-    });
-    var blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8;'});
-    var link=document.createElement("a");
-    link.href=URL.createObjectURL(blob);
-    link.download="Mansion_Export.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
 // NAV
 function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});}
 function setFooter(n,r){setEl('cur-name',n);setEl('cur-role',r);}
@@ -389,11 +379,13 @@ function goAlexis(btn){clearAll();btn.classList.add('active');setFooter('Alexis 
 function goDir(btn){clearAll();btn.classList.add('active');setFooter('Vue Direction','Accès restreint');document.getElementById('pg-dir').classList.add('active');if(!dirOpen){document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}else{document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}}
 function updDots(pfx,buf){for(var i=0;i<4;i++){var d=document.getElementById(pfx+i);if(d)d.className='pin-d'+(i<buf.length?' on':'');}}
 
-// PIN
+// PIN Alexis
 function alPin(d){if(alPinBuf.length>=4)return;alPinBuf+=d;updDots('ap',alPinBuf);}
 function alPinClear(){alPinBuf=alPinBuf.slice(0,-1);updDots('ap',alPinBuf);}
 function alPinSubmit(){if(alPinBuf===alPinCode){alOpen=true;document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}else{document.getElementById('al-err').textContent='Code incorrect';alPinBuf='';updDots('ap',alPinBuf);setTimeout(function(){document.getElementById('al-err').textContent='';},2000);}}
 function alLock(){alOpen=false;document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}
+
+// PIN Direction
 function dirPin(d){if(dirPinBuf.length>=4)return;dirPinBuf+=d;updDots('dp',dirPinBuf);}
 function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
@@ -402,7 +394,7 @@ function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.dis
 // Sub tabs
 function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();}
 
-// RENDER NEG ET COMPTEURS SÉPARÉS
+// --- MODIFICATION : RENDER NEG (COMPTEURS SÉPARÉS) ---
 function renderNeg(){
     if(!curWho)return;
     var who=curWho,d=D[who],st=getStats(who),now=new Date();
@@ -413,10 +405,14 @@ function renderNeg(){
     var todayCt=d.contacts.length;
     var wR=d.wr.reduce(function(a,b){return a+b;},0);
     var wM=d.wm.reduce(function(a,b){return a+b;},0);
-
-    // COMPTEURS SEPARÉS ICI !
-    document.getElementById('neg-kpis').innerHTML='<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' CA</div></div><div class="kc bl"><div class="kl">Contacts auj.</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div><div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div></div><div class="kc gr"><div class="kl">Mandats sem.</div><div class="kv sm" style="color:var(--green)">'+wM+'</div></div>';
     
+    // NOUVEL AFFICHAGE DES COMPTEURS (SÉPARÉS)
+    document.getElementById('neg-kpis').innerHTML=
+        '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>'+
+        '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
+        '<div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div></div>'+
+        '<div class="kc gr"><div class="kl">Mandats sem.</div><div class="kv sm" style="color:var(--green)">'+wM+'</div></div>';
+        
     var az=document.getElementById('neg-alert');
     if(az){
         var m='';
@@ -435,24 +431,31 @@ function renderNeg(){
 
 // CONTACTS
 function addContact(){D[curWho].contacts.push({id:Date.now(),nom:'',canal:'Pige',categorie:'Vendeur',secteur:'',rdv:'',nb_rdv:0,nb_man:0,type_man:'—',statut:'À rappeler',relance_date:'',relance_heure:'',notes:''});save(curWho);renderContacts();renderNeg();}
-function delContact(who,idx){if(!confirm("Êtes-vous sûr de vouloir supprimer ce contact ?"))return; D[who].contacts.splice(idx,1);save(who);renderContacts();renderNeg();}
+function delContact(who,idx){D[who].contacts.splice(idx,1);save(who);renderContacts();renderNeg();}
 function renderContacts(){var who=curWho;if(!who)return;var cs=D[who].contacts,tb=document.getElementById('contact-tbody');if(!tb)return;if(!cs.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;padding:14px;color:var(--txt3);">Aucun contact — cliquez « + Ajouter »</td></tr>';return;}tb.innerHTML=cs.map(function(c,i){var url=gcalUrl(c),mc=MPC[c.type_man]||'',cc=CCLASS[c.canal]||'ca';return'<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td><input value="'+escH(c.nom)+'" placeholder="Nom" oninput="D[\''+who+'\'].contacts['+i+'].nom=this.value;save(\''+who+'\')"></td><td><select onchange="D[\''+who+'\'].contacts['+i+'].canal=this.value;save(\''+who+'\');renderContacts()">'+CANAUX.map(function(ca){return'<option value="'+ca+'"'+(ca===c.canal?' selected':'')+'>'+ca+'</option>';}).join('')+'</select><span class="pill '+cc+'" style="display:block;margin-top:2px;font-size:9px;">'+c.canal+'</span></td><td><select onchange="D[\''+who+'\'].contacts['+i+'].categorie=this.value;save(\''+who+'\')">'+CATS.map(function(ca){return'<option'+(ca===c.categorie?' selected':'')+'>'+ca+'</option>';}).join('')+'</select></td><td><input value="'+escH(c.secteur)+'" placeholder="Secteur" oninput="D[\''+who+'\'].contacts['+i+'].secteur=this.value;save(\''+who+'\')"></td><td><input value="'+escH(c.rdv)+'" placeholder="Nom RDV" oninput="D[\''+who+'\'].contacts['+i+'].rdv=this.value;save(\''+who+'\')"><input type="number" min="0" value="'+(c.nb_rdv||0)+'" style="width:42px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px;font-size:10px;color:var(--txt);outline:none;margin-top:2px;" oninput="D[\''+who+'\'].contacts['+i+'].nb_rdv=parseInt(this.value)||0;save(\''+who+'\')"></td><td><select style="width:100%;border:none;background:transparent;font-size:10px;color:var(--txt2);outline:none;" onchange="D[\''+who+'\'].contacts['+i+'].type_man=this.value;save(\''+who+'\');renderContacts()">'+MANDATS_LIST.map(function(m){return'<option value="'+m+'"'+(m===c.type_man?' selected':'')+'>'+m+'</option>';}).join('')+'</select>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;margin-top:2px;display:inline-block;">'+c.type_man+'</span>':'')+'<input type="number" min="0" value="'+(c.nb_man||0)+'" style="width:38px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px;font-size:10px;color:var(--txt);outline:none;display:block;margin-top:2px;" oninput="D[\''+who+'\'].contacts['+i+'].nb_man=parseInt(this.value)||0;save(\''+who+'\')"></td><td><select onchange="D[\''+who+'\'].contacts['+i+'].statut=this.value;save(\''+who+'\')">'+STATUTS.map(function(s){return'<option'+(s===c.statut?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td><td><input type="date" value="'+escH(c.relance_date||'')+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:2px;font-size:10px;color:var(--txt2);outline:none;" oninput="D[\''+who+'\'].contacts['+i+'].relance_date=this.value;save(\''+who+'\')">'+(url?'<a href="'+url+'" target="_blank" class="gcal-btn" style="margin-top:2px;">Agenda</a>':'')+'</td><td><textarea rows="2" placeholder="Notes..." oninput="D[\''+who+'\'].contacts['+i+'].notes=this.value;save(\''+who+'\')" style="min-height:28px;">'+escH(c.notes)+'</textarea></td><td><button class="bd" onclick="delContact(\''+who+'\','+i+')">×</button></td></tr>';}).join('');}
 
 // WEEK
 function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"></div>';}wg.innerHTML=h;renderWeekKpis();}
+
+// --- MODIFICATION : RENDER WEEK KPIS (COMPTEURS SÉPARÉS) ---
 function renderWeekKpis(){
-    var who=curWho;if(!who)return;var d=D[who];
+    var who=curWho;if(!who)return;
+    var d=D[who];
     var tC=d.wd.reduce(function(a,b){return a+b;},0);
     var tR=d.wr.reduce(function(a,b){return a+b;},0);
     var tM=d.wm.reduce(function(a,b){return a+b;},0);
     var now=new Date(),dw=Math.max(1,now.getDay()===0?5:Math.min(now.getDay(),5)),dlt=tC-(dw*OBJ_J);
-    // COMPTEURS SÉPARÉS ICI AUSSI
-    document.getElementById('neg-week-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts semaine</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : 60</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/60*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">Avance / Retard</div><div class="kv sm" style="color:'+(dlt>=0?'var(--green)':'var(--red)')+';">'+(dlt>=0?'+':'')+dlt+'</div></div><div class="kc pu"><div class="kl">RDV</div><div class="kv sm" style="color:var(--pur);">'+tR+'</div></div><div class="kc gr"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--green);">'+tM+'</div><div class="ks">'+(tR>0?Math.round(tM/tR*100)+'% conv.':'—')+'</div></div>';
+    
+    document.getElementById('neg-week-kpis').innerHTML=
+        '<div class="kc or"><div class="kl">Contacts semaine</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : 60</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/60*100),100)+'%;background:var(--or);"></div></div></div>'+
+        '<div class="kc bl"><div class="kl">Avance / Retard</div><div class="kv sm" style="color:'+(dlt>=0?'var(--green)':'var(--red)')+';">'+(dlt>=0?'+':'')+dlt+'</div></div>'+
+        '<div class="kc pu"><div class="kl">RDV</div><div class="kv sm" style="color:var(--pur);">'+tR+'</div></div>'+
+        '<div class="kc gr"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--green);">'+tM+'</div><div class="ks">'+(tR>0?Math.round(tM/tR*100)+'% conv.':'—')+'</div></div>';
 }
 
 // COMPROMIS
 function addComp(){var who=curWho;if(!who)return;var nom=document.getElementById('cp-nom').value.trim(),ttc=parseFloat(document.getElementById('cp-ttc').value);if(!nom||isNaN(ttc)||ttc<=0){alert('Nom et montant requis.');return;}D[who].compromis.push({id:Date.now(),nom:nom,ttc:ttc,type:document.getElementById('cp-type').value||'—',es:document.getElementById('cp-es').value||'entree',bin:document.getElementById('cp-bin').checked,bnom:document.getElementById('cp-bnom').value.trim(),date:new Date().toLocaleDateString('fr-FR')});save(who);['cp-nom','cp-ttc','cp-bnom'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('cp-type').value='';document.getElementById('cp-bin').checked=false;renderComp();renderNeg();}
-function delComp(who,idx){if(!confirm("Êtes-vous sûr de vouloir supprimer ce compromis ?"))return; D[who].compromis.splice(idx,1);save(who);renderComp();renderNeg();}
+function delComp(who,idx){D[who].compromis.splice(idx,1);save(who);renderComp();renderNeg();}
 function renderComp(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who);setEl('cp-fees',fmt(st.ca));setEl('cp-com',fmt(st.com));pBar(st.ca,OBJ_FEES,'cp-pb');setEl('cp-obj-lbl','Obj. : '+fmt(OBJ_FEES)+' TTC');setEl('cp-reste',st.ca>=OBJ_FEES?'Objectif atteint !':'Reste '+fmt(Math.max(0,OBJ_FEES-st.ca)));var tb=document.getElementById('comp-tbody');if(!tb)return;if(!d.compromis.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}var h='',totCom=0,caA=0;d.compromis.forEach(function(c,i){var cv=comForWho(who,c,caA);totCom+=cv;caA+=c.ttc*(c.bin?.5:1);var mc=MPC[c.type]||'';h+='<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td style="color:var(--txt);font-weight:500;">'+escH(c.nom)+'</td><td style="color:var(--or);">'+fmt(c.ttc)+'</td><td>'+(c.type&&c.type!=='—'?'<span class="pill '+mc+'">'+c.type+'</span>':'—')+'</td><td><span class="pill '+(c.es==='entree'?'p-gr':'p-bl')+'">'+(c.es==='entree'?'E':'S')+'</span></td><td>'+(c.bin?'<span class="pill p-pu">'+escH(c.bnom||'—')+'</span>':'<span class="pill p-gy">Solo</span>')+'</td><td style="color:var(--green);font-weight:500;">'+fmt(cv)+'</td><td><button class="bd" onclick="delComp(\''+who+'\','+i+')">×</button></td></tr>';});tb.innerHTML=h;var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='<tr><td colspan="6">TOTAL</td><td style="color:var(--green);">'+fmt(totCom)+'</td><td></td></tr>';}
 
 // INDICATEURS
@@ -471,7 +474,7 @@ function closeModal(){document.getElementById('modal-ov').style.display='none';}
 function saveModal(){var ref=(document.getElementById('md-ref')||{}).value||'';if(!ref.trim()){alert('Référence requise.');return;}dossiers.push({id:Date.now(),ref:ref.trim(),neg:document.getElementById('md-neg').value,fee:parseFloat(document.getElementById('md-fee').value)||0,dateComp:document.getElementById('md-dcomp').value,dateActe:document.getElementById('md-dacte').value,stage:document.getElementById('md-stage').value,notes:document.getElementById('md-notes').value.trim(),encaisse:false});saveDoss();closeModal();['md-ref','md-fee','md-dcomp','md-dacte','md-notes'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});renderPipeline();}
 function renderPipeline(){var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};dossiers.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';var board=document.getElementById('kanban-board');if(!board)return;board.innerHTML=STAGES.map(function(stage){var items=dossiers.filter(function(d){return d.stage===stage;});var cards=items.map(function(d){var next=STAGES[STAGES.indexOf(stage)+1];var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div><div style="display:flex;gap:4px;margin-top:4px;">'+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bd" onclick="delDoss('+d.id+')" style="margin-left:auto;">×</button></div></div>';}).join('');return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';}).join('');}
 function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
-function delDoss(id){if(!confirm("Êtes-vous sûr de vouloir supprimer ce dossier du Pipeline ?"))return; dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();}
+function delDoss(id){dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();}
 
 // ALEXIS
 function renderAlexis(){var who='alexis',d=D[who],st=getStats(who);var tct=document.getElementById('al-tab-content');if(!tct)return;var todayCt=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0);tct.innerHTML='<div class="kg k4"><div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' TTC</div></div><div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'/'+OBJ_J+'</div></div><div class="kc gr"><div class="kl">RDV semaine</div><div class="kv sm" style="color:var(--green)">'+wR+'</div></div><div class="kc pu"><div class="kl">Contacts semaine</div><div class="kv sm" style="color:var(--pur)">'+wC+'</div></div></div><div class="stitle">Données identiques aux autres négociateurs — sélectionnez Alexis dans la sidebar pour accéder à son journal complet.</div>';}
