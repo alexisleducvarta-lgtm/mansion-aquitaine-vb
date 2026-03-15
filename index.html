@@ -157,7 +157,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .kb-card-fee{font-size:11px;color:var(--or);font-weight:500;margin-top:2px;}
 .kb-add{width:100%;background:transparent;border:1px dashed var(--border);color:var(--txt3);border-radius:6px;padding:5px;font-size:10px;cursor:pointer;margin-top:3px;}
 .kb-add:hover{border-color:var(--borderor);color:var(--or);}
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999999;} /* HORS DE LA SHELL POUR LE MOBILE */
+.modal-ov{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999999;}
 .modal-bx{background:var(--bg2);border:1px solid var(--borderor);border-radius:13px;padding:1.1rem;min-width:300px;max-width:520px;width:92%;max-height:90vh;overflow-y:auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
 .modal-t{font-family:Georgia,serif;font-size:14px;color:var(--or);margin-bottom:.7rem;}
 .gcal-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#6aa4f5;border-radius:5px;padding:2px 6px;font-size:10px;text-decoration:none;white-space:nowrap;}
@@ -172,7 +172,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   .shell { flex-direction: column; }
   .sb { width: 100%; height: auto; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 0.5rem; flex-wrap: nowrap; align-items: center; }
   .sb-logo, .sep { display: none; }
-  .sbf { display:none; } /* Caché sur mobile, le profil prend trop de place en haut */
+  .sbf { display:none; } /* Caché sur mobile pour gagner de la place */
   .ng { display: flex; align-items: center; margin-bottom: 0; padding: 0; }
   .ngl { display: none; }
   .ni { white-space: nowrap; margin-right: 5px; margin-bottom: 0; padding: 6px 10px; }
@@ -219,10 +219,10 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="ng" style="margin-top:3px;"><div class="ngl">Vision Board</div>
     <div class="ni active" id="nav-prosp" onclick="goProsp(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Prospection</div>
     <div class="ni" id="nav-pipeline" onclick="goPipeline(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="13" height="5" rx="1"/><rect x="2" y="17" width="8" height="5" rx="1"/></svg>Pipeline</div>
+    <div class="ni" onclick="toggleTheme()" style="background:var(--bg2); border:1px solid var(--border); padding: 5px 10px;">🌓 Thème Clair/Sombre</div>
   </div>
   <div class="sbf">
     <div class="ac2"><div class="ava" id="cur-av" style="background:var(--orb);border:1px solid var(--borderor);color:var(--or);">MA</div><div><div class="an" id="cur-name">Mansion Aquitaine</div><div class="aro" id="cur-role">Vision Board</div></div></div>
-    <button class="bd" onclick="toggleTheme()" title="Mode Nuit / Jour" style="font-size:16px;">🌓</button>
   </div>
 </div>
 
@@ -339,9 +339,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // --- INITIALISATION THÈME ---
-if(localStorage.getItem('mansion-theme') === 'light') {
-  document.body.classList.add('light-theme');
-}
+if(localStorage.getItem('mansion-theme') === 'light') { document.body.classList.add('light-theme'); }
 function toggleTheme() {
   document.body.classList.toggle('light-theme');
   var isLight = document.body.classList.contains('light-theme');
@@ -362,7 +360,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- OBJECTIFS PERSONNALISÉS SÉCURISÉS ---
 const AGENTS = [
   { id: 'swan', nom: 'Swan Dumas', role: 'Salariée', contrat: 'Salariée HT', color: '#c9a84c', init: 'SD', typeRem: 'swan', taux: null, objRdv: 4 },
   { id: 'pauline', nom: 'Pauline', role: 'Agent commercial', contrat: 'Progressive', color: '#e07a7f', init: 'PL', typeRem: 'prog', taux: null, objRdv: 4 },
@@ -442,7 +439,7 @@ function fixeCom(ttc,bin,t){return ttc*(t/100)*(bin?.5:1);}
 function comForWho(who,c,caB){var ag=getAg(who);if(ag.typeRem==='swan')return swanCom(c.ttc,c.type,c.bin);if(ag.typeRem==='prog')return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,ag.taux||50);}
 function getStats(who){var d=D[who],ca=0,com=0,ag=getAg(who);if(ag.typeRem==='swan'){d.compromis.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});}else if(ag.typeRem==='prog'){var r=calcProg(who);ca=r.ca;com=r.com;}else{var t=ag.taux||50;d.compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});}return{ca:ca,com:com,nb:d.compromis.length};}
 
-// EXPORT CSV
+// --- EXPORT CSV ---
 function exportCSV() {
   let csv = "Collaborateur;Reference;TTC;Commission;Date\n";
   ALL.forEach(w => {
