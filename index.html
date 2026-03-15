@@ -142,7 +142,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .kb-card-fee{font-size:11px;color:var(--or);font-weight:500;margin-top:2px;}
 .kb-add{width:100%;background:transparent;border:1px dashed var(--border);color:var(--txt3);border-radius:6px;padding:5px;font-size:10px;cursor:pointer;margin-top:3px;}
 .kb-add:hover{border-color:var(--borderor);color:var(--or);}
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:99999;} /* Z-index augmenté pour mobile */
 .modal-bx{background:var(--bg2);border:1px solid var(--borderor);border-radius:13px;padding:1.1rem;min-width:300px;max-width:520px;width:92%;max-height:90vh;overflow-y:auto;}
 .modal-t{font-family:Georgia,serif;font-size:14px;color:var(--or);margin-bottom:.7rem;}
 .gcal-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#6aa4f5;border-radius:5px;padding:2px 6px;font-size:10px;text-decoration:none;white-space:nowrap;}
@@ -165,86 +165,18 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   .wr { grid-template-columns: 1fr; }
   .fg { grid-template-columns: 1fr; }
   
-  /* Casser totalement la forme tableau pour forcer les cartes */
   #stc-journal .tbox { overflow: visible !important; background: transparent !important; border: none !important; }
-  #stc-journal .tbl,
-  #stc-journal .tbl tbody,
-  #stc-journal .tbl tr,
-  #stc-journal .tbl td {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-  #stc-journal .tbl colgroup,
-  #stc-journal .tbl thead {
-    display: none !important;
-  }
+  #stc-journal .tbl, #stc-journal .tbl tbody, #stc-journal .tbl tr, #stc-journal .tbl td { display: block !important; width: 100% !important; min-width: 0 !important; }
+  #stc-journal .tbl colgroup, #stc-journal .tbl thead { display: none !important; }
 
-  /* Style des "Cartes" de contacts */
-  #contact-tbody tr {
-    background: var(--bg2) !important;
-    margin-bottom: 15px !important;
-    border-radius: 12px !important;
-    padding: 12px !important;
-    border: 1px solid var(--border) !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  #contact-tbody td {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 8px 0 !important;
-    border-bottom: 1px solid rgba(255,255,255,0.03) !important;
-  }
-  
-  #contact-tbody td::before {
-    content: attr(data-label);
-    font-size: 11px;
-    color: var(--txt3);
-    text-transform: uppercase;
-    font-weight: 500;
-    width: 35%;
-    flex-shrink: 0;
-  }
-  
-  #contact-tbody td:last-child {
-    border-bottom: none !important;
-    justify-content: flex-end !important;
-    margin-top: 5px;
-  }
-  
-  #contact-tbody td input, 
-  #contact-tbody td select, 
-  #contact-tbody td textarea {
-    width: 60% !important;
-    flex: none !important;
-    text-align: right;
-    background: var(--bg3) !important;
-    padding: 6px 8px !important;
-    border-radius: 5px !important;
-    color: var(--txt) !important;
-    font-size: 11px !important;
-    border: 1px solid var(--border) !important;
-  }
-  
-  #contact-tbody td textarea {
-    text-align: left;
-    min-height: 45px;
-  }
-  
+  #contact-tbody tr { background: var(--bg2) !important; margin-bottom: 15px !important; border-radius: 12px !important; padding: 12px !important; border: 1px solid var(--border) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important; display: flex !important; flex-direction: column !important; }
+  #contact-tbody td { display: flex !important; align-items: center !important; justify-content: space-between !important; padding: 8px 0 !important; border-bottom: 1px solid rgba(255,255,255,0.03) !important; }
+  #contact-tbody td::before { content: attr(data-label); font-size: 11px; color: var(--txt3); text-transform: uppercase; font-weight: 500; width: 35%; flex-shrink: 0; }
+  #contact-tbody td:last-child { border-bottom: none !important; justify-content: flex-end !important; margin-top: 5px; }
+  #contact-tbody td input, #contact-tbody td select, #contact-tbody td textarea { width: 60% !important; flex: none !important; text-align: right; background: var(--bg3) !important; padding: 6px 8px !important; border-radius: 5px !important; color: var(--txt) !important; font-size: 11px !important; border: 1px solid var(--border) !important; }
+  #contact-tbody td textarea { text-align: left; min-height: 45px; }
   #contact-tbody td .pill { display: none !important; }
-  #contact-tbody td button.bd { 
-    background: rgba(192,68,74,0.15) !important; 
-    color: var(--red) !important; 
-    padding: 6px 12px !important; 
-    border-radius: 6px !important; 
-    border: 1px solid rgba(192,68,74,0.3) !important; 
-    font-size: 11px !important; 
-  }
-  
+  #contact-tbody td button.bd { background: rgba(192,68,74,0.15) !important; color: var(--red) !important; padding: 6px 12px !important; border-radius: 6px !important; border: 1px solid rgba(192,68,74,0.3) !important; font-size: 11px !important; }
   .modal-bx { width: 95%; padding: 1.2rem; }
   .modal-bx > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
 }
@@ -360,10 +292,10 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     </div>
     
     <div style="margin-top:10px; padding:10px; background:var(--bg3); border:1px solid var(--border); border-radius:8px;">
-      <div style="font-size:11px; color:var(--or); margin-bottom:6px; font-weight:500;">Objectif (Optionnel)</div>
+      <div style="font-size:11px; color:var(--or); margin-bottom:6px; font-weight:500;">RDV Obtenu (Optionnel)</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div><div class="fct">Nom du RDV</div><input class="ci" type="text" id="mc-rdvnom" placeholder="RDV Estim..."></div>
-        <div><div class="fct">Nombre obtenus</div><input class="ci" type="number" id="mc-rdvnb" value="0" min="0"></div>
+        <div><div class="fct">Nombre RDV</div><input class="ci" type="number" id="mc-rdvnb" value="0" min="0"></div>
       </div>
     </div>
 
@@ -380,7 +312,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// --- CONNEXION FIREBASE TEMPS RÉEL ---
+// --- CONNEXION FIREBASE ---
 const firebaseConfig = {
   apiKey: "AIzaSyBwZWv1DJIxXKe5NJXDyAQRj7pmwJBxgQk",
   authDomain: "vision-board-75069.firebaseapp.com",
@@ -391,11 +323,10 @@ const firebaseConfig = {
   measurementId: "G-LNEF71L8FS",
   databaseURL: "https://vision-board-75069-default-rtdb.europe-west1.firebasedatabase.app"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- CENTRALISATION DES AGENTS ET OBJECTIFS ---
+// --- OBJECTIFS PERSONNALISÉS SÉCURISÉS ---
 const AGENTS = [
   { id: 'swan', nom: 'Swan Dumas', role: 'Salariée', contrat: 'Salariée HT', color: '#c9a84c', init: 'SD', typeRem: 'swan', taux: null, objRdv: 4 },
   { id: 'pauline', nom: 'Pauline', role: 'Agent commercial', contrat: 'Progressive', color: '#e07a7f', init: 'PL', typeRem: 'prog', taux: null, objRdv: 4 },
@@ -432,7 +363,6 @@ var dirPinCode='1234',dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
 var charts={prosp:null,mens:null,dir:null};
 
-// --- FONCTIONS FIREBASE ---
 function loadAll() {
   db.ref('/').on('value', (snapshot) => {
     const data = snapshot.val();
@@ -453,7 +383,6 @@ function loadAll() {
       if (data.alPinCode) alPinCode = data.alPinCode;
       if (data.dirPinCode) dirPinCode = data.dirPinCode;
     }
-    
     if (document.getElementById('pg-prosp').classList.contains('active')) renderProsp();
     if (document.getElementById('pg-pipeline').classList.contains('active')) renderPipeline();
     if (dirOpen && document.getElementById('pg-dir').classList.contains('active')) renderDir();
@@ -497,21 +426,30 @@ function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.dis
 
 function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();}
 
-// --- RENDER NEG & KPIs EN TEMPS RÉEL ---
+// --- COMPTEURS UNIFIÉS ---
 function renderNegKpis() {
     var who=curWho; if(!who)return;
     var d=D[who], st=getStats(who), ag=getAg(who);
     var todayCt=d.contacts.length;
     
+    // Calcul RDV : somme des contacts + somme de la grille semaine
     var rdvContacts = d.contacts.reduce(function(acc,c){return acc+(parseInt(c.nb_rdv)||0);}, 0);
     var rdvSemaine = d.wr.reduce(function(acc,val){return acc+(parseInt(val)||0);}, 0);
     var totalRdv = rdvContacts + rdvSemaine;
+    
+    // Calcul Mandats : somme des contacts + somme de la grille semaine
+    var manContacts = d.contacts.reduce(function(acc,c){return acc+(parseInt(c.nb_man)||0);}, 0);
+    var manSemaine = d.wm.reduce(function(acc,val){return acc+(parseInt(val)||0);}, 0);
+    var totalMandat = manContacts + manSemaine;
+
     var objRdv = ag.objRdv || 4;
     var pctRdv = Math.min(Math.round((totalRdv / objRdv) * 100), 100);
 
     var h = '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>';
     h += '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>';
-    h += '<div class="kc gr"><div class="kl">RDV Semaine</div><div class="kv sm" style="color:var(--green)">'+totalRdv+'</div><div class="ks">Obj. : '+objRdv+'</div><div class="bbar"><div class="bbarf" style="width:'+pctRdv+'%;background:var(--green);"></div></div></div>';
+    
+    // Modification visuelle pour intégrer les Mandats
+    h += '<div class="kc gr"><div class="kl">RDV / Mandats (Sem.)</div><div class="kv sm" style="color:var(--green)">'+totalRdv+' / '+totalMandat+'</div><div class="ks">Obj. RDV : '+objRdv+'</div><div class="bbar"><div class="bbarf" style="width:'+pctRdv+'%;background:var(--green);"></div></div></div>';
     h += '<div class="kc pu"><div class="kl">CA TTC</div><div class="kv sm" style="color:var(--pur)">'+fmt(st.ca)+'</div></div>';
     
     document.getElementById('neg-kpis').innerHTML = h;
@@ -597,7 +535,7 @@ function renderContacts(){
         '<td data-label="Catégorie"><select onchange="D[\''+who+'\'].contacts['+i+'].categorie=this.value;save(\''+who+'\')">'+CATS.map(function(ca){return'<option'+(ca===c.categorie?' selected':'')+'>'+ca+'</option>';}).join('')+'</select></td>'+
         '<td data-label="Secteur"><input value="'+escH(c.secteur)+'" placeholder="Secteur" oninput="D[\''+who+'\'].contacts['+i+'].secteur=this.value;save(\''+who+'\')"></td>'+
         '<td data-label="RDV"><input value="'+escH(c.rdv)+'" placeholder="Nom RDV" oninput="D[\''+who+'\'].contacts['+i+'].rdv=this.value;save(\''+who+'\')"><input type="number" min="0" value="'+(c.nb_rdv||0)+'" style="width:42px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px;font-size:10px;color:var(--txt);outline:none;margin-top:2px;" oninput="D[\''+who+'\'].contacts['+i+'].nb_rdv=parseInt(this.value)||0;save(\''+who+'\');renderNegKpis();"></td>'+
-        '<td data-label="Mandat"><select style="width:100%;border:none;background:transparent;font-size:10px;color:var(--txt2);outline:none;" onchange="D[\''+who+'\'].contacts['+i+'].type_man=this.value;save(\''+who+'\');renderContacts()">'+MANDATS_LIST.map(function(m){return'<option value="'+m+'"'+(m===c.type_man?' selected':'')+'>'+m+'</option>';}).join('')+'</select>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;margin-top:2px;display:inline-block;">'+c.type_man+'</span>':'')+'<input type="number" min="0" value="'+(c.nb_man||0)+'" style="width:38px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px;font-size:10px;color:var(--txt);outline:none;display:block;margin-top:2px;" oninput="D[\''+who+'\'].contacts['+i+'].nb_man=parseInt(this.value)||0;save(\''+who+'\')"></td>'+
+        '<td data-label="Mandat"><select style="width:100%;border:none;background:transparent;font-size:10px;color:var(--txt2);outline:none;" onchange="D[\''+who+'\'].contacts['+i+'].type_man=this.value;save(\''+who+'\');renderContacts()">'+MANDATS_LIST.map(function(m){return'<option value="'+m+'"'+(m===c.type_man?' selected':'')+'>'+m+'</option>';}).join('')+'</select>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;margin-top:2px;display:inline-block;">'+c.type_man+'</span>':'')+'<input type="number" min="0" value="'+(c.nb_man||0)+'" style="width:38px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px;font-size:10px;color:var(--txt);outline:none;display:block;margin-top:2px;" oninput="D[\''+who+'\'].contacts['+i+'].nb_man=parseInt(this.value)||0;save(\''+who+'\');renderNegKpis();"></td>'+
         '<td data-label="Statut"><select onchange="D[\''+who+'\'].contacts['+i+'].statut=this.value;save(\''+who+'\')">'+STATUTS.map(function(s){return'<option'+(s===c.statut?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td>'+
         '<td data-label="Relance"><input type="date" value="'+escH(c.relance_date||'')+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:2px;font-size:10px;color:var(--txt2);outline:none;" oninput="D[\''+who+'\'].contacts['+i+'].relance_date=this.value;save(\''+who+'\')">'+(url?'<a href="'+url+'" target="_blank" class="gcal-btn" style="margin-top:2px;">Agenda</a>':'')+'</td>'+
         '<td data-label="Notes"><textarea rows="2" placeholder="Notes..." oninput="D[\''+who+'\'].contacts['+i+'].notes=this.value;save(\''+who+'\')" style="min-height:28px;">'+escH(c.notes)+'</textarea></td>'+
@@ -606,7 +544,7 @@ function renderContacts(){
     }).join('');
 }
 
-function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNegKpis();renderWeekKpis()"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;save(\''+who+'\')"></div>';}wg.innerHTML=h;renderWeekKpis();}
+function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNegKpis();renderWeekKpis()"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNegKpis();renderWeekKpis()"></div>';}wg.innerHTML=h;renderWeekKpis();}
 function renderWeekKpis(){
     var who=curWho;if(!who)return;
     var d=D[who], ag=getAg(who);
@@ -614,7 +552,11 @@ function renderWeekKpis(){
     var rdvContacts = d.contacts.reduce(function(a,c){return a+(parseInt(c.nb_rdv)||0);}, 0);
     var rdvSemaine = d.wr.reduce(function(a,b){return a+parseInt(b||0);}, 0);
     var tR = rdvContacts + rdvSemaine;
-    var tM=d.wm.reduce(function(a,b){return a+b;},0);
+    
+    var manContacts = d.contacts.reduce(function(acc,c){return acc+(parseInt(c.nb_man)||0);}, 0);
+    var manSemaine = d.wm.reduce(function(acc,val){return acc+(parseInt(val)||0);}, 0);
+    var tM = manContacts + manSemaine;
+
     var now=new Date(),dw=Math.max(1,now.getDay()===0?5:Math.min(now.getDay(),5)),dlt=tC-(dw*OBJ_J);
     var objRdv = ag.objRdv || 4;
     var pctRdv = Math.min(Math.round((tR / objRdv) * 100), 100);
