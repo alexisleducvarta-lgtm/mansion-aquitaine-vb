@@ -246,6 +246,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="ng" style="margin-top:3px;"><div class="ngl">Vision Board</div>
     <div class="ni active" id="nav-prosp" onclick="goProsp(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Prospection</div>
     <div class="ni" id="nav-pipeline" onclick="goPipeline(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="13" height="5" rx="1"/><rect x="2" y="17" width="8" height="5" rx="1"/></svg>Pipeline</div>
+    <div class="ni" id="nav-clients" onclick="goClients(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</div>
+    <div class="ni" id="nav-files" onclick="goFiles(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Fichiers</div>
   </div>
   <div class="sbf"><div class="ac2"><div class="ava" id="cur-av" style="background:var(--orb);border:1px solid var(--borderor);color:var(--or);">MA</div><div><div class="an" id="cur-name">Mansion Aquitaine</div><div class="aro" id="cur-role">Vision Board</div></div></div></div>
 </div>
@@ -290,6 +292,15 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     </div>
     <!-- RÉSUMÉ RAPIDE -->
     <div id="journal-summary" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;"></div>
+    <!-- ALERTES RELANCES -->
+    <div id="journal-relances" style="margin-bottom:8px;"></div>
+    <!-- RECHERCHE & FILTRES -->
+    <div style="display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;align-items:center;">
+      <input type="text" id="ct-search" placeholder="🔍 Rechercher (nom, secteur, tag...)" oninput="renderContacts()" class="ci" style="flex:1;min-width:160px;margin:0;padding:5px 8px;font-size:11px;">
+      <select id="ct-filter-canal" onchange="renderContacts()" class="ci" style="margin:0;padding:5px 6px;font-size:10px;width:auto;"><option value="">Tous canaux</option><option>Pige</option><option>Boîtage</option><option>Porte à porte</option><option>Téléphone</option><option>Réseau / Parrainage</option><option>Autre</option></select>
+      <select id="ct-filter-statut" onchange="renderContacts()" class="ci" style="margin:0;padding:5px 6px;font-size:10px;width:auto;"><option value="">Tous statuts</option><option>À rappeler</option><option>RDV fixé</option><option>RDV effectué</option><option>Mandat signé</option><option>Pas intéressé</option><option>En attente</option></select>
+      <select id="ct-filter-cat" onchange="renderContacts()" class="ci" style="margin:0;padding:5px 6px;font-size:10px;width:auto;"><option value="">Toutes cat.</option><option>Vendeur</option><option>Acquéreur</option><option>Propriétaire</option><option>Investisseur</option><option>Locataire</option></select>
+    </div>
     <div class="tbox">
       <div class="thead"><span class="ttl" id="journal-title">Contacts</span><button class="bs" id="btn-add-contact" onclick="toggleContactForm()">+ Ajouter</button></div>
       <!-- FORMULAIRE ACCORDÉON -->
@@ -298,6 +309,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <div><div class="fct">Nom *</div><input class="ci" type="text" id="cf-nom" placeholder="Nom du contact"></div>
           <div style="grid-column:1/-1;"><div class="fct">Date du contact — cliquez un jour</div><div id="cf-date-picker" style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;"></div><input type="hidden" id="cf-date"></div>
+          <div><div class="fct">Téléphone</div><input class="ci" type="tel" id="cf-tel" placeholder="06 12 34 56 78"></div>
+          <div><div class="fct">Email</div><input class="ci" type="email" id="cf-email" placeholder="email@exemple.com"></div>
           <div><div class="fct">Canal</div><select class="ci" id="cf-canal"><option>Pige</option><option>Boîtage</option><option>Porte à porte</option><option>Téléphone</option><option>Réseau / Parrainage</option><option>Autre</option></select></div>
           <div><div class="fct">Catégorie</div><select class="ci" id="cf-cat"><option>Vendeur</option><option>Acquéreur</option><option>Propriétaire</option><option>Investisseur</option><option>Locataire</option><option>Autre</option></select></div>
           <div><div class="fct">Secteur</div><input class="ci" type="text" id="cf-secteur" placeholder="Quartier / ville"></div>
@@ -305,6 +318,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
           <div><div class="fct">Mandat</div><select class="ci" id="cf-mandat"><option>—</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select></div>
           <div><div class="fct">Statut</div><select class="ci" id="cf-statut"><option>À rappeler</option><option>RDV fixé</option><option>RDV effectué</option><option>Mandat signé</option><option>Pas intéressé</option><option>En attente</option></select></div>
           <div><div class="fct">Relance</div><input class="ci" type="date" id="cf-relance"></div>
+          <div style="grid-column:1/-1;"><div class="fct">Tags (séparés par virgule)</div><input class="ci" type="text" id="cf-tags" placeholder="ex: chaud, investisseur, urgent"></div>
         </div>
         <div style="margin-top:8px;"><div class="fct">Notes</div><textarea class="na" id="cf-notes" placeholder="Notes..." rows="2"></textarea></div>
         <div style="display:flex;gap:6px;margin-top:8px;">
@@ -334,6 +348,24 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   </div>
   <div class="kg k4" id="pipe-kpis"></div>
   <div class="kanban" id="kanban-board"></div>
+</div>
+
+<div class="pg" id="pg-clients">
+  <div class="ph"><div><div class="pt">Clients</div><div class="pss">Fiches unifiées — contacts + dossiers Pipeline regroupés par nom</div></div></div>
+  <div style="margin-bottom:8px;"><input type="text" id="cl-search" placeholder="🔍 Rechercher un client (nom, tél, email, secteur, tag...)" oninput="renderClients()" class="ci" style="margin:0;padding:6px 10px;font-size:11px;"></div>
+  <div class="kg k4" id="cl-kpis"></div>
+  <div id="cl-list"></div>
+</div>
+
+<div class="pg" id="pg-files">
+  <div class="ph"><div><div class="pt">Fichiers en attente</div><div class="pss">Drag-and-drop ou cliquez · Matching automatique avec les dossiers Pipeline</div></div></div>
+  <div id="file-drop-zone" style="border:2px dashed var(--borderor);border-radius:11px;padding:30px;text-align:center;background:var(--orl);cursor:pointer;margin-bottom:.8rem;" onclick="document.getElementById('file-input').click()">
+    <div style="font-size:32px;margin-bottom:6px;">📁</div>
+    <div style="font-size:13px;color:var(--or);font-weight:500;">Glissez vos fichiers ici, ou cliquez pour parcourir</div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px;">PDF, images, docs · Max 10 MB par fichier · Matching automatique sur les dossiers Pipeline</div>
+    <input type="file" id="file-input" multiple style="display:none;" onchange="handleFileSelect(event)">
+  </div>
+  <div id="file-list"></div>
 </div>
 
 <div class="pg" id="pg-alexis" style="position:relative;min-height:500px;">
@@ -393,6 +425,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <!-- ====== FIREBASE SDK (compat pour fichier unique HTML) ====== -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 var db = null;
 try {
@@ -549,6 +582,8 @@ function setFooter(n,r){setEl('cur-name',n);setEl('cur-role',r);}
 function goNeg(who,btn){clearAll();btn.classList.add('active');curWho=who;var c=COLORS[who];var av=document.getElementById('cur-av');if(av){av.textContent=INITS[who];av.style.background=c+'22';av.style.color=c;av.style.borderColor=c+'44';}setFooter(NAMES[who],ROLES[who]);document.getElementById('pg-neg').classList.add('active');curSub='journal';document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stab-journal').classList.add('active');document.getElementById('stc-journal').classList.add('active');renderNeg();}
 function goProsp(btn){clearAll();btn.classList.add('active');setFooter('Mansion Aquitaine','Prospection');document.getElementById('pg-prosp').classList.add('active');renderProsp();}
 function goPipeline(btn){clearAll();btn.classList.add('active');setFooter('Pipeline','Vision Board');document.getElementById('pg-pipeline').classList.add('active');renderPipeline();}
+function goClients(btn){clearAll();btn.classList.add('active');setFooter('Clients','Fiches unifiées');document.getElementById('pg-clients').classList.add('active');renderClients();}
+function goFiles(btn){clearAll();btn.classList.add('active');setFooter('Fichiers','Pièces jointes');document.getElementById('pg-files').classList.add('active');renderFiles();}
 function goAlexis(btn){clearAll();btn.classList.add('active');setFooter('Alexis Leduc','Gérant');document.getElementById('pg-alexis').classList.add('active');if(!alOpen){document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}else{document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}}
 function goDir(btn){clearAll();btn.classList.add('active');setFooter('Vue Direction','Accès restreint');document.getElementById('pg-dir').classList.add('active');if(!dirOpen){document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}else{document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}}
 function updDots(pfx,buf){for(var i=0;i<4;i++){var d=document.getElementById(pfx+i);if(d)d.className='pin-d'+(i<buf.length?' on':'');}}
@@ -628,7 +663,7 @@ function toggleContactForm(){
   else{f.style.display='none';b.textContent='+ Ajouter';resetContactForm();}
 }
 function resetContactForm(){
-  ['cf-nom','cf-secteur','cf-rdv','cf-notes','cf-relance'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['cf-nom','cf-secteur','cf-rdv','cf-notes','cf-relance','cf-tel','cf-email','cf-tags'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('cf-date').value=fmtDate(new Date());document.getElementById('cf-edit-idx').value='-1';
   ['cf-canal','cf-cat','cf-mandat','cf-statut'].forEach(function(id){var e=document.getElementById(id);if(e)e.selectedIndex=0;});
 }
@@ -638,15 +673,21 @@ function editContact(idx){
   document.getElementById('cf-edit-idx').value=idx;document.getElementById('cf-submit-btn').textContent='Modifier le contact';
   document.getElementById('cf-nom').value=c.nom||'';
   var cd=c.contact_date||fmtDate(new Date());document.getElementById('cf-date').value=cd;renderDatePicker(cd);
+  document.getElementById('cf-tel').value=c.tel||'';
+  document.getElementById('cf-email').value=c.email||'';
   document.getElementById('cf-canal').value=c.canal||'Pige';document.getElementById('cf-cat').value=c.categorie||'Vendeur';
   document.getElementById('cf-secteur').value=c.secteur||'';document.getElementById('cf-rdv').value=c.rdv||'';
   document.getElementById('cf-mandat').value=c.type_man||'—';document.getElementById('cf-statut').value=c.statut||'À rappeler';
   document.getElementById('cf-relance').value=c.relance_date||'';document.getElementById('cf-notes').value=c.notes||'';
+  document.getElementById('cf-tags').value=(c.tags||[]).join(', ');
+  // Scroll vers le formulaire
+  document.getElementById('contact-form').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function submitContact(){
   var who=curWho;if(!who)return;var nom=(document.getElementById('cf-nom').value||'').trim();
   if(!nom){alert('Le nom est requis.');return;}
-  var data={id:Date.now(),nom:nom,contact_date:document.getElementById('cf-date').value||fmtDate(new Date()),canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim()};
+  var tags=(document.getElementById('cf-tags').value||'').split(',').map(function(t){return t.trim();}).filter(function(t){return t;});
+  var data={id:Date.now(),nom:nom,contact_date:document.getElementById('cf-date').value||fmtDate(new Date()),tel:(document.getElementById('cf-tel').value||'').trim(),email:(document.getElementById('cf-email').value||'').trim(),canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim(),tags:tags};
   var editIdx=parseInt(document.getElementById('cf-edit-idx').value);
   if(editIdx>=0&&editIdx<D[who].contacts.length){data.id=D[who].contacts[editIdx].id||Date.now();D[who].contacts[editIdx]=data;}else{D[who].contacts.push(data);}
   save(who);resetContactForm();document.getElementById('contact-form').style.display='none';document.getElementById('btn-add-contact').textContent='+ Ajouter';renderContacts();renderNeg();
@@ -674,21 +715,63 @@ function renderContacts(){
   var wr=getWeekRange(),opts={day:'numeric',month:'short'};
   var wl=document.getElementById('week-label');
   if(wl)wl.textContent=wr.mon.toLocaleDateString('fr-FR',opts)+' — '+wr.sun.toLocaleDateString('fr-FR',opts)+(viewWeekOffset===0?' (cette semaine)':'');
-  var filtered=getWeekContacts();
+  var weekFiltered=getWeekContacts();
   var wc=document.getElementById('week-count');
-  if(wc)wc.textContent=filtered.length+' contact'+(filtered.length>1?'s':'')+' cette semaine';
+  if(wc)wc.textContent=weekFiltered.length+' contact'+(weekFiltered.length>1?'s':'')+' cette semaine';
+  // Résumé rapide
   var sm=document.getElementById('journal-summary');
-  if(sm){var byCanal={},byStat={};filtered.forEach(function(c){byCanal[c.canal]=(byCanal[c.canal]||0)+1;byStat[c.statut]=(byStat[c.statut]||0)+1;});var h='';Object.keys(byCanal).forEach(function(k){h+='<span class="pill '+(CCLASS[k]||'ca')+'" style="font-size:9px;">'+byCanal[k]+' '+k+'</span>';});Object.keys(byStat).forEach(function(k){var sc=k==='Mandat signé'?'p-gr':k==='RDV fixé'?'p-bl':k==='Pas intéressé'?'p-re':'p-gy';h+='<span class="pill '+sc+'" style="font-size:9px;">'+byStat[k]+' '+k+'</span>';});sm.innerHTML=h||'<span style="font-size:10px;color:var(--txt3);">Aucun contact cette semaine</span>';}
-  var jt=document.getElementById('journal-title');if(jt)jt.textContent='Contacts ('+filtered.length+')';
+  if(sm){var byCanal={},byStat={};weekFiltered.forEach(function(c){byCanal[c.canal]=(byCanal[c.canal]||0)+1;byStat[c.statut]=(byStat[c.statut]||0)+1;});var h='';Object.keys(byCanal).forEach(function(k){h+='<span class="pill '+(CCLASS[k]||'ca')+'" style="font-size:9px;">'+byCanal[k]+' '+k+'</span>';});Object.keys(byStat).forEach(function(k){var sc=k==='Mandat signé'?'p-gr':k==='RDV fixé'?'p-bl':k==='Pas intéressé'?'p-re':'p-gy';h+='<span class="pill '+sc+'" style="font-size:9px;">'+byStat[k]+' '+k+'</span>';});sm.innerHTML=h||'<span style="font-size:10px;color:var(--txt3);">Aucun contact cette semaine</span>';}
+  // ALERTES RELANCES (sur TOUS les contacts, pas que la semaine)
+  var today=fmtDate(new Date());
+  var relances=D[who].contacts.filter(function(c){
+    return c.relance_date&&c.relance_date<=today&&c.statut!=='Mandat signé'&&c.statut!=='Pas intéressé';
+  });
+  var rel=document.getElementById('journal-relances');
+  if(rel){
+    if(relances.length){
+      var rh='<div class="al ar2"><div class="ald"></div><strong>'+relances.length+' relance'+(relances.length>1?'s':'')+' à faire :</strong> ';
+      rh+=relances.slice(0,3).map(function(c){return escH(c.nom);}).join(', ');
+      if(relances.length>3)rh+=' et '+(relances.length-3)+' autres';
+      rh+='</div>';
+      rel.innerHTML=rh;
+    } else rel.innerHTML='';
+  }
+  // FILTRES & RECHERCHE
+  var search=(document.getElementById('ct-search')||{}).value||'';
+  var fCanal=(document.getElementById('ct-filter-canal')||{}).value||'';
+  var fStat=(document.getElementById('ct-filter-statut')||{}).value||'';
+  var fCat=(document.getElementById('ct-filter-cat')||{}).value||'';
+  var filtered=weekFiltered;
+  if(search||fCanal||fStat||fCat){
+    var s=search.toLowerCase();
+    filtered=weekFiltered.filter(function(c){
+      if(fCanal&&c.canal!==fCanal)return false;
+      if(fStat&&c.statut!==fStat)return false;
+      if(fCat&&c.categorie!==fCat)return false;
+      if(s){
+        var hay=((c.nom||'')+' '+(c.secteur||'')+' '+(c.rdv||'')+' '+(c.notes||'')+' '+(c.tel||'')+' '+(c.email||'')+' '+((c.tags||[]).join(' '))).toLowerCase();
+        if(hay.indexOf(s)<0)return false;
+      }
+      return true;
+    });
+  }
+  var jt=document.getElementById('journal-title');if(jt)jt.textContent='Contacts ('+filtered.length+(filtered.length!==weekFiltered.length?'/'+weekFiltered.length:'')+')';
   var box=document.getElementById('contact-cards');if(!box)return;
-  if(!filtered.length){box.innerHTML='<div class="ct-empty">Aucun contact cette semaine — cliquez « + Ajouter »</div>';return;}
+  if(!filtered.length){box.innerHTML='<div class="ct-empty">'+(weekFiltered.length===0?'Aucun contact cette semaine — cliquez « + Ajouter »':'Aucun résultat avec ces filtres')+'</div>';return;}
   var sorted=filtered.slice().sort(function(a,b){return(b.contact_date||'').localeCompare(a.contact_date||'');});
   box.innerHTML=sorted.map(function(c){
     var realIdx=D[who].contacts.indexOf(c);
     var cc=CCLASS[c.canal]||'ca',mc=MPC[c.type_man]||'',url=gcalUrl(c);
     var statCol=c.statut==='Mandat signé'?'p-gr':c.statut==='RDV fixé'?'p-bl':c.statut==='RDV effectué'?'p-pu':c.statut==='Pas intéressé'?'p-re':'p-or';
     var dateStr=c.contact_date?new Date(c.contact_date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}):'';
-    return '<div class="ct-card"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(dateStr?' <span style="font-weight:normal;font-size:10px;color:var(--txt3);">· '+dateStr+'</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div><div class="ct-card-grid"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:2px 6px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:2px 6px;margin-left:4px;">✏️</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="margin-left:4px;">×</button></div></div>';
+    var relanceUrgente=c.relance_date&&c.relance_date<=today&&c.statut!=='Mandat signé'&&c.statut!=='Pas intéressé';
+    var border=relanceUrgente?'border-color:var(--red);box-shadow:0 0 0 1px rgba(192,68,74,.3);':'';
+    var contacts='';
+    if(c.tel)contacts+='<a href="tel:'+escH(c.tel)+'" style="font-size:10px;color:var(--blue);text-decoration:none;margin-right:8px;">📞 '+escH(c.tel)+'</a>';
+    if(c.email)contacts+='<a href="mailto:'+escH(c.email)+'" style="font-size:10px;color:var(--pur);text-decoration:none;">✉️ '+escH(c.email)+'</a>';
+    var tagsHtml='';
+    if(c.tags&&c.tags.length){tagsHtml='<div style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;">#'+escH(t)+'</span>';}).join('')+'</div>';}
+    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(dateStr?' <span style="font-weight:normal;font-size:10px;color:var(--txt3);">· '+dateStr+'</span>':'')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:2px 6px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:2px 6px;margin-left:4px;">✏️</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="margin-left:4px;">×</button></div></div>';
   }).join('');
 }
 
@@ -725,7 +808,18 @@ function renderComp(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who
 
 // INDICATEURS
 function drawMeter(id,pct,color){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext('2d');c.width=60;c.height=60;ctx.clearRect(0,0,60,60);ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,2.25*Math.PI);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();var pv=Math.min(pct/100,1);if(pv>0){ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,(.75+1.5*pv)*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();}ctx.fillStyle=color;ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.round(pct)+'%',30,30);}
-function renderPerf(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),tC=d.contacts.length,tR=d.contacts.reduce(function(s,c){return s+(c.nb_rdv||0);},0),tM=d.contacts.reduce(function(s,c){return s+(c.nb_man||0);},0),wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0),wM=d.wm.reduce(function(a,b){return a+b;},0),aC=tC+wC,aR=tR+wR,aM=tM+wM,txCR=aC>0?Math.round(aR/aC*100):0,txRM=aR>0?Math.round(aM/aR*100):0,txF=Math.round(st.ca/OBJ_FEES*100);document.getElementById('perf-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">RDV→Mandat</div><div class="kv sm" style="color:var(--green)">'+txRM+'%</div><div class="ks">'+aM+'/'+aR+'</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(OBJ_FEES)+'</div></div>';document.getElementById('perf-meters').innerHTML='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Contacts→RDV</div><canvas id="m-cr" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--or);">'+txCR+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">RDV→Mandat</div><canvas id="m-rm" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--green);">'+txRM+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Obj. honoraires</div><canvas id="m-f" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--blue);">'+txF+'%</div></div>';setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4a9c5d');drawMeter('m-f',txF,'#4a82c0');},80);var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
+function renderPerf(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who);
+// Compter RDV et mandats depuis les vraies données saisies
+var tC=d.contacts.length;
+var tR=d.contacts.filter(function(c){return c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé';}).length;
+var tM=d.contacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+var wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0),wM=d.wm.reduce(function(a,b){return a+b;},0);
+var aC=tC+wC,aR=tR+wR,aM=tM+wM;
+var txCR=aC>0?Math.round(aR/aC*100):0,txRM=aR>0?Math.round(aM/aR*100):0,txF=Math.round(st.ca/OBJ_FEES*100);
+document.getElementById('perf-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">RDV→Mandat</div><div class="kv sm" style="color:var(--green)">'+txRM+'%</div><div class="ks">'+aM+'/'+aR+'</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(OBJ_FEES)+'</div></div>';
+document.getElementById('perf-meters').innerHTML='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Contacts→RDV</div><canvas id="m-cr" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--or);">'+txCR+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">RDV→Mandat</div><canvas id="m-rm" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--green);">'+txRM+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Obj. honoraires</div><canvas id="m-f" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--blue);">'+txF+'%</div></div>';
+setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4a9c5d');drawMeter('m-f',txF,'#4a82c0');},80);
+var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
 
 // MENSUEL
 function renderMensuel(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),wC=d.wd.reduce(function(a,b){return a+b;},0),allC=d.contacts.length+wC,txF=Math.round(st.ca/OBJ_FEES*100),now=new Date(),jO=Math.max(1,Math.round(now.getDate()*5/7)),proj=jO>0?Math.round(st.ca/jO*21):0;document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC</div><div class="kv gold">'+fmt(st.ca)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">Commission</div><div class="kv sm" style="color:var(--blue)">'+fmt(st.com)+'</div></div><div class="kc gr"><div class="kl">Contacts mois</div><div class="kv sm" style="color:var(--green)">'+allC+'</div></div><div class="kc pu"><div class="kl">Projection</div><div class="kv sm" style="color:var(--pur)">'+fmt(proj)+'</div></div>';var ma=document.getElementById('mens-alerts');if(ma){ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-st.ca))+'</div>';}if(charts.mens){charts.mens.destroy();charts.mens=null;}var mc=document.getElementById('mens-chart');if(mc){charts.mens=new Chart(mc,{type:'bar',data:{labels:JNOMS,datasets:[{label:'Contacts',data:d.wd.slice(),backgroundColor:COLORS[who]+'88',borderColor:COLORS[who],borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(5).fill(OBJ_J),type:'line',borderColor:'rgba(201,168,76,.5)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
@@ -869,6 +963,186 @@ function exportCSV(){
   a.download='Mansion_Compromis_'+new Date().toISOString().slice(0,10)+'.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
+
+// ====== CLIENTS UNIFIÉS ======
+function normalizeName(n){return(n||'').toLowerCase().replace(/[^a-zàâéèêëïîôöùûüç ]/gi,'').replace(/\s+/g,' ').trim();}
+function getAllClients(){
+  // Regroupe tous les contacts (toutes équipes) + tous les dossiers Pipeline par nom normalisé
+  var clients={};
+  ALL.forEach(function(who){
+    (D[who].contacts||[]).forEach(function(c){
+      var key=normalizeName(c.nom);if(!key)return;
+      if(!clients[key])clients[key]={key:key,nom:c.nom,contacts:[],dossiers:[],agents:{},tel:'',email:'',tags:[]};
+      clients[key].contacts.push({agent:who,data:c});
+      clients[key].agents[who]=true;
+      if(c.tel&&!clients[key].tel)clients[key].tel=c.tel;
+      if(c.email&&!clients[key].email)clients[key].email=c.email;
+      if(c.tags)c.tags.forEach(function(t){if(clients[key].tags.indexOf(t)<0)clients[key].tags.push(t);});
+    });
+  });
+  // Matcher les dossiers Pipeline par leur champ "client"
+  dossiers.forEach(function(d){
+    var key=normalizeName(d.client||d.ref);if(!key)return;
+    // Cherche un client existant (par nom client OU par ref) qui matche
+    var matchKey=null;
+    Object.keys(clients).forEach(function(k){
+      if(k===key||(d.client&&normalizeName(d.client)===k))matchKey=k;
+    });
+    if(!matchKey){
+      matchKey=key;
+      clients[matchKey]={key:matchKey,nom:d.client||d.ref,contacts:[],dossiers:[],agents:{},tel:d.tel||'',email:d.email||'',tags:[]};
+    }
+    clients[matchKey].dossiers.push(d);
+    if(d.tel&&!clients[matchKey].tel)clients[matchKey].tel=d.tel;
+    if(d.email&&!clients[matchKey].email)clients[matchKey].email=d.email;
+  });
+  return Object.values(clients).sort(function(a,b){return(b.dossiers.length+b.contacts.length)-(a.dossiers.length+a.contacts.length);});
+}
+function renderClients(){
+  var clients=getAllClients();
+  var s=((document.getElementById('cl-search')||{}).value||'').toLowerCase();
+  if(s){clients=clients.filter(function(c){var hay=(c.nom+' '+c.tel+' '+c.email+' '+c.tags.join(' ')+' '+c.contacts.map(function(x){return x.data.secteur||'';}).join(' ')).toLowerCase();return hay.indexOf(s)>=0;});}
+  var totalContacts=clients.reduce(function(s,c){return s+c.contacts.length;},0);
+  var totalDossiers=clients.reduce(function(s,c){return s+c.dossiers.length;},0);
+  var withBoth=clients.filter(function(c){return c.contacts.length&&c.dossiers.length;}).length;
+  var kpis=document.getElementById('cl-kpis');
+  if(kpis)kpis.innerHTML='<div class="kc or"><div class="kl">Clients uniques</div><div class="kv gold">'+clients.length+'</div></div><div class="kc bl"><div class="kl">Contacts journal</div><div class="kv sm" style="color:var(--blue)">'+totalContacts+'</div></div><div class="kc gr"><div class="kl">Dossiers Pipeline</div><div class="kv sm" style="color:var(--green)">'+totalDossiers+'</div></div><div class="kc pu"><div class="kl">Avec contact + dossier</div><div class="kv sm" style="color:var(--pur)">'+withBoth+'</div></div>';
+  var list=document.getElementById('cl-list');if(!list)return;
+  if(!clients.length){list.innerHTML='<div class="ct-empty">Aucun client</div>';return;}
+  list.innerHTML=clients.map(function(c){
+    var agentNames=Object.keys(c.agents).map(function(w){return NAMES[w];}).join(', ');
+    var contactsHtml=c.contacts.map(function(x){
+      var ct=x.data;
+      var statCol=ct.statut==='Mandat signé'?'p-gr':ct.statut==='RDV fixé'?'p-bl':ct.statut==='Pas intéressé'?'p-re':'p-or';
+      var dateStr=ct.contact_date?new Date(ct.contact_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'}):'';
+      return'<div style="background:var(--bg3);border-left:3px solid '+COLORS[x.agent]+';padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:10px;"><strong style="color:'+COLORS[x.agent]+';">'+NAMES[x.agent]+'</strong> · '+dateStr+' · <span class="pill '+statCol+'" style="font-size:9px;">'+escH(ct.statut)+'</span>'+(ct.notes?'<div style="color:var(--txt3);margin-top:2px;font-style:italic;">'+escH(ct.notes)+'</div>':'')+'</div>';
+    }).join('');
+    var dossiersHtml=c.dossiers.map(function(d){
+      var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';
+      return'<div style="background:var(--bg3);border-left:3px solid '+col+';padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:10px;"><strong>'+escH(d.ref)+'</strong> · '+escH(STAGE_LBL[d.stage]||'')+' · <span style="color:var(--or);">'+fmt(d.fee)+'</span><div style="font-size:9px;color:var(--txt3);">par '+escH(d.neg)+'</div></div>';
+    }).join('');
+    var tagsHtml=c.tags.length?'<div style="margin-top:4px;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;margin-right:3px;">#'+escH(t)+'</span>';}).join('')+'</div>':'';
+    return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'+
+        '<div><div style="font-family:Georgia,serif;font-size:14px;color:var(--txt);font-weight:500;">'+escH(c.nom)+'</div><div style="font-size:9px;color:var(--txt3);">Suivi par : '+escH(agentNames)+'</div></div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+(c.tel?'<a href="tel:'+escH(c.tel)+'" class="bs" style="font-size:10px;text-decoration:none;background:rgba(74,130,192,.15);color:var(--blue);border-color:rgba(74,130,192,.35);">📞 '+escH(c.tel)+'</a>':'')+(c.email?'<a href="mailto:'+escH(c.email)+'" class="bs" style="font-size:10px;text-decoration:none;background:var(--purl);color:var(--pur);border-color:rgba(122,108,192,.35);">✉️</a>':'')+'</div>'+
+      '</div>'+
+      tagsHtml+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">'+
+        '<div>'+(c.contacts.length?'<div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:4px;">📝 Contacts ('+c.contacts.length+')</div>'+contactsHtml:'<div style="font-size:10px;color:var(--txt3);font-style:italic;">Aucun contact journal</div>')+'</div>'+
+        '<div>'+(c.dossiers.length?'<div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:4px;">📂 Dossiers ('+c.dossiers.length+')</div>'+dossiersHtml:'<div style="font-size:10px;color:var(--txt3);font-style:italic;">Aucun dossier Pipeline</div>')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ====== FICHIERS — Upload Firebase Storage + matching auto ======
+var storageRef=null;
+try{if(typeof firebase!=='undefined'&&firebase.storage)storageRef=firebase.storage().ref();}catch(e){console.warn('Storage indisponible',e);}
+
+function handleFileSelect(evt){
+  var files=evt.target.files;if(!files||!files.length)return;
+  uploadFiles(files);
+  evt.target.value=''; // reset
+}
+function uploadFiles(files){
+  if(!storageRef){alert('Firebase Storage non configuré — voir l\'aide.');return;}
+  for(var i=0;i<files.length;i++){(function(f){
+    if(f.size>10*1024*1024){alert(f.name+' dépasse 10 MB');return;}
+    var path='mansion/files/'+Date.now()+'_'+f.name;
+    var task=storageRef.child(path).put(f);
+    task.then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
+      var matches=findMatchingDossiers(f.name);
+      var meta={id:Date.now()+Math.random(),name:f.name,size:f.size,path:path,url:url,uploadedAt:fmtDate(new Date()),matchedDossierId:null,suggestedMatches:matches.map(function(m){return m.id;})};
+      if(!db)return;
+      db.ref('mansion/pendingFiles').push(meta).then(function(){renderFiles();});
+    }).catch(function(e){alert('Erreur upload '+f.name+': '+e.message);});
+  })(files[i]);}
+}
+function findMatchingDossiers(filename){
+  var name=normalizeName(filename.replace(/\.[^.]+$/,'').replace(/[_-]/g,' '));
+  var words=name.split(' ').filter(function(w){return w.length>2;});
+  return dossiers.map(function(d){
+    var hay=normalizeName((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||''));
+    var score=0;
+    words.forEach(function(w){if(hay.indexOf(w)>=0)score++;});
+    return{dossier:d,id:d.id,score:score};
+  }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,3);
+}
+var pendingFiles=[];
+if(db){
+  db.ref('mansion/pendingFiles').on('value',function(snap){
+    var v=snap.val();
+    pendingFiles=v?Object.keys(v).map(function(k){var x=v[k];x._key=k;return x;}):[];
+    var activePg=document.querySelector('.pg.active');
+    if(activePg&&activePg.id==='pg-files')renderFiles();
+  });
+}
+function renderFiles(){
+  var box=document.getElementById('file-list');if(!box)return;
+  // Filtrer ceux pas encore matchés
+  var pending=pendingFiles.filter(function(f){return !f.matchedDossierId;});
+  var matched=pendingFiles.filter(function(f){return f.matchedDossierId;});
+  if(!pending.length&&!matched.length){box.innerHTML='<div class="ct-empty">Aucun fichier en attente</div>';return;}
+  var h='';
+  if(pending.length){
+    h+='<div class="stitle">À trier ('+pending.length+')</div>';
+    h+=pending.map(function(f){
+      var suggested=(f.suggestedMatches||[]).map(function(id){return dossiers.find(function(d){return d.id===id;});}).filter(function(x){return x;});
+      var sizeKb=Math.round((f.size||0)/1024);
+      return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:6px;">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'+
+          '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);font-size:12px;font-weight:500;text-decoration:none;">📄 '+escH(f.name)+'</a><div style="font-size:9px;color:var(--txt3);">'+sizeKb+' Ko · '+escH(f.uploadedAt||'')+'</div></div>'+
+          '<div style="display:flex;gap:4px;"><a href="'+f.url+'" target="_blank" class="bs" style="font-size:10px;text-decoration:none;">Voir</a><button class="bd" onclick="deletePendingFile(\''+f._key+'\')">×</button></div>'+
+        '</div>'+
+        (suggested.length?'<div style="font-size:10px;color:var(--green);margin-bottom:4px;">✨ Matching suggéré :</div>':'<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Aucune correspondance auto — choisissez :</div>')+
+        suggested.map(function(d){return'<button class="bs" onclick="assignFileToDoss(\''+f._key+'\','+d.id+')" style="font-size:10px;padding:3px 8px;margin:2px 4px 2px 0;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">✅ '+escH(d.ref)+' ('+escH(d.neg)+')</button>';}).join('')+
+        '<select onchange="if(this.value)assignFileToDoss(\''+f._key+'\',parseInt(this.value));" class="ci" style="margin:4px 0 0;padding:4px 6px;font-size:10px;width:auto;"><option value="">Choisir un autre dossier...</option>'+dossiers.map(function(d){return'<option value="'+d.id+'">'+escH(d.ref)+' — '+escH(d.neg)+'</option>';}).join('')+'</select>'+
+      '</div>';
+    }).join('');
+  }
+  if(matched.length){
+    h+='<div class="stitle" style="margin-top:12px;">Classés ('+matched.length+')</div>';
+    h+=matched.map(function(f){
+      var d=dossiers.find(function(x){return x.id===f.matchedDossierId;});
+      var sizeKb=Math.round((f.size||0)/1024);
+      return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;margin-bottom:4px;font-size:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">'+
+        '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);text-decoration:none;">📄 '+escH(f.name)+'</a> → <strong>'+escH(d?d.ref:'Dossier supprimé')+'</strong> · '+sizeKb+' Ko</div>'+
+        '<div style="display:flex;gap:4px;"><button class="bs" onclick="unmatchFile(\''+f._key+'\')" style="font-size:9px;">↩️ Reclasser</button><button class="bd" onclick="deletePendingFile(\''+f._key+'\')">×</button></div>'+
+      '</div>';
+    }).join('');
+  }
+  box.innerHTML=h;
+}
+function assignFileToDoss(fileKey,dossId){
+  if(!db)return;
+  db.ref('mansion/pendingFiles/'+fileKey+'/matchedDossierId').set(dossId);
+  // Ajouter aussi le fichier dans le dossier
+  var f=pendingFiles.find(function(x){return x._key===fileKey;});
+  if(f){
+    var d=dossiers.find(function(x){return x.id===dossId;});
+    if(d){
+      d.files=d.files||[];
+      d.files.push({name:f.name,url:f.url,uploadedAt:f.uploadedAt});
+      saveDoss();
+    }
+  }
+}
+function unmatchFile(fileKey){if(db)db.ref('mansion/pendingFiles/'+fileKey+'/matchedDossierId').set(null);}
+function deletePendingFile(fileKey){
+  if(!confirm('Supprimer ce fichier ?'))return;
+  var f=pendingFiles.find(function(x){return x._key===fileKey;});
+  if(f&&storageRef){try{storageRef.child(f.path).delete();}catch(e){}}
+  if(db)db.ref('mansion/pendingFiles/'+fileKey).remove();
+}
+// Drag & drop
+document.addEventListener('DOMContentLoaded',function(){
+  var dz=document.getElementById('file-drop-zone');
+  if(!dz)return;
+  ['dragover','dragenter'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.style.background='var(--orb)';});});
+  ['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.style.background='var(--orl)';});});
+  dz.addEventListener('drop',function(e){e.preventDefault();uploadFiles(e.dataTransfer.files);});
+});
 
 // INIT
 loadAll();
