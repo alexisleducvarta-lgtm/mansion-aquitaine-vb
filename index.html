@@ -347,6 +347,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <span style="font-size:10px;color:var(--txt3);margin-left:auto;" id="pipe-month-count"></span>
   </div>
   <div class="kg k4" id="pipe-kpis"></div>
+  <div id="pipe-alerts" style="margin-bottom:8px;"></div>
   <div class="kanban" id="kanban-board"></div>
 </div>
 
@@ -490,6 +491,24 @@ var MANDATS_LIST=['—','Exclusif','Semi-exclusif','Exclusivité morale','Simple
 var STAGES=['mandat','offre','compromis','acte'];
 var STAGE_LBL={mandat:'Mandat signé',offre:'Offre acceptée',compromis:'Compromis signé',acte:'Acte authentique'};
 var STAGE_COL={mandat:'var(--blue)',offre:'var(--pur)',compromis:'var(--or)',acte:'var(--green)'};
+// Pièces requises par étape (cumul : à 'acte' on doit avoir tout)
+var REQ_DOCS={
+  mandat:[{key:'mandat',label:'Mandat',icon:'📑'}],
+  offre:[{key:'mandat',label:'Mandat',icon:'📑'},{key:'offre',label:'Offre',icon:'💌'}],
+  compromis:[{key:'mandat',label:'Mandat',icon:'📑'},{key:'offre',label:'Offre',icon:'💌'},{key:'compromis',label:'Compromis',icon:'📋'},{key:'cni',label:'Identité',icon:'🪪'}],
+  acte:[{key:'mandat',label:'Mandat',icon:'📑'},{key:'offre',label:'Offre',icon:'💌'},{key:'compromis',label:'Compromis',icon:'📋'},{key:'cni',label:'Identité',icon:'🪪'},{key:'financement',label:'Financement',icon:'💰'},{key:'acte',label:'Acte',icon:'🏛️'}]
+};
+function checkDossDocs(d){
+  // Retourne {required:[...], present:[...], missing:[...]}
+  var req=REQ_DOCS[d.stage]||[];
+  var files=d.files||[];
+  var present=[],missing=[];
+  req.forEach(function(r){
+    if(files.some(function(f){return f.category===r.key;})){present.push(r);}
+    else missing.push(r);
+  });
+  return{required:req,present:present,missing:missing};
+}
 
 function mkE(){return{compromis:[],contacts:[],wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};}
 var D={};ALL.forEach(function(w){D[w]=mkE();});
@@ -918,7 +937,6 @@ function editDoss(id){
   var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Modifier le dossier';
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Mettre à jour';
 }
-function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
 function renderPipeline(){
   var filtered=getFilteredDossiers();
   var mr=getPipeMonthRange();
@@ -929,6 +947,18 @@ function renderPipeline(){
   var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};
   filtered.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});
   document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';
+  // ALERTES PIÈCES MANQUANTES
+  var alertBox=document.getElementById('pipe-alerts');
+  if(alertBox){
+    var withMissing=filtered.filter(function(d){var c=checkDossDocs(d);return(d.stage==='compromis'||d.stage==='acte')&&c.missing.length>0;});
+    if(withMissing.length){
+      var ah='<div class="al ar2"><div class="ald"></div><strong>⚠️ '+withMissing.length+' dossier'+(withMissing.length>1?'s':'')+' avec pièces manquantes :</strong> ';
+      ah+=withMissing.slice(0,5).map(function(d){var c=checkDossDocs(d);return escH(d.ref)+' ('+c.missing.map(function(m){return m.icon;}).join('')+')';}).join(' · ');
+      if(withMissing.length>5)ah+=' et '+(withMissing.length-5)+' autres';
+      ah+='</div>';
+      alertBox.innerHTML=ah;
+    } else alertBox.innerHTML='';
+  }
   var board=document.getElementById('kanban-board');if(!board)return;
   board.innerHTML=STAGES.map(function(stage){
     var items=filtered.filter(function(d){return d.stage===stage;});
@@ -942,13 +972,43 @@ function renderPipeline(){
       if(d.notaire)coords+='<div style="font-size:9px;color:var(--txt3);">⚖️ '+escH(d.notaire)+'</div>';
       if(d.adresse)coords+='<div style="font-size:9px;color:var(--txt3);">📍 '+escH(d.adresse)+'</div>';
       var dateInfo=d.createdAt?'<div style="font-size:8px;color:var(--txt3);margin-top:2px;">Créé le '+new Date(d.createdAt+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div>':'';
+      // FICHIERS ATTACHÉS
+      var filesHtml='';
+      if(d.files&&d.files.length){
+        filesHtml='<div style="margin-top:5px;padding-top:5px;border-top:1px solid var(--border);"><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;margin-bottom:3px;">📎 Fichiers ('+d.files.length+')</div>';
+        filesHtml+=d.files.map(function(file,fIdx){
+          return'<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:9px;padding:2px 0;"><a href="'+file.url+'" target="_blank" style="color:var(--or);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+escH(file.name)+'">'+(file.categoryIcon||'📄')+' '+escH(file.name)+'</a><button onclick="removeFileFromDoss('+d.id+','+fIdx+')" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:11px;padding:0 3px;" title="Détacher">×</button></div>';
+        }).join('');
+        filesHtml+='</div>';
+      }
+      // CHECKLIST DOCUMENTS
+      var check=checkDossDocs(d);
+      var checklistHtml='';
+      if(check.required.length){
+        checklistHtml='<div style="margin-top:5px;padding-top:5px;border-top:1px solid var(--border);"><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;margin-bottom:3px;">📎 Pièces ('+check.present.length+'/'+check.required.length+')</div><div style="display:flex;flex-wrap:wrap;gap:3px;">';
+        check.required.forEach(function(r){
+          var has=check.present.indexOf(r)>=0;
+          checklistHtml+='<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:'+(has?'var(--greenl)':'rgba(192,68,74,.1)')+';color:'+(has?'var(--green)':'var(--red)')+';border:1px solid '+(has?'rgba(74,156,93,.3)':'rgba(192,68,74,.3)')+';">'+(has?'✓':'✗')+' '+r.icon+'</span>';
+        });
+        checklistHtml+='</div></div>';
+      }
+      // Alerte si pièces manquent à compromis/acte
+      var alertHtml='';
+      if((d.stage==='compromis'||d.stage==='acte')&&check.missing.length){
+        alertHtml='<div style="margin-top:4px;background:rgba(192,68,74,.15);border:1px solid rgba(192,68,74,.3);border-radius:5px;padding:3px 6px;font-size:9px;color:var(--red);">⚠️ '+check.missing.length+' pièce'+(check.missing.length>1?'s':'')+' manquante'+(check.missing.length>1?'s':'')+'</div>';
+      }
       var prev=STAGES[STAGES.indexOf(stage)-1];
-      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
     }).join('');
     return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';
   }).join('');
 }
 function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
+function removeFileFromDoss(dossId,fileIdx){
+  if(!confirm('Détacher ce fichier du dossier ? (Le fichier reste dans le stockage)'))return;
+  var d=dossiers.find(function(x){return x.id===dossId;});
+  if(d&&d.files){d.files.splice(fileIdx,1);saveDoss();renderPipeline();}
+}
 function delDoss(id){
   if(!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?'))return;
   dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();
@@ -1074,6 +1134,28 @@ async function extractPdfText(file){
     return text.substring(0,3000); // 3000 caractères max
   }catch(e){console.warn('PDF extract error',e);return '';}
 }
+function categorizeFile(filename,pdfContent){
+  var searchSpace=normalizeName((filename||'')+' '+(pdfContent||''));
+  // Patterns par type (ordre = priorité)
+  var TYPES=[
+    {key:'compromis',label:'Compromis',icon:'📋',patterns:['compromis de vente','promesse synallagmatique','avant-contrat','sous condition suspensive','compromis']},
+    {key:'acte',label:'Acte',icon:'🏛️',patterns:['acte authentique','acte de vente','reception des fonds','acte définitif','acte definitif']},
+    {key:'mandat',label:'Mandat',icon:'📑',patterns:['mandat exclusif','mandat simple','mandat semi-exclusif','mandat de vente','mandat de recherche','mandat']},
+    {key:'offre',label:'Offre',icon:'💌',patterns:['offre d\'achat','offre dachat','proposition d\'achat','proposition dachat','offre']},
+    {key:'cni',label:'Identité',icon:'🪪',patterns:['carte d\'identité','carte didentite','carte nationale','passeport','titre de sejour','titre de séjour','permis de conduire','cni']},
+    {key:'financement',label:'Financement',icon:'💰',patterns:['accord de principe','offre de pret','offre de prêt','attestation de financement','simulation de pret','simulation de prêt','accord bancaire','pret immobilier','prêt immobilier','financement']},
+    {key:'dpe',label:'DPE',icon:'⚡',patterns:['diagnostic de performance','diagnostic energetique','diagnostic énergétique','dpe']},
+    {key:'diagnostic',label:'Diagnostic',icon:'🔍',patterns:['plomb','amiante','termites','electricite','électricité','gaz','etat des risques','état des risques','diagnostic technique']},
+    {key:'avis',label:'Avis/Taxe',icon:'💸',patterns:['taxe fonciere','taxe foncière','taxe d\'habitation','avis d\'imposition','avis dimposition']}
+  ];
+  for(var i=0;i<TYPES.length;i++){
+    var t=TYPES[i];
+    for(var j=0;j<t.patterns.length;j++){
+      if(searchSpace.indexOf(t.patterns[j])>=0)return{key:t.key,label:t.label,icon:t.icon};
+    }
+  }
+  return{key:'autre',label:'Autre',icon:'📄'};
+}
 function uploadFiles(files){
   if(!storageRef){alert('Firebase Storage non configuré — voir l\'aide.');return;}
   for(var i=0;i<files.length;i++){(function(f){
@@ -1087,7 +1169,8 @@ function uploadFiles(files){
       return results[0].ref.getDownloadURL();
     }).then(function(url){
       var matches=findMatchingDossiers(f.name,pdfText);
-      var meta={id:Date.now()+Math.random(),name:f.name,size:f.size,path:path,url:url,uploadedAt:fmtDate(new Date()),matchedDossierId:null,suggestedMatches:matches.map(function(m){return m.id;}),contentPreview:pdfText.substring(0,200)};
+      var category=categorizeFile(f.name,pdfText);
+      var meta={id:Date.now()+Math.random(),name:f.name,size:f.size,path:path,url:url,uploadedAt:fmtDate(new Date()),matchedDossierId:null,suggestedMatches:matches.map(function(m){return m.id;}),contentPreview:pdfText.substring(0,200),category:category.key,categoryLabel:category.label,categoryIcon:category.icon};
       if(!db)return;
       db.ref('mansion/pendingFiles').push(meta).then(function(){renderFiles();});
     }).catch(function(e){alert('Erreur upload '+f.name+': '+e.message);});
@@ -1140,7 +1223,7 @@ function renderFiles(){
       var sizeKb=Math.round((f.size||0)/1024);
       return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:6px;">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'+
-          '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);font-size:12px;font-weight:500;text-decoration:none;">📄 '+escH(f.name)+'</a><div style="font-size:9px;color:var(--txt3);">'+sizeKb+' Ko · '+escH(f.uploadedAt||'')+(f.contentPreview?' · 🔍 Contenu lu':'')+'</div></div>'+
+          '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);font-size:12px;font-weight:500;text-decoration:none;">📄 '+escH(f.name)+'</a><div style="font-size:9px;color:var(--txt3);">'+sizeKb+' Ko · '+escH(f.uploadedAt||'')+(f.contentPreview?' · 🔍 Contenu lu':'')+(f.categoryLabel?' · <span style="color:var(--or);">'+(f.categoryIcon||'📄')+' '+escH(f.categoryLabel)+'</span>':'')+'</div></div>'+
           '<div style="display:flex;gap:4px;"><a href="'+f.url+'" target="_blank" class="bs" style="font-size:10px;text-decoration:none;">Voir</a><button class="bd" onclick="deletePendingFile(\''+f._key+'\')">×</button></div>'+
         '</div>'+
         (suggested.length?'<div style="font-size:10px;color:var(--green);margin-bottom:4px;">✨ Matching suggéré :</div>':'<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Aucune correspondance auto — choisissez :</div>')+
@@ -1155,7 +1238,7 @@ function renderFiles(){
       var d=dossiers.find(function(x){return x.id===f.matchedDossierId;});
       var sizeKb=Math.round((f.size||0)/1024);
       return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;margin-bottom:4px;font-size:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">'+
-        '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);text-decoration:none;">📄 '+escH(f.name)+'</a> → <strong>'+escH(d?d.ref:'Dossier supprimé')+'</strong> · '+sizeKb+' Ko</div>'+
+        '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);text-decoration:none;">'+(f.categoryIcon||'📄')+' '+escH(f.name)+'</a> → <strong>'+escH(d?d.ref:'Dossier supprimé')+'</strong>'+(f.categoryLabel?' · <span style="color:var(--or);">'+escH(f.categoryLabel)+'</span>':'')+' · '+sizeKb+' Ko</div>'+
         '<div style="display:flex;gap:4px;"><button class="bs" onclick="unmatchFile(\''+f._key+'\')" style="font-size:9px;">↩️ Reclasser</button><button class="bd" onclick="deletePendingFile(\''+f._key+'\')">×</button></div>'+
       '</div>';
     }).join('');
@@ -1198,7 +1281,7 @@ function assignFileToDoss(fileKey,dossId){
     var d=dossiers.find(function(x){return x.id===dossId;});
     if(d){
       d.files=d.files||[];
-      d.files.push({name:f.name,url:f.url,uploadedAt:f.uploadedAt});
+      d.files.push({name:f.name,url:f.url,uploadedAt:f.uploadedAt,category:f.category,categoryLabel:f.categoryLabel,categoryIcon:f.categoryIcon});
       saveDoss();
     }
   }
