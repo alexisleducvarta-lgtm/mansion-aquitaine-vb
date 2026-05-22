@@ -164,6 +164,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .tl-lbl{font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px;}
 .tl-date{font-size:10px;color:var(--txt2);font-weight:500;}
 .tl-alert{font-size:9px;padding:1px 5px;border-radius:3px;display:inline-block;margin-top:2px;}
+
+/* SLIDE PANEL — remplace la modale */
 .slide-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;}
 .slide-overlay.open{opacity:1;pointer-events:auto;}
 .slide-panel{position:absolute;top:0;right:0;bottom:0;width:340px;max-width:92vw;background:var(--bg1);border-left:1px solid var(--borderor);z-index:910;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;display:flex;flex-direction:column;}
@@ -173,8 +175,10 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .slide-close{background:none;border:1px solid var(--border);color:var(--txt3);border-radius:6px;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .slide-close:hover{border-color:var(--red);color:var(--red);}
 .slide-body{padding:.8rem 1rem;flex:1;}
+
 .modal-bx{background:var(--bg2);border:1px solid var(--borderor);border-radius:13px;padding:1.1rem;min-width:300px;max-width:520px;width:92%;max-height:90vh;overflow-y:auto;}
 .modal-t{font-family:Georgia,serif;font-size:14px;color:var(--or);margin-bottom:.7rem;}
+
 .gcal-btn{display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#6aa4f5;border-radius:5px;padding:2px 6px;font-size:10px;text-decoration:none;white-space:nowrap;}
 .enc-month{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:7px 9px;}
 .enc-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:3px;}
@@ -183,6 +187,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .cp{background:#E6F1FB;color:#185FA5;}.cb{background:#EAF3DE;color:#3B6D11;}
 .cpt{background:#FAEEDA;color:#854F0B;}.ct{background:#FBEAF0;color:#993556;}
 .cr2{background:#EEEDFE;color:#534AB7;}.ca{background:rgba(255,255,255,.05);color:var(--txt3);}
+/* CARTES CONTACTS */
 .ct-card{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:6px;position:relative;}
 .ct-card:hover{border-color:var(--borderor);}
 .ct-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
@@ -195,66 +200,9 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .ct-card-notes{font-size:10px;color:var(--txt3);margin-top:5px;font-style:italic;}
 .ct-card-del{position:absolute;top:8px;right:8px;}
 .ct-empty{text-align:center;padding:20px;color:var(--txt3);font-size:11px;}
+
 .na{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:11px;color:var(--txt2);resize:vertical;min-height:40px;margin-top:4px;font-family:inherit;outline:none;}
 .na:focus{border-color:var(--or);}
-
-/* ============ NEW: FORMATION & CHATBOT STYLES ============ */
-.fm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:1rem;}
-.fm-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:14px;cursor:pointer;transition:all .15s;}
-.fm-card:hover{border-color:var(--borderor);background:var(--bg3);}
-.fm-card-ic{font-size:22px;margin-bottom:8px;}
-.fm-card h4{font-size:12px;color:var(--txt);font-weight:500;margin-bottom:3px;}
-.fm-card p{font-size:10px;color:var(--txt3);line-height:1.4;}
-.fm-card .fm-st{display:inline-block;margin-top:6px;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500;}
-.fm-body{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px 24px;max-width:760px;line-height:1.7;font-size:12px;color:var(--txt2);}
-.fm-body h2{font-family:Georgia,serif;color:var(--or);font-size:16px;margin:18px 0 8px;}
-.fm-body h2:first-child{margin-top:0;}
-.fm-body h3{color:var(--txt);font-size:13px;margin:14px 0 6px;}
-.fm-body ul{padding-left:16px;margin:4px 0;}
-.fm-body li{margin-bottom:2px;}
-.fm-body strong{color:var(--txt);}
-.fm-body .hbox{background:var(--bxl);border-left:3px solid var(--bx);padding:10px 14px;border-radius:0 7px 7px 0;margin:10px 0;font-size:11px;}
-.fm-body .tbox2{background:var(--orl);border-left:3px solid var(--or);padding:10px 14px;border-radius:0 7px 7px 0;margin:10px 0;font-size:11px;}
-.fm-quiz{background:var(--bg3);border-radius:11px;padding:16px 20px;margin-top:14px;max-width:760px;}
-.fm-quiz h3{font-family:Georgia,serif;color:var(--or);margin-bottom:10px;font-size:13px;}
-.fm-qopt{display:block;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;cursor:pointer;font-size:11px;transition:all .15s;}
-.fm-qopt:hover{border-color:var(--or);}
-.fm-qopt.qok{border-color:var(--green);background:var(--greenl);}
-.fm-qopt.qko{border-color:var(--red);background:var(--redl);}
-.fm-nav{display:flex;justify-content:space-between;margin-top:16px;max-width:760px;}
-.fm-prog{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
-.fm-prog-bg{flex:1;max-width:300px;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;}
-.fm-prog-fill{height:100%;background:var(--or);border-radius:3px;transition:width .4s;}
-.fm-prog-lbl{font-size:10px;color:var(--or);font-weight:500;}
-
-/* CHAT */
-.chat-wrap2{display:flex;flex-direction:column;height:calc(100vh - 20px);max-width:700px;margin:0 auto;}
-.chat-msgs2{flex:1;overflow-y:auto;padding:12px 0;display:flex;flex-direction:column;gap:10px;}
-.cmsg{display:flex;gap:8px;max-width:85%;animation:fi .2s;}
-.cmsg.usr{align-self:flex-end;flex-direction:row-reverse;}
-.cmsg-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
-.cmsg.bot .cmsg-av{background:var(--bxl);color:var(--or);border:1px solid var(--bxb);}
-.cmsg.usr .cmsg-av{background:var(--orb);color:var(--or);border:1px solid var(--borderor);}
-.cmsg-bub{padding:10px 13px;border-radius:11px;font-size:12px;line-height:1.6;}
-.cmsg.bot .cmsg-bub{background:var(--bg2);border:1px solid var(--border);border-top-left-radius:2px;color:var(--txt2);}
-.cmsg.usr .cmsg-bub{background:var(--bxl);border:1px solid var(--bxb);border-top-right-radius:2px;color:var(--txt);}
-.cmsg-bub strong{color:var(--txt);}
-.cmsg-bub ul,.cmsg-bub ol{padding-left:16px;margin:4px 0;}
-.cmsg-bub li{margin-bottom:2px;}
-.chat-web-badge{display:inline-flex;align-items:center;gap:3px;background:var(--bluel);color:var(--blue);font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;margin-bottom:4px;}
-.chat-in2{padding:10px 0 14px;border-top:1px solid var(--border);}
-.chat-row2{display:flex;gap:7px;align-items:flex-end;}
-.chat-ta2{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-family:inherit;font-size:12px;resize:none;outline:none;min-height:38px;max-height:90px;background:var(--bg2);color:var(--txt);transition:border .2s;}
-.chat-ta2:focus{border-color:var(--or);}
-.chat-send2{width:38px;height:38px;border-radius:9px;background:var(--or);color:#1a0f00;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.chat-send2:hover{background:var(--or2);}
-.chat-sugs2{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
-.chat-sug2{padding:5px 10px;background:var(--orl);border:1px solid var(--borderor);border-radius:14px;font-size:10px;cursor:pointer;color:var(--or);font-weight:500;transition:all .15s;}
-.chat-sug2:hover{background:var(--orb);}
-.ctyping{display:flex;gap:3px;padding:4px 0;}
-.ctyping span{width:5px;height:5px;border-radius:50%;background:var(--txt3);animation:tb2 1.2s infinite;}
-.ctyping span:nth-child(2){animation-delay:.15s;}.ctyping span:nth-child(3){animation-delay:.3s;}
-@keyframes tb2{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-4px);opacity:1;}}
 
 @media (max-width: 768px) {
   .shell { flex-direction: column; }
@@ -269,7 +217,6 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   .kanban { grid-template-columns: 1fr; gap: 15px; }
   .wr { grid-template-columns: 1fr; }
   .fg { grid-template-columns: 1fr; }
-  .fm-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -278,38 +225,33 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="sb">
   <div class="sb-logo">
       <div class="lm"><div class="li"><svg viewBox="0 0 80 70" width="17" height="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 46 Q40 39 60 46" fill="#c9a84c"/><rect x="22" y="20" width="36" height="26" fill="#7a2228"/><rect x="14" y="26" width="12" height="20" fill="#7a2228"/><rect x="54" y="26" width="12" height="20" fill="#7a2228"/><path d="M18 26 L40 12 L62 26" fill="#5a1a1e"/><rect x="27" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="36" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="45" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/></svg></div><div class="bn" style="display:none;">Mansion<br>Aquitaine</div></div>
-      <button class="btn-theme" onclick="toggleTheme()">🌓</button>
+      <button class="btn-theme" onclick="toggleTheme()">🌓 Nuit/Jour</button>
   </div>
-  <div class="ng"><div class="ngl">Salariée</div><div class="ni" id="nav-swan" onclick="goNeg('swan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Swan</div></div>
+  <div class="ng"><div class="ngl">Agence Langon</div>
+    <div class="ni" id="nav-swan" onclick="goNeg('swan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Swan Dumas</div>
+    <div class="ni" id="nav-enrik" onclick="goNeg('enrik',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Enrik Enache</div>
+  </div>
   <div class="ng"><div class="ngl">Agents</div>
     <div class="ni" id="nav-pauline" onclick="goNeg('pauline',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Pauline</div>
     <div class="ni" id="nav-nolan" onclick="goNeg('nolan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Nolan</div>
-    <div class="ni" id="nav-lisa" onclick="goNeg('lisa',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Lisa</div>
     <div class="ni" id="nav-thibault" onclick="goNeg('thibault',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Thibault</div>
     <div class="ni" id="nav-nicolas" onclick="goNeg('nicolas',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Nicolas</div>
     <div class="ni" id="nav-laurent" onclick="goNeg('laurent',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Laurent</div>
   </div>
   <div class="sep"></div>
   <div class="ng">
-    <div class="ni ni-alex" id="nav-alexis" onclick="goAlexis(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>Alexis</div>
-    <div class="ni ni-dir" id="nav-dir" onclick="goDir(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Direction</div>
+    <div class="ni ni-alex" id="nav-alexis" onclick="goNeg('alexis',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>Alexis Leduc</div>
+    <div class="ni ni-dir" id="nav-dir" onclick="goDir(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vue Direction</div>
   </div>
   <div class="ng" style="margin-top:3px;"><div class="ngl">Vision Board</div>
     <div class="ni active" id="nav-prosp" onclick="goProsp(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Prospection</div>
     <div class="ni" id="nav-pipeline" onclick="goPipeline(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="13" height="5" rx="1"/><rect x="2" y="17" width="8" height="5" rx="1"/></svg>Pipeline</div>
-  </div>
-  <!-- ====== NEW NAV ITEMS ====== -->
-  <div class="sep"></div>
-  <div class="ng"><div class="ngl">Formation</div>
-    <div class="ni" id="nav-formation" onclick="goFormation(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Onboarding</div>
-    <div class="ni" id="nav-chatbot" onclick="goChatbot(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Assistant IA<span style="margin-left:auto;background:var(--greenl);color:var(--green);font-size:8px;padding:1px 5px;border-radius:6px;font-weight:600;">NEW</span></div>
   </div>
   <div class="sbf"><div class="ac2"><div class="ava" id="cur-av" style="background:var(--orb);border:1px solid var(--borderor);color:var(--or);">MA</div><div><div class="an" id="cur-name">Mansion Aquitaine</div><div class="aro" id="cur-role">Vision Board</div></div></div></div>
 </div>
 
 <div class="main">
 
-<!-- ====== EXISTING PAGES (unchanged) ====== -->
 <div class="pg active" id="pg-prosp">
   <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours</div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
@@ -317,8 +259,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="kg k4" id="prosp-kpis"></div>
   <div class="stitle">Suivi hebdo équipe</div>
   <div class="tbox"><div style="overflow-x:auto;"><table class="tbl">
-    <colgroup><col style="width:auto"><col style="width:42px"><col style="width:42px"><col style="width:42px"><col style="width:42px"><col style="width:42px"><col style="width:52px"><col style="width:42px"><col style="width:38px"><col style="width:38px"><col style="width:52px"><col style="width:55px"></colgroup>
-    <thead><tr><th>Collaborateur</th><th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Sem.</th><th>Obj.</th><th>RDV</th><th>Mdt</th><th>Tx RDV</th><th>Statut</th></tr></thead>
+    <colgroup><col style="width:auto"><col style="width:48px"><col style="width:48px"><col style="width:48px"><col style="width:48px"><col style="width:48px"><col style="width:60px"><col style="width:48px"><col style="width:60px"></colgroup>
+    <thead><tr><th>Collaborateur</th><th>Lun</th><th>Mar</th><th>Mer</th><th>Jeu</th><th>Ven</th><th>Semaine</th><th>Obj.</th><th>Statut</th></tr></thead>
     <tbody id="prosp-tbody"></tbody><tfoot id="prosp-tfoot"></tfoot>
   </table></div></div>
   <div class="cw"><div class="cwt">Contacts semaine par agent — objectif 60</div><div style="position:relative;width:100%;height:170px;"><canvas id="prosp-chart"></canvas></div></div>
@@ -336,11 +278,26 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="stab" id="stab-mensuel" onclick="switchSub('mensuel',this)">Vision mensuel</button>
   </div>
   <div class="subtab-content active" id="stc-journal">
+    <!-- NAV SEMAINE -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="bs" onclick="changeWeek(-1)">← Sem. préc.</button>
+        <span style="font-size:11px;color:var(--txt);font-weight:500;" id="week-label">—</span>
+        <button class="bs" onclick="changeWeek(1)">Sem. suiv. →</button>
+        <button class="bs" onclick="goToCurrentWeek()" style="font-size:9px;color:var(--or);border-color:var(--borderor);">Aujourd'hui</button>
+      </div>
+      <span style="font-size:10px;color:var(--txt3);" id="week-count">—</span>
+    </div>
+    <!-- RÉSUMÉ RAPIDE -->
+    <div id="journal-summary" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;"></div>
     <div class="tbox">
-      <div class="thead"><span class="ttl">Contacts</span><div style="display:flex;gap:5px;align-items:center;"><input type="text" id="ct-search" placeholder="🔍 Rechercher..." oninput="renderContacts()" class="ci" style="margin:0;padding:4px 8px;font-size:10px;width:120px;"><select id="ct-filter-statut" onchange="renderContacts()" class="ci" style="margin:0;padding:4px 6px;font-size:10px;width:90px;"><option value="">Tous statuts</option><option>À rappeler</option><option>RDV fixé</option><option>RDV effectué</option><option>Mandat signé</option><option>Pas intéressé</option></select><select id="ct-filter-canal" onchange="renderContacts()" class="ci" style="margin:0;padding:4px 6px;font-size:10px;width:80px;"><option value="">Tous canaux</option><option>Pige</option><option>Boîtage</option><option>Porte à porte</option><option>Téléphone</option><option>Réseau / Parrainage</option></select><button class="bs" id="btn-add-contact" onclick="toggleContactForm()">+ Ajouter</button></div></div>
+      <div class="thead"><span class="ttl" id="journal-title">Contacts</span><button class="bs" id="btn-add-contact" onclick="toggleContactForm()">+ Ajouter</button></div>
+      <!-- FORMULAIRE ACCORDÉON -->
       <div id="contact-form" style="display:none;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg2);">
+        <input type="hidden" id="cf-edit-idx" value="-1">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><div class="fct">Nom</div><input class="ci" type="text" id="cf-nom" placeholder="Nom du contact"></div>
+          <div><div class="fct">Nom *</div><input class="ci" type="text" id="cf-nom" placeholder="Nom du contact"></div>
+          <div style="grid-column:1/-1;"><div class="fct">Date du contact — cliquez un jour</div><div id="cf-date-picker" style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;"></div><input type="hidden" id="cf-date"></div>
           <div><div class="fct">Canal</div><select class="ci" id="cf-canal"><option>Pige</option><option>Boîtage</option><option>Porte à porte</option><option>Téléphone</option><option>Réseau / Parrainage</option><option>Autre</option></select></div>
           <div><div class="fct">Catégorie</div><select class="ci" id="cf-cat"><option>Vendeur</option><option>Acquéreur</option><option>Propriétaire</option><option>Investisseur</option><option>Locataire</option><option>Autre</option></select></div>
           <div><div class="fct">Secteur</div><input class="ci" type="text" id="cf-secteur" placeholder="Quartier / ville"></div>
@@ -351,21 +308,30 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
         </div>
         <div style="margin-top:8px;"><div class="fct">Notes</div><textarea class="na" id="cf-notes" placeholder="Notes..." rows="2"></textarea></div>
         <div style="display:flex;gap:6px;margin-top:8px;">
-          <button class="bp" style="flex:1;margin:0;" onclick="submitContact()">Enregistrer le contact</button>
+          <button class="bp" style="flex:1;margin:0;" id="cf-submit-btn" onclick="submitContact()">Enregistrer le contact</button>
           <button class="bs" style="flex:0 0 auto;" onclick="toggleContactForm()">Annuler</button>
         </div>
       </div>
     </div>
+    <!-- LISTE DES CONTACTS EN CARTES -->
     <div id="contact-cards"></div>
   </div>
-  <div class="subtab-content" id="stc-semaine"><div id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
-  <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><div class="fct" style="margin-top:5px;">Date compromis</div><input class="ci" type="date" id="cp-dcomp"><div class="fct" style="margin-top:5px;">Date acte prévu</div><input class="ci" type="date" id="cp-dacte"><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
+  <div class="subtab-content" id="stc-semaine"><div class="wr" id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
+  <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
   <div class="subtab-content" id="stc-perf"><div class="kg k4" id="perf-kpis"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.8rem;" id="perf-meters"></div><div id="perf-alerts"></div></div>
   <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw"><div class="cwt">Contacts semaine vs objectif</div><div style="position:relative;width:100%;height:175px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-alerts"></div></div>
 </div>
 
 <div class="pg" id="pg-pipeline">
   <div class="ph"><div><div class="pt">Pipeline dossiers</div><div class="pss">Kanban · Mandat → Offre → Compromis → Acte</div></div><button class="bs" onclick="openModal()">+ Nouveau dossier</button></div>
+  <!-- FILTRE PAR MOIS -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+    <button class="bs" onclick="changePipeMonth(-1)">← Mois préc.</button>
+    <span style="font-size:12px;color:var(--or);font-weight:500;font-family:Georgia,serif;" id="pipe-month-label">—</span>
+    <button class="bs" onclick="changePipeMonth(1)">Mois suiv. →</button>
+    <button class="bs" onclick="resetPipeMonth()" style="font-size:9px;color:var(--or);border-color:var(--borderor);">Tous</button>
+    <span style="font-size:10px;color:var(--txt3);margin-left:auto;" id="pipe-month-count"></span>
+  </div>
   <div class="kg k4" id="pipe-kpis"></div>
   <div class="kanban" id="kanban-board"></div>
 </div>
@@ -377,41 +343,22 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;align-items:center;"><select id="dir-month-filter" onchange="renderDir()" class="ci" style="margin:0;padding:4px 8px;font-size:10px;width:130px;"></select><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 CSV</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
 
-<!-- ====== NEW PAGES: FORMATION & CHATBOT ====== -->
-<div class="pg" id="pg-formation">
-  <div class="ph"><div><div class="pt">Formation & Onboarding</div><div class="pss">Parcours d'intégration Mansion Aquitaine</div></div></div>
-  <div class="fm-prog"><div class="fm-prog-bg"><div class="fm-prog-fill" id="fm-prog-bar" style="width:0%"></div></div><span class="fm-prog-lbl" id="fm-prog-lbl">0/0</span></div>
-  <div id="fm-content"></div>
-</div>
-
-<div class="pg" id="pg-chatbot">
-  <div class="chat-wrap2">
-    <div class="chat-msgs2" id="chat-msgs-box"></div>
-    <div class="chat-in2">
-      <div class="chat-sugs2" id="chat-sugs-box"></div>
-      <div class="chat-row2">
-        <textarea class="chat-ta2" id="chat-input" placeholder="Posez votre question à l'assistant Mansion..." rows="1"></textarea>
-        <button class="chat-send2" id="chat-send-btn" onclick="chatSend()">➤</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE PANEL -->
+<!-- SLIDE PANEL pour nouveau dossier -->
 <div class="slide-overlay" id="slide-overlay" onclick="closePanel()"></div>
 <div class="slide-panel" id="slide-panel">
   <div class="slide-head">
-    <span class="slide-head-t">Nouveau dossier</span>
+    <span class="slide-head-t" id="slide-panel-title">Nouveau dossier</span>
     <button class="slide-close" onclick="closePanel()">×</button>
   </div>
   <div class="slide-body">
+    <input type="hidden" id="md-edit-id" value="">
     <div class="fct">Référence</div>
     <input class="ci" type="text" id="md-ref" placeholder="12 rue des Lilas">
     <div class="fct" style="margin-top:8px;">Négociateur</div>
-    <select class="ci" id="md-neg"><option>Swan Dumas</option><option>Pauline</option><option>Nolan</option><option>Lisa</option><option>Thibault</option><option>Nicolas</option><option>Laurent</option><option>Alexis Leduc</option></select>
+    <select class="ci" id="md-neg"><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Laurent</option><option>Alexis Leduc</option></select>
     <div class="fct" style="margin-top:8px;">Honoraires TTC (€)</div>
     <input class="ci" type="number" id="md-fee" placeholder="9500">
     <div class="fct" style="margin-top:8px;">Étape</div>
@@ -420,9 +367,22 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <input class="ci" type="date" id="md-dcomp">
     <div class="fct" style="margin-top:8px;">Date acte prévu</div>
     <input class="ci" type="date" id="md-dacte">
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
+      <div class="fct" style="color:var(--or);">Coordonnées</div>
+    </div>
+    <div class="fct" style="margin-top:6px;">Nom client</div>
+    <input class="ci" type="text" id="md-client" placeholder="M. / Mme Dupont">
+    <div class="fct" style="margin-top:8px;">Téléphone</div>
+    <input class="ci" type="tel" id="md-tel" placeholder="06 12 34 56 78">
+    <div class="fct" style="margin-top:8px;">Email</div>
+    <input class="ci" type="email" id="md-email" placeholder="client@email.com">
+    <div class="fct" style="margin-top:8px;">Notaire</div>
+    <input class="ci" type="text" id="md-notaire" placeholder="Maître Martin">
+    <div class="fct" style="margin-top:8px;">Adresse du bien</div>
+    <input class="ci" type="text" id="md-adresse" placeholder="12 rue des Lilas, 33000 Bordeaux">
     <div class="fct" style="margin-top:8px;">Notes</div>
     <textarea class="na" id="md-notes" placeholder="Notes..."></textarea>
-    <button class="bp" style="margin-top:10px;" onclick="savePanel()">Enregistrer</button>
+    <button class="bp" style="margin-top:10px;" id="md-submit-btn" onclick="savePanel()">Enregistrer</button>
     <button class="bs" style="width:100%;margin-top:6px;" onclick="closePanel()">Annuler</button>
   </div>
 </div>
@@ -430,59 +390,59 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 </div>
 </div>
 
-<!-- FIREBASE SDK -->
+<!-- ====== FIREBASE SDK (compat pour fichier unique HTML) ====== -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey: "AIzaSyBwZWv1DJIxXKe5NJXDyAQRj7pmwJBxgQk",
-  authDomain: "vision-board-75069.firebaseapp.com",
-  databaseURL: "https://vision-board-75069-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "vision-board-75069",
-  storageBucket: "vision-board-75069.firebasestorage.app",
-  messagingSenderId: "114949785883",
-  appId: "1:114949785883:web:2e9d2d62100e578ce46bbe",
-  measurementId: "G-LNEF71L8FS"
-});
-var db = firebase.database();
+var db = null;
+try {
+  if(typeof firebase !== 'undefined'){
+    firebase.initializeApp({
+      apiKey: "AIzaSyBwZWv1DJIxXKe5NJXDyAQRj7pmwJBxgQk",
+      authDomain: "vision-board-75069.firebaseapp.com",
+      databaseURL: "https://vision-board-75069-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "vision-board-75069",
+      storageBucket: "vision-board-75069.firebasestorage.app",
+      messagingSenderId: "114949785883",
+      appId: "1:114949785883:web:2e9d2d62100e578ce46bbe",
+      measurementId: "G-LNEF71L8FS"
+    });
+    db = firebase.database();
+  } else { console.warn('Firebase SDK non chargé — mode hors-ligne'); }
+} catch(e){ console.warn('Firebase init error:',e); }
 </script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// =====================================================
-// EXISTING DASHBOARD CODE (100% preserved)
-// =====================================================
+// --- THEME NUIT / JOUR ---
 if(localStorage.getItem('mansion-theme') === 'light') { document.body.classList.add('light-theme'); }
-function toggleTheme() { document.body.classList.toggle('light-theme'); localStorage.setItem('mansion-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); }
+function toggleTheme() {
+  document.body.classList.toggle('light-theme');
+  localStorage.setItem('mansion-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+}
 
-var TVA=1.2,OBJ_FEES=7000;
-// Per-agent CA objective per month (null = no obj)
-var AGENT_CA_OBJ={thibault:15000,nicolas:15000,alexis:15000,swan:null,lisa:null,nolan:null,pauline:null,laurent:null};
-function getCaObj(who){return AGENT_CA_OBJ[who]||OBJ_FEES;}
-// Per-agent objectives: contacts/jour, contacts/sem, contacts/mois, rdv/sem, rdv/mois. null=pas d'objectif
-var AGENT_OBJ={
-  swan:{cj:12,cs:60,cm:240,rs:3,rm:12},
-  lisa:{cj:12,cs:60,cm:240,rs:3,rm:12},
-  nolan:{cj:7,cs:35,cm:140,rs:2,rm:10},
-  pauline:null,thibault:null,nicolas:null,laurent:null,alexis:null
-};
-function getObj(who){return AGENT_OBJ[who]||null;}
-function hasObj(who){return AGENT_OBJ[who]!==null;}
+var TVA=1.2,OBJ_J=12,OBJ_FEES=7000;
 var SWAN_RATES={Exclusif:.12,'Semi-exclusif':.12,'Exclusivité morale':.12,Simple:.10};
 var PALIERS=[{min:0,max:35000,t:40},{min:35000,max:65000,t:45},{min:65000,max:100000,t:50},{min:100000,max:135000,t:55},{min:135000,max:null,t:60}];
 var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:50};
-var PROG=['pauline','nolan','lisa'];
-var ALL=['swan','pauline','nolan','lisa','thibault','nicolas','laurent','alexis'];
-var COLORS={swan:'#c9a84c',pauline:'#e07a7f',nolan:'#4a82c0',lisa:'#7a6cc0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a'};
-var INITS={swan:'SD',pauline:'PL',nolan:'NO',lisa:'LI',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL'};
-var NAMES={swan:'Swan Dumas',pauline:'Pauline',nolan:'Nolan',lisa:'Lisa',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc'};
-var ROLES={swan:'Salariée',pauline:'Agent commercial',nolan:'Agent commercial',lisa:'Agent commercial',thibault:'Agent commercial',nicolas:'Agent commercial',laurent:'Agent commercial',alexis:'Gérant'};
-var CONTRATS={swan:'Salariée HT',pauline:'Progressive',nolan:'Progressive',lisa:'Progressive',thibault:'60% fixe',nicolas:'60% fixe',laurent:'60% fixe',alexis:'50% fixe'};
+var PROG=['pauline','nolan'];
+var SAL=['swan','enrik']; // Salariés avec barème Swan (10/12%)
+var ALL=['swan','enrik','pauline','nolan','thibault','nicolas','laurent','alexis'];
+var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a'};
+var INITS={swan:'SD',enrik:'EE',pauline:'PL',nolan:'NO',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL'};
+var NAMES={swan:'Swan Dumas',enrik:'Enrik Enache',pauline:'Pauline',nolan:'Nolan',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc'};
+var ROLES={swan:'Salariée · Langon',enrik:'Salarié · Langon',pauline:'Agent commercial',nolan:'Agent commercial',thibault:'Agent commercial',nicolas:'Agent commercial',laurent:'Agent commercial',alexis:'Gérant'};
+var CONTRATS={swan:'Salariée HT',enrik:'Salarié HT',pauline:'Progressive',nolan:'Progressive',thibault:'60% fixe',nicolas:'60% fixe',laurent:'60% fixe',alexis:'50% fixe'};
 var MPC={Exclusif:'p-me','Semi-exclusif':'p-mse','Exclusivité morale':'p-mem',Simple:'p-ms'};
 var JNOMS=['Lun','Mar','Mer','Jeu','Ven'];
+var CANAUX=['Pige','Boîtage','Porte à porte','Téléphone','Réseau / Parrainage','Autre'];
+var CCLASS={Pige:'cp',Boîtage:'cb','Porte à porte':'cpt',Téléphone:'ct','Réseau / Parrainage':'cr2',Autre:'ca'};
+var CATS=['Vendeur','Acquéreur','Propriétaire','Investisseur','Locataire','Autre'];
+var STATUTS=['À rappeler','RDV fixé','RDV effectué','Mandat signé','Pas intéressé','En attente'];
+var MANDATS_LIST=['—','Exclusif','Semi-exclusif','Exclusivité morale','Simple'];
 var STAGES=['mandat','offre','compromis','acte'];
 var STAGE_LBL={mandat:'Mandat signé',offre:'Offre acceptée',compromis:'Compromis signé',acte:'Acte authentique'};
 var STAGE_COL={mandat:'var(--blue)',offre:'var(--pur)',compromis:'var(--or)',acte:'var(--green)'};
-var CCLASS={Pige:'cp',Boîtage:'cb','Porte à porte':'cpt',Téléphone:'ct','Réseau / Parrainage':'cr2',Autre:'ca'};
 
 function mkE(){return{compromis:[],contacts:[],wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};}
 var D={};ALL.forEach(function(w){D[w]=mkE();});
@@ -490,239 +450,428 @@ var dossiers=[];
 var alPinCode='1994',alPinBuf='',alOpen=false;
 var dirPinCode='1994',dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
-var curWeekOffset=0; // 0=semaine actuelle, -1=semaine précédente, etc.
 var charts={prosp:null,mens:null,dir:null};
+var _saving=false; // Flag pour empêcher le listener Firebase de re-render pendant une action
 
-// Helper: get Monday of a week by offset (0=current, -1=last, etc.)
-function getWeekMonday(offset){var d=new Date();var day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);d.setDate(diff+(offset*7));d.setHours(0,0,0,0);return d;}
-function getWeekSunday(offset){var m=getWeekMonday(offset);var s=new Date(m);s.setDate(s.getDate()+6);s.setHours(23,59,59,999);return s;}
-function getWeekKey(offset){var m=getWeekMonday(offset);return m.toISOString().slice(0,10);}
-function getWeekLabel(offset){var m=getWeekMonday(offset),s=getWeekSunday(offset);var opts={day:'numeric',month:'short'};return m.toLocaleDateString('fr-FR',opts)+' — '+s.toLocaleDateString('fr-FR',opts)+(offset===0?' (en cours)':'');}
-function contactInWeek(c,offset){if(!c.date_created)return offset===0;var cd=new Date(c.date_created);var mon=getWeekMonday(offset),sun=getWeekSunday(offset);return cd>=mon&&cd<=sun;}
-function getWeekData(who,offset){var key=getWeekKey(offset);var d=D[who];if(!d.weeks)d.weeks={};if(!d.weeks[key])d.weeks[key]={wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};return d.weeks[key];}
-function saveWeekData(who,offset,field,idx,val){var key=getWeekKey(offset);var d=D[who];if(!d.weeks)d.weeks={};if(!d.weeks[key])d.weeks[key]={wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};d.weeks[key][field][idx]=val;save(who);}
-// Migration: if agent has old wd/wr/wm at root, migrate to current week
-function migrateWeeks(who){var d=D[who];if(!d.weeks)d.weeks={};var key=getWeekKey(0);if(!d.weeks[key]){d.weeks[key]={wd:d.wd||[0,0,0,0,0],wr:d.wr||[0,0,0,0,0],wm:d.wm||[0,0,0,0,0]};}}
-// Get week totals for current view
-function getWeekTotals(who,offset){var w=getWeekData(who,offset);return{wd:w.wd,wr:w.wr,wm:w.wm,tC:w.wd.reduce(function(a,b){return a+b;},0),tR:w.wr.reduce(function(a,b){return a+b;},0),tM:w.wm.reduce(function(a,b){return a+b;},0)};}
-var _saving=false;
+// ====== FIREBASE STORAGE ======
+function save(w){
+  if(!db)return;
+  _saving=true;
+  try{ db.ref('mansion/agents/'+w).set(D[w]).then(function(){_saving=false;}).catch(function(){_saving=false;}); }catch(e){ _saving=false; console.error('save error',w,e); }
+}
+function saveDoss(){
+  if(!db)return;
+  _saving=true;
+  try{ db.ref('mansion/dossiers').set(dossiers).then(function(){_saving=false;}).catch(function(){_saving=false;}); }catch(e){ _saving=false; console.error('saveDoss error',e); }
+}
+function loadAll(){
+  if(!db){renderProsp();return;}
+  // Suppression définitive de Lisa
+  try{ db.ref('mansion/agents/lisa').remove(); }catch(e){}
+  db.ref('mansion/agents').once('value').then(function(snap){
+    var val = snap.val();
+    if(val){
+      ALL.forEach(function(w){
+        if(val[w]){
+          D[w] = val[w];
+          if(!D[w].compromis) D[w].compromis=[];
+          if(!D[w].contacts) D[w].contacts=[];
+          if(!D[w].wd) D[w].wd=[0,0,0,0,0];
+          if(!D[w].wr) D[w].wr=[0,0,0,0,0];
+          if(!D[w].wm) D[w].wm=[0,0,0,0,0];
+        }
+      });
+    }
+    return db.ref('mansion/dossiers').once('value');
+  }).then(function(snap){
+    var val = snap.val();
+    if(val && Array.isArray(val)) dossiers = val;
+    else if(val) dossiers = Object.values(val);
+    renderProsp();
+  }).catch(function(e){
+    console.error('loadAll error',e);
+    renderProsp();
+  });
+}
 
-function save(w){_saving=true;try{db.ref('mansion/agents/'+w).set(D[w]).then(function(){_saving=false;}).catch(function(){_saving=false;});}catch(e){_saving=false;}}
-function saveDoss(){_saving=true;try{db.ref('mansion/dossiers').set(dossiers).then(function(){_saving=false;}).catch(function(){_saving=false;});}catch(e){_saving=false;}}
-function loadAll(){db.ref('mansion/agents').once('value').then(function(snap){var val=snap.val();if(val){ALL.forEach(function(w){if(val[w]){D[w]=val[w];if(!D[w].compromis)D[w].compromis=[];if(!D[w].contacts)D[w].contacts=[];if(!D[w].wd)D[w].wd=[0,0,0,0,0];if(!D[w].wr)D[w].wr=[0,0,0,0,0];if(!D[w].wm)D[w].wm=[0,0,0,0,0];}});}return db.ref('mansion/dossiers').once('value');}).then(function(snap){var val=snap.val();if(val&&Array.isArray(val))dossiers=val;else if(val)dossiers=Object.values(val);renderProsp();}).catch(function(){renderProsp();});}
-db.ref('mansion/agents').on('value',function(snap){if(_saving)return;var val=snap.val();if(!val)return;ALL.forEach(function(w){if(val[w]){D[w]=val[w];if(!D[w].compromis)D[w].compromis=[];if(!D[w].contacts)D[w].contacts=[];if(!D[w].wd)D[w].wd=[0,0,0,0,0];if(!D[w].wr)D[w].wr=[0,0,0,0,0];if(!D[w].wm)D[w].wm=[0,0,0,0,0];}});var ap=document.querySelector('.pg.active');if(ap){if(ap.id==='pg-prosp')renderProsp();else if(ap.id==='pg-neg')renderNeg();else if(ap.id==='pg-pipeline')renderPipeline();else if(ap.id==='pg-dir'&&dirOpen)renderDir();}});
-db.ref('mansion/dossiers').on('value',function(snap){if(_saving)return;var val=snap.val();if(val&&Array.isArray(val))dossiers=val;else if(val)dossiers=Object.values(val);else dossiers=[];var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-pipeline')renderPipeline();});
+// Écoute en temps réel
+if(db){
+db.ref('mansion/agents').on('value', function(snap){
+  if(_saving) return;
+  var val = snap.val();
+  if(!val) return;
+  ALL.forEach(function(w){
+    if(val[w]){
+      D[w] = val[w];
+      if(!D[w].compromis) D[w].compromis=[];
+      if(!D[w].contacts) D[w].contacts=[];
+      if(!D[w].wd) D[w].wd=[0,0,0,0,0];
+      if(!D[w].wr) D[w].wr=[0,0,0,0,0];
+      if(!D[w].wm) D[w].wm=[0,0,0,0,0];
+    }
+  });
+  var activePg = document.querySelector('.pg.active');
+  if(activePg){
+    if(activePg.id==='pg-prosp') renderProsp();
+    else if(activePg.id==='pg-neg') renderNeg();
+    else if(activePg.id==='pg-pipeline') renderPipeline();
+    else if(activePg.id==='pg-dir' && dirOpen) renderDir();
+  }
+});
+db.ref('mansion/dossiers').on('value', function(snap){
+  if(_saving) return;
+  var val = snap.val();
+  if(val && Array.isArray(val)) dossiers = val;
+  else if(val) dossiers = Object.values(val);
+  else dossiers = [];
+  var activePg = document.querySelector('.pg.active');
+  if(activePg && activePg.id==='pg-pipeline') renderPipeline();
+});
+}
 
 function fmt(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v||0);}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function setEl(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function pBar(v,m,id){var e=document.getElementById(id);if(e)e.style.width=Math.min(Math.round(v/m*100),100)+'%';}
 function gcalUrl(c){if(!c.relance_date)return null;try{var d=new Date(c.relance_date+'T'+(c.relance_heure||'10:00')+':00');var dE=new Date(d.getTime()+30*60000);var f=function(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';};return'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Relance — '+(c.nom||'Contact'))+'&dates='+f(d)+'/'+f(dE)+'&sf=true&output=xml';}catch(e){return null;}}
+
 function swanCom(ttc,type,bin){return(ttc/TVA)*(SWAN_RATES[type]||.10)*(bin?.5:1);}
 function calcProg(who){var ca=0;D[who].compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);});var com=0;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(ca<=p.min)break;com+=(Math.min(ca,mx)-p.min)*p.t/100;}return{ca:ca,com:com};}
 function calcProgPer(c,caB){var part=c.ttc*(c.bin?.5:1),com=0,caS=caB,r=part;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(caS>=mx)continue;var d2=mx-Math.max(caS,p.min),tr=Math.min(r,d2);if(tr<=0)continue;com+=tr*p.t/100;r-=tr;caS+=tr;if(r<=0)break;}return com;}
 function activePal(ca){var p=PALIERS[0];for(var i=0;i<PALIERS.length;i++){if(ca>=PALIERS[i].min)p=PALIERS[i];}return p;}
 function fixeCom(ttc,bin,t){return ttc*(t/100)*(bin?.5:1);}
-function comForWho(who,c,caB){if(who==='swan')return swanCom(c.ttc,c.type,c.bin);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
-function getStats(who){var d=D[who],ca=0,com=0;if(who==='swan'){d.compromis.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});}else if(PROG.indexOf(who)>=0){var r=calcProg(who);ca=r.ca;com=r.com;}else{var t=TAUX_FIXE[who]||50;d.compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});}return{ca:ca,com:com,nb:d.compromis.length};}
+function comForWho(who,c,caB){if(SAL.indexOf(who)>=0)return swanCom(c.ttc,c.type,c.bin);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
+function getStats(who){var d=D[who],ca=0,com=0;if(SAL.indexOf(who)>=0){d.compromis.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});}else if(PROG.indexOf(who)>=0){var r=calcProg(who);ca=r.ca;com=r.com;}else{var t=TAUX_FIXE[who]||50;d.compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});}return{ca:ca,com:com,nb:d.compromis.length};}
 
-// NAV — updated to include new pages
+// NAV
 function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});}
 function setFooter(n,r){setEl('cur-name',n);setEl('cur-role',r);}
-function goNeg(who,btn){clearAll();btn.classList.add('active');curWho=who;curWeekOffset=0;curMonthOffset=0;var c=COLORS[who];var av=document.getElementById('cur-av');if(av){av.textContent=INITS[who];av.style.background=c+'22';av.style.color=c;av.style.borderColor=c+'44';}setFooter(NAMES[who],ROLES[who]);document.getElementById('pg-neg').classList.add('active');curSub='journal';document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stab-journal').classList.add('active');document.getElementById('stc-journal').classList.add('active');renderNeg();}
+function goNeg(who,btn){clearAll();btn.classList.add('active');curWho=who;var c=COLORS[who];var av=document.getElementById('cur-av');if(av){av.textContent=INITS[who];av.style.background=c+'22';av.style.color=c;av.style.borderColor=c+'44';}setFooter(NAMES[who],ROLES[who]);document.getElementById('pg-neg').classList.add('active');curSub='journal';document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stab-journal').classList.add('active');document.getElementById('stc-journal').classList.add('active');renderNeg();}
 function goProsp(btn){clearAll();btn.classList.add('active');setFooter('Mansion Aquitaine','Prospection');document.getElementById('pg-prosp').classList.add('active');renderProsp();}
 function goPipeline(btn){clearAll();btn.classList.add('active');setFooter('Pipeline','Vision Board');document.getElementById('pg-pipeline').classList.add('active');renderPipeline();}
-function goFormation(btn){clearAll();btn.classList.add('active');setFooter('Formation','Onboarding');document.getElementById('pg-formation').classList.add('active');renderFormation();}
-function goChatbot(btn){clearAll();btn.classList.add('active');setFooter('Assistant IA','Mansion Aquitaine');document.getElementById('pg-chatbot').classList.add('active');initChat();}
 function goAlexis(btn){clearAll();btn.classList.add('active');setFooter('Alexis Leduc','Gérant');document.getElementById('pg-alexis').classList.add('active');if(!alOpen){document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}else{document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}}
 function goDir(btn){clearAll();btn.classList.add('active');setFooter('Vue Direction','Accès restreint');document.getElementById('pg-dir').classList.add('active');if(!dirOpen){document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}else{document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}}
 function updDots(pfx,buf){for(var i=0;i<4;i++){var d=document.getElementById(pfx+i);if(d)d.className='pin-d'+(i<buf.length?' on':'');}}
+
 function alPin(d){if(alPinBuf.length>=4)return;alPinBuf+=d;updDots('ap',alPinBuf);}
 function alPinClear(){alPinBuf=alPinBuf.slice(0,-1);updDots('ap',alPinBuf);}
 function alPinSubmit(){if(alPinBuf===alPinCode){alOpen=true;document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}else{document.getElementById('al-err').textContent='Code incorrect';alPinBuf='';updDots('ap',alPinBuf);setTimeout(function(){document.getElementById('al-err').textContent='';},2000);}}
 function alLock(){alOpen=false;document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}
+
 function dirPin(d){if(dirPinBuf.length>=4)return;dirPinBuf+=d;updDots('dp',dirPinBuf);}
 function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
+
 function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();}
 
-function renderNeg(){if(!curWho)return;var who=curWho,d=D[who],st=getStats(who),now=new Date(),ob=getObj(who);migrateWeeks(who);setEl('neg-title',NAMES[who]);setEl('neg-sub',ROLES[who]+' · Mansion Aquitaine');setEl('neg-date',now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}));var todayCt=d.contacts.filter(function(c){return contactInWeek(c,0);}).length;var wk=getWeekData(who,0);var wR=wk.wr.reduce(function(a,b){return a+b;},0),wM=wk.wm.reduce(function(a,b){return a+b;},0);var kpiH='<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>';if(ob){kpiH+='<div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+ob.cs+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/ob.cs*100),100)+'%;background:var(--blue);"></div></div></div>';kpiH+='<div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div><div class="ks">Obj. : '+ob.rs+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(wR/ob.rs*100),100)+'%;background:var(--pur);"></div></div></div>';}else{kpiH+='<div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div></div>';kpiH+='<div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div></div>';}kpiH+='<div class="kc gr"><div class="kl">Mandats sem.</div><div class="kv sm" style="color:var(--green)">'+wM+'</div></div>';document.getElementById('neg-kpis').innerHTML=kpiH;var az=document.getElementById('neg-alert');if(az){var m='';if(ob){if(todayCt>=ob.cs)m='<div class="al ag2"><div class="ald"></div>Objectif contacts semaine atteint !</div>';else if(todayCt>0)m='<div class="al aw"><div class="ald"></div>'+(ob.cs-todayCt)+' contacts restants (obj. '+ob.cs+'/sem · '+ob.cj+'/jour).</div>';else m='<div class="al aw"><div class="ald"></div>Aucun contact. Objectif : '+ob.cj+'/jour · '+ob.cs+'/sem.</div>';}else{m=todayCt>0?'<div class="al ag2"><div class="ald"></div>'+todayCt+' contacts cette semaine.</div>':'<div class="al aw"><div class="ald"></div>Aucun contact cette semaine.</div>';}az.innerHTML=m;}if(curSub==='journal')renderContacts();else if(curSub==='semaine')renderWeek();else if(curSub==='compromis')renderComp();else if(curSub==='perf')renderPerf();else if(curSub==='mensuel')renderMensuel();}
-function toggleContactForm(){var f=document.getElementById('contact-form'),b=document.getElementById('btn-add-contact');if(f.style.display==='none'){f.style.display='block';b.textContent='✕ Fermer';}else{f.style.display='none';b.textContent='+ Ajouter';editingContactIdx=null;resetContactForm();}}
-function resetContactForm(){['cf-nom','cf-secteur','cf-rdv','cf-notes','cf-relance'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});var s1=document.getElementById('cf-canal');if(s1)s1.selectedIndex=0;var s2=document.getElementById('cf-cat');if(s2)s2.selectedIndex=0;var s3=document.getElementById('cf-mandat');if(s3)s3.selectedIndex=0;var s4=document.getElementById('cf-statut');if(s4)s4.selectedIndex=0;}
-var editingContactIdx=null;
-function submitContact(){var who=curWho;if(!who)return;var nom=(document.getElementById('cf-nom').value||'').trim();if(!nom){alert('Le nom est requis.');return;}var obj={id:editingContactIdx!==null?(D[who].contacts[editingContactIdx]||{}).id||Date.now():Date.now(),nom:nom,canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim(),date_created:editingContactIdx!==null?((D[who].contacts[editingContactIdx]||{}).date_created||new Date().toISOString()):new Date().toISOString()};if(editingContactIdx!==null){D[who].contacts[editingContactIdx]=obj;editingContactIdx=null;}else{D[who].contacts.push(obj);}save(who);resetContactForm();document.getElementById('contact-form').style.display='none';document.getElementById('btn-add-contact').textContent='+ Ajouter';renderContacts();renderNeg();}
-function delContact(who,idx){if(!confirm('Supprimer ce contact ?'))return;D[who].contacts.splice(idx,1);save(who);renderContacts();renderNeg();}
-function editContact(who,idx){var c=D[who].contacts[idx];if(!c)return;editingContactIdx=idx;document.getElementById('cf-nom').value=c.nom||'';document.getElementById('cf-canal').value=c.canal||'Pige';document.getElementById('cf-cat').value=c.categorie||'Vendeur';document.getElementById('cf-secteur').value=c.secteur||'';document.getElementById('cf-rdv').value=c.rdv||'';document.getElementById('cf-mandat').value=c.type_man||'—';document.getElementById('cf-statut').value=c.statut||'À rappeler';document.getElementById('cf-relance').value=c.relance_date||'';document.getElementById('cf-notes').value=c.notes||'';document.getElementById('contact-form').style.display='block';document.getElementById('btn-add-contact').textContent='✕ Fermer';}
-function renderContacts(){var who=curWho;if(!who)return;migrateWeeks(who);var allCs=D[who].contacts||[];var cs=allCs.filter(function(c){return contactInWeek(c,curWeekOffset);});/* Apply search & filters */var sq=(document.getElementById('ct-search')||{}).value||'';var fs=(document.getElementById('ct-filter-statut')||{}).value||'';var fc=(document.getElementById('ct-filter-canal')||{}).value||'';if(sq){var sl=sq.toLowerCase();cs=cs.filter(function(c){return(c.nom||'').toLowerCase().indexOf(sl)>=0||(c.secteur||'').toLowerCase().indexOf(sl)>=0||(c.notes||'').toLowerCase().indexOf(sl)>=0;});}if(fs)cs=cs.filter(function(c){return c.statut===fs;});if(fc)cs=cs.filter(function(c){return c.canal===fc;});var box=document.getElementById('contact-cards');if(!box)return;var weekNav='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;"><button class="bs" onclick="curWeekOffset--;renderContacts();renderNeg();" style="font-size:10px;">← Sem. préc.</button><div style="text-align:center;"><div style="font-size:11px;color:var(--txt);font-weight:500;">'+getWeekLabel(curWeekOffset)+'</div><div style="font-size:9px;color:var(--txt3);">'+cs.length+' contact'+(cs.length>1?'s':'')+' cette semaine</div></div><button class="bs" onclick="curWeekOffset++;renderContacts();renderNeg();" style="font-size:10px;"'+(curWeekOffset>=0?' disabled style="font-size:10px;opacity:.4;cursor:default;"':'')+'>Sem. suiv. →</button></div>';if(!cs.length){box.innerHTML=weekNav+'<div class="ct-empty">Aucun contact cette semaine'+(curWeekOffset<0?' — <span style="cursor:pointer;color:var(--or);text-decoration:underline;" onclick="curWeekOffset=0;renderContacts();renderNeg();">Revenir à cette semaine</span>':'')+'</div>';return;}box.innerHTML=weekNav+cs.map(function(c,i){var realIdx=allCs.indexOf(c);var cc=CCLASS[c.canal]||'ca',mc=MPC[c.type_man]||'',url=gcalUrl(c),statCol=c.statut==='Mandat signé'?'p-gr':c.statut==='RDV fixé'?'p-bl':c.statut==='RDV effectué'?'p-pu':c.statut==='Pas intéressé'?'p-re':'p-or';var dateStr=c.date_created?new Date(c.date_created).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}):'';return'<div class="ct-card"><div class="ct-card-head"><div class="ct-card-name">'+(i+1)+'. '+escH(c.nom)+(dateStr?' <span style="font-size:9px;color:var(--txt3);font-weight:normal;margin-left:4px;">'+dateStr+'</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div><div class="ct-card-grid"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<button class="bd ct-card-del" onclick="delContact(\''+who+'\','+realIdx+')">×</button><button class="bd" onclick="editContact(\''+who+'\','+realIdx+')" style="position:absolute;top:8px;right:28px;color:var(--or);" title="Modifier">✎</button></div>';}).join('');}
-function renderWeek(){var who=curWho;if(!who)return;migrateWeeks(who);var ob=getObj(who);var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var wk=getWeekData(who,curWeekOffset);var now=new Date(),cur=curWeekOffset===0?Math.min(Math.max(now.getDay()-1,0),4):-1;var weekNav='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;"><button class="bs" onclick="curWeekOffset--;renderWeek();" style="font-size:10px;">← Sem. préc.</button><div style="font-size:11px;color:var(--txt);font-weight:500;">'+getWeekLabel(curWeekOffset)+'</div><button class="bs" onclick="curWeekOffset++;renderWeek();" style="font-size:10px;"'+(curWeekOffset>=0?' disabled style="font-size:10px;opacity:.4;cursor:default;"':'')+'>Sem. suiv. →</button></div>';var h='';var objJ=ob?ob.cj:10;for(var i=0;i<5;i++){var v=wk.wd[i]||0,rv=wk.wr[i]||0,mv=wk.wm[i]||0,pp=ob?Math.min(Math.round(v/objJ*100),100):0,cl=ob?(v>=objJ?'var(--green)':(v>=Math.round(objJ*0.6)?'var(--or)':'var(--red)')):'var(--blue)';h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div>'+(ob?'<div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div>':'')+'<div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="saveWeekData(\''+who+'\','+curWeekOffset+',\'wd\','+i+',parseInt(this.value)||0);renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="saveWeekData(\''+who+'\','+curWeekOffset+',\'wr\','+i+',parseInt(this.value)||0);renderNeg()"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="saveWeekData(\''+who+'\','+curWeekOffset+',\'wm\','+i+',parseInt(this.value)||0);renderNeg()"></div>';}wg.innerHTML=weekNav+'<div class="wr">'+h+'</div>';renderWeekKpis();}
-function renderWeekKpis(){var who=curWho;if(!who)return;migrateWeeks(who);var ob=getObj(who);var wk=getWeekData(who,curWeekOffset);var tC=wk.wd.reduce(function(a,b){return a+b;},0),tR=wk.wr.reduce(function(a,b){return a+b;},0),tM=wk.wm.reduce(function(a,b){return a+b;},0);var cs=ob?ob.cs:60,rs=ob?ob.rs:3;var now=new Date(),dw=Math.max(1,now.getDay()===0?5:Math.min(now.getDay(),5)),dlt=ob?tC-(dw*ob.cj):0;var h='<div class="kc or"><div class="kl">Contacts semaine</div><div class="kv gold">'+tC+'</div>'+(ob?'<div class="ks">Obj. : '+cs+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/cs*100),100)+'%;background:var(--or);"></div></div>':'')+'</div>';h+='<div class="kc bl"><div class="kl">'+(ob?'Avance / Retard':'Total')+'</div><div class="kv sm" style="color:'+(ob?(dlt>=0?'var(--green)':'var(--red)'):'var(--blue)')+';">'+(ob?(dlt>=0?'+':'')+dlt:tC)+'</div></div>';h+='<div class="kc pu"><div class="kl">RDV</div><div class="kv sm" style="color:var(--pur);">'+tR+'</div>'+(ob?'<div class="ks">Obj. : '+rs+'</div>':'')+'</div>';h+='<div class="kc gr"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--green);">'+tM+'</div><div class="ks">'+(tR>0?Math.round(tM/tR*100)+'% conv.':'—')+'</div></div>';document.getElementById('neg-week-kpis').innerHTML=h;}
-function addComp(){var who=curWho;if(!who)return;var nom=document.getElementById('cp-nom').value.trim(),ttc=parseFloat(document.getElementById('cp-ttc').value);if(!nom||isNaN(ttc)||ttc<=0){alert('Nom et montant requis.');return;}var compType=document.getElementById('cp-type').value||'—';var compEs=document.getElementById('cp-es').value||'entree';var compBin=document.getElementById('cp-bin').checked;var compBnom=document.getElementById('cp-bnom').value.trim();var compId=Date.now();var dateComp=document.getElementById('cp-dcomp')?document.getElementById('cp-dcomp').value:'';var dateActe=document.getElementById('cp-dacte')?document.getElementById('cp-dacte').value:'';D[who].compromis.push({id:compId,nom:nom,ttc:ttc,type:compType,es:compEs,bin:compBin,bnom:compBnom,date:new Date().toLocaleDateString('fr-FR'),dateComp:dateComp,dateActe:dateActe});save(who);/* Sync to pipeline */dossiers.push({id:compId,ref:nom,neg:NAMES[who],fee:ttc,dateComp:dateComp,dateActe:dateActe,stage:'compromis',notes:'Ajouté depuis fiche '+NAMES[who],encaisse:false});saveDoss();['cp-nom','cp-ttc','cp-bnom'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});if(document.getElementById('cp-dcomp'))document.getElementById('cp-dcomp').value='';if(document.getElementById('cp-dacte'))document.getElementById('cp-dacte').value='';document.getElementById('cp-type').value='';document.getElementById('cp-bin').checked=false;renderComp();renderNeg();}
-function delComp(who,idx){if(!confirm('Supprimer ce compromis ?'))return;var comp=D[who].compromis[idx];if(comp&&comp.id){dossiers=dossiers.filter(function(x){return x.id!==comp.id;});saveDoss();}D[who].compromis.splice(idx,1);save(who);renderComp();renderNeg();}
-function renderComp(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who);setEl('cp-fees',fmt(st.ca));setEl('cp-com',fmt(st.com));pBar(st.ca,getCaObj(who),'cp-pb');setEl('cp-obj-lbl','Obj. : '+fmt(getCaObj(who))+' TTC');setEl('cp-reste',st.ca>=getCaObj(who)?'Objectif atteint !':'Reste '+fmt(Math.max(0,getCaObj(who)-st.ca)));var tb=document.getElementById('comp-tbody');if(!tb)return;if(!d.compromis.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}var h='',totCom=0,caA=0;d.compromis.forEach(function(c,i){var cv=comForWho(who,c,caA);totCom+=cv;caA+=c.ttc*(c.bin?.5:1);var mc=MPC[c.type]||'';h+='<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td style="color:var(--txt);font-weight:500;">'+escH(c.nom)+'</td><td style="color:var(--or);">'+fmt(c.ttc)+'</td><td>'+(c.type&&c.type!=='—'?'<span class="pill '+mc+'">'+c.type+'</span>':'—')+'</td><td><span class="pill '+(c.es==='entree'?'p-gr':'p-bl')+'">'+(c.es==='entree'?'E':'S')+'</span></td><td>'+(c.bin?'<span class="pill p-pu">'+escH(c.bnom||'—')+'</span>':'<span class="pill p-gy">Solo</span>')+'</td><td style="color:var(--green);font-weight:500;">'+fmt(cv)+'</td><td><button class="bd" onclick="delComp(\''+who+'\','+i+')">×</button></td></tr>';});tb.innerHTML=h;var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='<tr><td colspan="6">TOTAL</td><td style="color:var(--green);">'+fmt(totCom)+'</td><td></td></tr>';}
-function drawMeter(id,pct,color){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext('2d');c.width=60;c.height=60;ctx.clearRect(0,0,60,60);ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,2.25*Math.PI);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();var pv=Math.min(pct/100,1);if(pv>0){ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,(.75+1.5*pv)*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();}ctx.fillStyle=color;ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.round(pct)+'%',30,30);}
-function renderPerf(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),tC=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0),wM=d.wm.reduce(function(a,b){return a+b;},0),aC=tC+wC,aR=wR,aM=wM,txCR=aC>0?Math.round(aR/aC*100):0,txRM=aR>0?Math.round(aM/aR*100):0,txF=Math.round(st.ca/getCaObj(who)*100);document.getElementById('perf-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">RDV→Mandat</div><div class="kv sm" style="color:var(--green)">'+txRM+'%</div><div class="ks">'+aM+'/'+aR+'</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(getCaObj(who))+'</div></div>';document.getElementById('perf-meters').innerHTML='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Contacts→RDV</div><canvas id="m-cr" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--or);">'+txCR+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">RDV→Mandat</div><canvas id="m-rm" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--green);">'+txRM+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Obj. honoraires</div><canvas id="m-f" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--blue);">'+txF+'%</div></div>';setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4a9c5d');drawMeter('m-f',txF,'#4a82c0');},80);var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
-var curMonthOffset=0; // 0=current month, -1=last month etc.
-function getMonthLabel(offset){var d=new Date();d.setMonth(d.getMonth()+offset);return d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});}
-function getMonthWeeks(offset){var d=new Date();d.setMonth(d.getMonth()+offset);var y=d.getFullYear(),m=d.getMonth();var first=new Date(y,m,1),last=new Date(y,m+1,0);var weeks=[];var cur=new Date(first);var day=cur.getDay(),diff=cur.getDate()-day+(day===0?-6:1);cur.setDate(diff);while(cur<=last||cur.getMonth()===m){var wk=cur.toISOString().slice(0,10);var end=new Date(cur);end.setDate(end.getDate()+6);weeks.push({key:wk,label:'S'+(weeks.length+1)+' ('+cur.getDate()+'/'+(cur.getMonth()+1)+' — '+end.getDate()+'/'+(end.getMonth()+1)+')'});cur.setDate(cur.getDate()+7);if(weeks.length>6)break;}return weeks;}
-function getMonthContacts(who,offset){var d=new Date();d.setMonth(d.getMonth()+offset);var y=d.getFullYear(),m=d.getMonth();return(D[who].contacts||[]).filter(function(c){if(!c.date_created)return offset===0;var cd=new Date(c.date_created);return cd.getFullYear()===y&&cd.getMonth()===m;});}
-function getMonthWeekData(who,weekKey){var d=D[who];if(!d.weeks||!d.weeks[weekKey])return{wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};return d.weeks[weekKey];}
-function renderMensuel(){var who=curWho;if(!who)return;migrateWeeks(who);var ob=getObj(who);var st=getStats(who);var weeks=getMonthWeeks(curMonthOffset);var mContacts=getMonthContacts(who,curMonthOffset);var totalC=0,totalR=0,totalM=0;var weekLabels=[],weekContacts=[],weekRDV=[];weeks.forEach(function(w){var wd=getMonthWeekData(who,w.key);var wC=wd.wd.reduce(function(a,b){return a+b;},0);var wR=wd.wr.reduce(function(a,b){return a+b;},0);var wM=wd.wm.reduce(function(a,b){return a+b;},0);totalC+=wC;totalR+=wR;totalM+=wM;weekLabels.push(w.label);weekContacts.push(wC);weekRDV.push(wR);});totalC+=mContacts.length;var txF=Math.round(st.ca/getCaObj(who)*100);
-var monthNav='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;"><button class="bs" onclick="curMonthOffset--;renderMensuel();" style="font-size:10px;">← Mois préc.</button><div style="font-size:12px;color:var(--or);font-weight:500;font-family:Georgia,serif;text-transform:capitalize;">'+getMonthLabel(curMonthOffset)+'</div><button class="bs" onclick="curMonthOffset++;renderMensuel();" style="font-size:10px;"'+(curMonthOffset>=0?' disabled style="font-size:10px;opacity:.4;cursor:default;"':'')+'>Mois suiv. →</button></div>';
-document.getElementById('mens-kpis').innerHTML=monthNav+'<div class="kg k4"><div class="kc or"><div class="kl">Honos TTC</div><div class="kv gold">'+fmt(st.ca)+'</div><div class="ks">Obj. : '+fmt(getCaObj(who))+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV mois</div><div class="kv sm" style="color:var(--blue)">'+totalR+'</div>'+(ob?'<div class="ks">Obj. : '+ob.rm+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(totalR/ob.rm*100),100)+'%;background:var(--blue);"></div></div>':'')+'</div><div class="kc gr"><div class="kl">Contacts mois</div><div class="kv sm" style="color:var(--green)">'+totalC+'</div>'+(ob?'<div class="ks">Obj. : '+ob.cm+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(totalC/ob.cm*100),100)+'%;background:var(--green);"></div></div>':'')+'</div><div class="kc pu"><div class="kl">Mandats mois</div><div class="kv sm" style="color:var(--pur)">'+totalM+'</div></div></div>';
-var ma=document.getElementById('mens-alerts');if(ma){if(!ob){ma.innerHTML='<div class="al ag2"><div class="ald"></div>'+totalC+' contacts · '+totalR+' RDV · '+totalM+' mandats ce mois.</div>';}else{ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif CA atteint !</div>':(totalR>=ob.rm?'<div class="al ag2"><div class="ald"></div>Objectif RDV mois atteint ('+totalR+'/'+ob.rm+') !</div>':'<div class="al aw"><div class="ald"></div>RDV : '+totalR+'/'+ob.rm+' · Contacts : '+totalC+'/'+ob.cm+' · Reste '+fmt(Math.max(0,getCaObj(who)-st.ca))+' CA</div>');}}
-if(charts.mens){charts.mens.destroy();charts.mens=null;}var mc=document.getElementById('mens-chart');if(mc){var dsArr=[{label:'Contacts',data:weekContacts,backgroundColor:COLORS[who]+'88',borderColor:COLORS[who],borderWidth:1,borderRadius:5},{label:'RDV',data:weekRDV,backgroundColor:'rgba(74,130,192,.6)',borderColor:'var(--blue)',borderWidth:1,borderRadius:5}];if(ob){dsArr.push({label:'Obj. RDV/sem',data:Array(weekLabels.length).fill(ob.rs),type:'line',borderColor:'rgba(201,168,76,.5)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false});}charts.mens=new Chart(mc,{type:'bar',data:{labels:weekLabels,datasets:dsArr},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b5f52',font:{size:9}}}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52',font:{size:9}},grid:{display:false}}}}});}}
-function renderProsp(){var tC=0,tR=0,tM=0;ALL.forEach(function(w){var d=D[w];tC+=d.wd.reduce(function(a,b){return a+b;},0);tR+=d.wr.reduce(function(a,b){return a+b;},0);tM+=d.wm.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var d=D[w],ob2=getObj(w),tot=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0),wM=d.wm.reduce(function(a,b){return a+b;},0),c2=COLORS[w],txR=tot>0?Math.round(wR/tot*100):0,sp=ob2?(tot>=ob2.cs?'<span class="pill p-gr">OK</span>':tot>=Math.round(ob2.cs*0.7)?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>'):'<span class="pill p-gy">—</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+d.wd.map(function(v){var objD=ob2?ob2.cj:0;var cl=ob2?(v>=objD?'var(--green)':(v>=Math.round(objD*0.6)?'var(--or)':'var(--red)')):'var(--txt2)';return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(ob2?(tot>=ob2.cs?'var(--green)':'var(--or)'):'var(--txt2)')+';">'+tot+'</td><td style="color:var(--txt3);">'+(ob2?ob2.cs:'—')+'</td><td style="text-align:center;color:var(--pur);font-weight:500;">'+wR+'</td><td style="text-align:center;color:var(--green);font-weight:500;">'+wM+'</td><td style="text-align:center;"><span class="pill '+(txR>=5?'p-gr':txR>=2?'p-or':'p-gy')+'">'+txR+'%</span></td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+JNOMS.map(function(_,i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(D[w].wd[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td style="color:var(--pur);font-weight:500;">'+tR+'</td><td style="color:var(--green);font-weight:500;">'+tM+'</td><td style="color:var(--or);">'+(tC>0?Math.round(tR/tC*100):0)+'%</td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return D[w].wd.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
-function openModal(){openPanel();}function openPanel(){document.getElementById('slide-overlay').classList.add('open');document.getElementById('slide-panel').classList.add('open');}function closeModal(){closePanel();}function closePanel(){document.getElementById('slide-overlay').classList.remove('open');document.getElementById('slide-panel').classList.remove('open');}
-function savePanel(){var ref=(document.getElementById('md-ref')||{}).value||'';if(!ref.trim()){alert('Référence requise.');return;}dossiers.push({id:Date.now(),ref:ref.trim(),neg:document.getElementById('md-neg').value,fee:parseFloat(document.getElementById('md-fee').value)||0,dateComp:document.getElementById('md-dcomp').value,dateActe:document.getElementById('md-dacte').value,stage:document.getElementById('md-stage').value,notes:document.getElementById('md-notes').value.trim(),encaisse:false});saveDoss();closePanel();['md-ref','md-fee','md-dcomp','md-dacte','md-notes'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});renderPipeline();}
-function renderPipeline(){var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};dossiers.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';var board=document.getElementById('kanban-board');if(!board)return;board.innerHTML=STAGES.map(function(stage){var items=dossiers.filter(function(d){return d.stage===stage;});var cards=items.map(function(d){var next=STAGES[STAGES.indexOf(stage)+1];var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div><div style="display:flex;gap:4px;margin-top:4px;">'+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bd" onclick="delDoss('+d.id+')" style="margin-left:auto;">×</button></div></div>';}).join('');return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';}).join('');}
-function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
-function delDoss(id){if(!confirm('Supprimer ?'))return;dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();}
-function renderAlexis(){var who='alexis',d=D[who],st=getStats(who);var tct=document.getElementById('al-tab-content');if(!tct)return;var todayCt=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0);tct.innerHTML='<div class="kg k4"><div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' TTC</div></div><div class="kc bl"><div class="kl">Contacts auj.</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div></div><div class="kc gr"><div class="kl">RDV semaine</div><div class="kv sm" style="color:var(--green)">'+wR+'</div></div><div class="kc pu"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--pur)">'+wC+'</div></div></div><div class="stitle">Sélectionnez Alexis dans la sidebar pour accéder au journal complet.</div>';}
-function initDirMonthFilter(){var sel=document.getElementById('dir-month-filter');if(!sel||sel.options.length>1)return;sel.innerHTML='<option value="">Tous les mois</option>';for(var i=0;i<12;i++){var d=new Date();d.setMonth(d.getMonth()-i);var lbl=d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});var val=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');sel.innerHTML+='<option value="'+val+'">'+lbl.charAt(0).toUpperCase()+lbl.slice(1)+'</option>';}}
-function getStatsFiltered(who,monthFilter){var d=D[who],ca=0,com=0,nb=0;var comps=d.compromis||[];if(monthFilter){comps=comps.filter(function(c){if(!c.dateComp&&!c.date)return false;var ds=c.dateComp||'';if(ds&&ds.indexOf('-')>=0){return ds.slice(0,7)===monthFilter;}var parts=(c.date||'').split('/');if(parts.length===3){var m2=parts[1]+'/'+parts[2];return false;}return false;});}if(who==='swan'){comps.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});nb=comps.length;}else if(PROG.indexOf(who)>=0){comps.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);});com=0;for(var i2=0;i2<PALIERS.length;i2++){var p=PALIERS[i2],mx=p.max===null?Infinity:p.max;if(ca<=p.min)break;com+=(Math.min(ca,mx)-p.min)*p.t/100;}nb=comps.length;}else{var t=TAUX_FIXE[who]||50;comps.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});nb=comps.length;}return{ca:ca,com:com,nb:nb};}
-function renderDir(){initDirMonthFilter();var mf=(document.getElementById('dir-month-filter')||{}).value||'';var stats=ALL.map(function(w){var s=mf?getStatsFiltered(w,mf):getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(a.who==='swan'?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/getCaObj(a.who)*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(a.who==='swan'?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
-function exportCSV(){var sep=';';var lines=['Collaborateur'+sep+'Contrat'+sep+'Référence'+sep+'Honoraires TTC'+sep+'Type mandat'+sep+'Entrée/Sortie'+sep+'Binôme'+sep+'Nom binôme'+sep+'Commission'+sep+'Date'];ALL.forEach(function(who){var d=D[who],caA=0;d.compromis.forEach(function(c){var cv=comForWho(who,c,caA);caA+=c.ttc*(c.bin?.5:1);lines.push('"'+NAMES[who]+'"'+sep+'"'+CONTRATS[who]+'"'+sep+'"'+(c.nom||'').replace(/"/g,'""')+'"'+sep+(c.ttc||0)+sep+'"'+(c.type||'—')+'"'+sep+(c.es==='entree'?'Entrée':'Sortie')+sep+(c.bin?'Oui':'Non')+sep+'"'+(c.bnom||'').replace(/"/g,'""')+'"'+sep+Math.round(cv)+sep+'"'+(c.date||'')+'"');});});var blob=new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Mansion_Compromis_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);}
+// --- RENDER NEG (compteurs RDV et Mandats séparés) ---
+function renderNeg(){
+    if(!curWho)return;
+    var who=curWho,d=D[who],st=getStats(who),now=new Date();
+    setEl('neg-title',NAMES[who]);
+    setEl('neg-sub',ROLES[who]+' · Mansion Aquitaine');
+    setEl('neg-date',now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}));
+    var todayCt=d.contacts.length;
+    var wR=d.wr.reduce(function(a,b){return a+b;},0);
+    var wM=d.wm.reduce(function(a,b){return a+b;},0);
+    document.getElementById('neg-kpis').innerHTML=
+        '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>'+
+        '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
+        '<div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div></div>'+
+        '<div class="kc gr"><div class="kl">Mandats sem.</div><div class="kv sm" style="color:var(--green)">'+wM+'</div></div>';
+    var az=document.getElementById('neg-alert');
+    if(az){
+        var m='';
+        if(todayCt>=OBJ_J)m='<div class="al ag2"><div class="ald"></div>Objectif journalier atteint !</div>';
+        else if(todayCt>0)m='<div class="al aw"><div class="ald"></div>'+(OBJ_J-todayCt)+' contacts restants.</div>';
+        else m='<div class="al aw"><div class="ald"></div>Aucun contact. Objectif : '+OBJ_J+'.</div>';
+        az.innerHTML=m;
+    }
+    if(curSub==='journal')renderContacts();else if(curSub==='semaine')renderWeek();else if(curSub==='compromis')renderComp();else if(curSub==='perf')renderPerf();else if(curSub==='mensuel')renderMensuel();
+}
 
-// =====================================================
-// NEW: FORMATION MODULE
-// =====================================================
-var FM_MODULES=[
-{id:'welcome',t:'Bienvenue chez Mansion',ic:'🏛️',st:'done',body:'<h2>Bienvenue chez Mansion Aquitaine !</h2><p>Vous rejoignez une agence <strong>nouvelle génération</strong> fondée par Alexis Leduc. SAS MANSION BORDEAUX — RCS Libourne 994 896 249 — Carte pro CPI33012026000000004.</p><p><strong>2 agences :</strong> Saint-André-de-Cubzac (siège) + Langon. Activités : Estimation, Vente, Achat, Location, Division foncière.</p><div class="hbox"><strong>Important :</strong> En tant qu\'agent commercial, vous n\'êtes PAS habilité à signer les mandats. Seul le DG ou la Présidente peut le faire.</div><p><strong>Nos outils :</strong> Drone, vidéos immersives, photos pro, diffusion sur SeLoger, LeBonCoin, Logic-Immo, Bien\'ici, FigaroImmo, Jinka, MeilleursAgents… + Instagram @mansion_aquitaine.</p>',q:'Quelle est la spécialité de Mansion ?',qo:['Gestion locative','Division foncière','Viager','Neuf'],qc:1},
-{id:'chasse',t:'La Chasse — Prospection',ic:'🎯',st:'todo',body:'<h2>La Chasse — Maîtriser la prospection</h2><p>La prospection est le <strong>carburant</strong> de votre activité. Sans stock de mandats, pas de ventes. Chez Mansion, 4 canaux principaux.</p><h3>1. La Pige (priorité absolue)</h3><p>La pige consiste à contacter des propriétaires qui vendent déjà leur bien (sur LeBonCoin, SeLoger, PAP…). C\'est le canal le plus efficace car vous parlez à des <strong>vendeurs confirmés</strong>.</p><p><strong>Objectifs :</strong> Swan & Lisa : 12 contacts/jour. Nolan : 7 contacts/jour.</p><h3>2. Le Porte-à-porte</h3><p>Excellent pour la notoriété locale. Présentez-vous, déposez un flyer Mansion. Identifiez les panneaux "À vendre". Ciblez les quartiers où vous avez déjà vendu.</p><h3>3. L\'Entourage</h3><p>Chaque personne que vous connaissez est un mandat potentiel. Parlez de votre activité. Demandez systématiquement : "Connaissez-vous quelqu\'un qui vend ?"</p><h3>4. Les Réseaux Sociaux</h3><p>Instagram @mansion_aquitaine : 4-5 stories/semaine, 2-3 posts/semaine. Répondre à TOUS les DM en moins de 2h. Hashtags locaux.</p><div class="hbox"><strong>Règle d\'or :</strong> La prospection se fait CHAQUE JOUR, en première activité du matin. Pas de prospection = pas de mandats = pas de ventes = pas de commission.</div>',q:'Canal de prospection prioritaire chez Mansion ?',qo:['Porte-à-porte','Réseaux sociaux','La pige','Entourage'],qc:2},
-{id:'pige',t:'La Pige téléphonique',ic:'📞',st:'todo',body:'<h2>La Pige téléphonique — Guide complet</h2><p>La pige est votre arme n°1. Voici le guide exhaustif pour décrocher des RDV par téléphone.</p><h3>AVANT l\'appel — Préparation (2 min)</h3><p>• Consultez l\'annonce en détail (photos, prix, surface, emplacement)<br>• Notez le <strong>prix au m²</strong> et comparez avec le marché<br>• Identifiez 1 point fort et 1 point faible du bien<br>• Vérifiez depuis combien de temps l\'annonce est en ligne<br>• Préparez votre phrase d\'accroche adaptée</p><h3>LE SCRIPT EN 4 PHASES</h3><h3>Phase 1 — L\'accroche (15 secondes)</h3><p>Objectif : capter l\'attention et obtenir un "oui" initial.</p><p><strong>Script :</strong> "Bonjour [prénom], je suis [votre nom] de l\'agence Mansion Aquitaine à [Saint-André / Langon]. Je vous appelle car j\'ai vu votre bien sur [plateforme]. <strong>Une question rapide : êtes-vous toujours en recherche active d\'un acquéreur ?</strong>"</p><p><strong>Pourquoi ça marche :</strong> La question est fermée (oui/non), facile à répondre, et le "oui" ouvre la conversation.</p><div class="tbox2"><strong>💡 Variante si l\'annonce est ancienne (&gt;3 mois) :</strong> "Je vous appelle car votre bien est en ligne depuis un moment. Je me demandais si vous aviez trouvé preneur ou si vous étiez toujours en recherche ?"</div><h3>Phase 2 — La qualification (2 minutes)</h3><p>Objectif : comprendre la situation pour adapter votre argumentaire.</p><p><strong>Les 6 questions essentielles :</strong></p><p>1. "Depuis combien de temps votre bien est-il en vente ?"<br>2. "Combien de visites avez-vous eu jusqu\'à présent ?"<br>3. "Avez-vous reçu des offres ?"<br>4. "Êtes-vous accompagné par une agence actuellement ?"<br>5. "Quel est votre délai idéal pour vendre ?"<br>6. "Qu\'est-ce qui vous a amené à vendre ?" (motivation profonde)</p><p><strong>ÉCOUTEZ plus que vous ne parlez.</strong> Notez mentalement les failles : peu de visites = problème de prix ou de visibilité. Pas d\'offre = le bien ne correspond pas aux attentes du marché.</p><h3>Phase 3 — La valeur ajoutée (2 minutes)</h3><p>Objectif : montrer que vous pouvez résoudre SON problème spécifique.</p><p><strong>Adaptez votre argument à ce que vous avez appris :</strong></p><p>• <strong>Si peu de visites :</strong> "C\'est souvent un problème de visibilité ou de présentation. Chez Mansion, on utilise le drone, les vidéos immersives et on diffuse sur 100% des plateformes avec des boosts quotidiens. On a des résultats significatifs sur ce type de situation."</p><p>• <strong>Si visites mais pas d\'offre :</strong> "Ça arrive quand il y a un décalage entre le prix et la perception des acquéreurs. On a des outils d\'analyse comparative de marché qui permettent de trouver le juste prix pour déclencher des offres rapidement."</p><p>• <strong>Si déjà en agence sans résultat :</strong> "Je comprends votre frustration. Ce qui nous différencie, c\'est notre approche : audit commercial complet, photos drone, visite immersive sur les réseaux sociaux. On ne se contente pas de poser une annonce."</p><p>• <strong>Si vend seul et « se débrouille » :</strong> "70% des acquéreurs sérieux passent uniquement par des professionnels. En gardant la possibilité de vendre vous-même, vous ajoutez simplement un canal de vente supplémentaire."</p><h3>Phase 4 — L\'engagement (30 secondes)</h3><p>Objectif : obtenir un RDV physique. <strong>JAMAIS d\'estimation par téléphone.</strong></p><p><strong>Script :</strong> "Écoutez, le plus simple serait que je passe voir votre bien. En 30 minutes, je vous fais un audit complet et je vous dis honnêtement ce que Mansion peut vous apporter. <strong>Vous êtes plutôt disponible en début ou en fin de semaine ?</strong>"</p><div class="hbox"><strong>L\'alternative obligatoire :</strong> Ne demandez JAMAIS "Est-ce que vous voulez qu\'on se voie ?" (réponse facile : non). Proposez toujours 2 options : "Mardi ou jeudi ?", "Le matin ou l\'après-midi ?". Le cerveau choisit QUAND au lieu de SI.</div><h3>LES 3 OBJECTIONS CLASSIQUES ET COMMENT Y RÉPONDRE</h3><p><strong>"J\'ai déjà plusieurs agences"</strong></p><p>→ Motif réel : trop d\'annonces qui se cannibalisent, ou l\'agence est une connaissance.<br>→ Votre question : "Selon vous, est-il préférable d\'être accompagné parfaitement par un professionnel investi, ou de multiplier les interlocuteurs au risque qu\'ils se fatiguent et passent à d\'autres dossiers ?"<br>→ Argument : "Je peux mettre votre bien bien davantage en valeur grâce à la photo aérienne, la visite immersive diffusée sur nos réseaux sociaux, et notre capacité à booster quotidiennement l\'annonce sur toutes les plateformes."</p><p><strong>"Je me débrouille très bien seul"</strong></p><p>→ Motif réel : pense que l\'agent n\'apporte rien, ou a un ami qui conseille.<br>→ Votre question : "Quel est mon intérêt de vous appeler si je pense ne pas avoir de valeur ajoutée à vous apporter ?"<br>→ Argument : "En vous laissant la possibilité de vendre seul, vous ajoutez un canal supplémentaire qui touche 70% des acquéreurs qui passent uniquement par des pros."</p><p><strong>"Le bien était en agence, j\'ai retiré car aucun résultat"</strong></p><p>→ Motif réel : pas de suivi, peu de visites, compromis tombé.<br>→ Votre question : "Qu\'auriez-vous aimé avoir de plus que ce que l\'agence vous a proposé ?"<br>→ Argument : "En me laissant l\'opportunité de vous rencontrer, nous réaliserons un audit commercial sur les actions menées et non menées, afin d\'établir une stratégie claire et différenciante."</p><div class="tbox2"><strong>💡 La technique du Takeaway (puissante) :</strong> "Écoutez, je vais être honnête avec vous. Chez Mansion, on est très sélectifs sur les biens qu\'on accompagne. Je ne suis pas encore sûr qu\'on soit la bonne agence pour vous. Mais si vous me permettez de voir le bien, je pourrai vous dire honnêtement." → Inverse la dynamique : c\'est VOUS qui choisissez, pas lui.</div><h3>APRÈS l\'appel</h3><p>• Notez immédiatement le contact dans votre journal (Dashboard Mansion)<br>• Si RDV obtenu : confirmez par SMS dans l\'heure<br>• Si "rappeler plus tard" : programmez une relance (utilisez le bouton Agenda)<br>• Si refus : notez "Pas intéressé" mais gardez le contact — relancez dans 3 mois</p>',q:'Que ne faut-il JAMAIS faire par téléphone en pige ?',qo:['Demander le prix','Donner une estimation','Poser des questions','Proposer un RDV'],qc:1},
-{id:'closing',t:'Le Closing du R1',ic:'🤝',st:'todo',body:'<h2>Le Closing du R1 — L\'art de signer un mandat au premier rendez-vous</h2><p>Le R1 (premier rendez-vous) est LE moment décisif. Votre objectif : repartir avec un <strong>mandat signé</strong>. Voici la méthode Mansion en détail.</p><h3>PRÉPARATION (avant d\'arriver)</h3><p>• Consultez toutes les annonces du bien (LeBonCoin, SeLoger…)<br>• Préparez une mini-ACM (3-4 biens comparables + prix DVF du secteur)<br>• Vérifiez le PLU de la commune (potentiel division ?)<br>• Préparez votre tablette/téléphone avec des exemples de biens vendus par Mansion<br>• Habillez-vous de manière professionnelle mais accessible</p><h3>ÉTAPE 1 — Briser la glace (5-10 min)</h3><p>Les vendeurs sont méfiants. Votre job : créer du lien humain.</p><p><strong>Techniques :</strong><br>• Complimentez quelque chose de spécifique (jardin, vue, décoration)<br>• Trouvez un point commun (quartier, enfants, animaux…)<br>• Utilisez l\'humour léger pour détendre l\'atmosphère<br>• Posez des questions personnelles (pas intrusives) : "Vous habitez ici depuis longtemps ?"<br>• <strong>Ne parlez PAS encore d\'immobilier.</strong> C\'est le moment humain.</p><h3>ÉTAPE 2 — Découverte du bien (15-20 min)</h3><p>Laissez le client vous guider dans le logement. <strong>Commencez par l\'extérieur</strong> (jardin, façade, parking).</p><p><strong>Pendant la visite :</strong><br>• Complimentez sincèrement les points forts<br>• Posez des questions techniques : "Les fenêtres ont été changées quand ?"<br>• Notez mentalement les points forts ET les points à valoriser<br>• Demandez l\'histoire du bien : "Quels travaux avez-vous réalisés ?"<br>• Photographiez (avec accord) — montrez que vous êtes déjà en action</p><h3>ÉTAPE 3 — L\'audit commercial (15-20 min)</h3><p>C\'est là que vous montrez votre expertise. Installez-vous autour d\'une table.</p><p><strong>Questions clés :</strong><br>• "Combien de visites avez-vous eu ?"<br>• "Des offres ? À quel prix ?"<br>• "Qu\'est-ce que les visiteurs ont dit ?"<br>• "Comment avez-vous fixé votre prix ?"<br>• "Quels retours des agences qui vous accompagnent ?"<br>• "Quel est votre projet derrière cette vente ?" (motivation profonde = levier)</p><p><strong>Montrez vos données :</strong><br>• Prix au m² réels du secteur (DVF)<br>• Biens comparables en vente<br>• Statistiques Mansion : 800 clients accompagnés en 2025<br>• Exemples concrets de biens vendus rapidement grâce à vos outils</p><h3>ÉTAPE 4 — La solution & le closing</h3><p>Adaptez votre proposition au problème identifié. Ne récitez pas un pitch générique.</p><p><strong>Si peu de visites :</strong> "Mon plan pour vous : photos drone + visite immersive + diffusion boostée sur toutes les plateformes. Je m\'engage à vous apporter au minimum X visites en Y semaines."</p><p><strong>Si prix trop haut :</strong> "Les données montrent un prix marché à [X]. Si on positionne votre bien à [Y], on maximise les visites et on provoque une offre au prix. C\'est la stratégie la plus rentable pour vous."</p><p><strong>Si mauvaise expérience agence :</strong> "Voici ce que je fais de différent : un rapport promotionnel toutes les 3 semaines avec des stats précises, et je m\'engage à [action spécifique]."</p><div class="hbox"><strong>Le closing par l\'alternative :</strong> "On peut démarrer dès cette semaine. Vous préférez que je passe faire les photos mardi matin ou jeudi après-midi ?" → Ne demandez JAMAIS "Alors, vous voulez signer ?"</div><h3>LES TECHNIQUES DE CLOSING AVANCÉES</h3><p><strong>Le SPIN Selling :</strong><br>S (Situation) : "Depuis combien de temps vendez-vous ?"<br>P (Problème) : "Qu\'est-ce qui vous freine aujourd\'hui ?"<br>I (Implication) : "Si ça continue 6 mois sans offre, quel impact sur votre projet ?"<br>N (Need-payoff) : "Si je réduis votre délai de vente de moitié, ça change quoi ?"</p><p><strong>Le Feel-Felt-Found :</strong> Pour les objections émotionnelles : "Je comprends ce que vous ressentez (feel). D\'autres propriétaires dans votre situation ont ressenti exactement la même chose (felt). Ce qu\'ils ont découvert (found), c\'est que [solution]."</p><p><strong>Le Silence stratégique :</strong> Après votre proposition de prix ou de mandat, <strong>taisez-vous</strong>. Comptez mentalement jusqu\'à 10. Le premier qui parle perd. Le silence crée une pression naturelle qui pousse le client à répondre.</p><p><strong>La méthode Sandler :</strong> Ne vendez pas, faites acheter. Posez des questions qui amènent le client à conclure lui-même qu\'il a besoin de vous. "Selon vous, quel serait le bénéfice pour vous de passer à côté de mon offre ?"</p><h3>MÉTHODE DE L\'ENTONNOIR (Levée d\'objections Mansion)</h3><p>1. <strong>Comprendre et accepter</strong> — "Je comprends parfaitement."<br>2. <strong>Reformuler</strong> — "Si j\'ai bien compris, votre préoccupation c\'est…"<br>3. <strong>Isoler</strong> — "Est-ce le seul point qui vous retient ?"<br>4. <strong>Pré-closer</strong> — "Si je résous ce point, on peut avancer ?"<br>5. <strong>Conclure</strong> — Apportez la solution.<br>6. <strong>Conforter</strong> — "Vous avez fait le bon choix."</p><h3>3 FAMILLES D\'OBJECTIONS</h3><p><strong>Sincères :</strong> Mauvaise expérience, pas d\'exclusivité, honoraires trop élevés → Traitez avec des faits et des exemples.<br><strong>Fausses :</strong> "Je veux réfléchir", "J\'en parle à mon conjoint" → Cachent un manque de confiance. Isolez la vraie objection.<br><strong>Tactiques :</strong> "Vous êtes jeune", "Peu d\'avis Google" → Le client cherche une remise. Restez professionnel et montrez votre expertise.</p><div class="tbox2"><strong>💡 Après le R1 :</strong> Envoyez un SMS de remerciement dans l\'heure. Si mandat signé : lancez les photos dans les 48h. Si pas signé : relancez à J+2 avec un argument supplémentaire (ex: "J\'ai trouvé un acquéreur potentiel pour votre secteur").</div>',q:'Après votre proposition de mandat, que devez-vous faire ?',qo:['Argumenter davantage','Proposer une remise','Vous taire et attendre','Rappeler le lendemain'],qc:2},
-{id:'mandats',t:'Les Mandats',ic:'📋',st:'todo',body:'<h2>Les Mandats de vente</h2><p>Mandataire : SAS MANSION BORDEAUX. Agent co : vous (RSAC Libourne).</p><p><strong>Durée :</strong> 3 mois irrévocable + 3 mois prorogation. <strong>Honoraires :</strong> charge acquéreur, TVA incluse.</p><p><strong>Protection :</strong> 8 mois post-expiration pour acquéreurs identifiés. <strong>Rétractation :</strong> 14 jours.</p><div class="tbox2"><strong>💡 Exclusivité :</strong> "La concurrence entre agences ne multiplie pas les acquéreurs. Elle favorise la négociation. En exclusivité, on valorise au maximum."</div><p><strong>Documents obligatoires :</strong> CI, titre de propriété, diagnostics complets.</p>',q:'Qui signe les mandats chez Mansion ?',qo:['L\'agent commercial','Le DG ou la Présidente uniquement','N\'importe qui','Le notaire'],qc:1},
-{id:'suivi',t:'Suivi vendeur',ic:'📊',st:'todo',body:'<h2>Le Suivi vendeur</h2><p>Rapport Promotionnel en <strong>6 sections</strong> : Annonce, Visibilité internet, Clics & appels, Stats LeBonCoin, Stats détaillées, Recommandations.</p><p><strong>Fréquence :</strong> toutes les 3-4 semaines.</p><div class="hbox"><strong>Obligation :</strong> Informer le mandant dans les 8 jours suivant la signature d\'un acquéreur.</div><h3>Baisse de prix</h3><p>Argumentaire : "Le prix final est corrélé au délai de commercialisation. Plus on attend, plus les négociations sont fortes." Procédure : avenant modificatif.</p>',q:'Combien de sections dans le Rapport Promotionnel ?',qo:['4','6','8','10'],qc:1},
-{id:'estimation',t:'L\'Estimation',ic:'🏠',st:'todo',body:'<h2>L\'Estimation</h2><p>Rapport en 6 parties. ACM basée sur 3 piliers : prix moyen/m², concurrence, conjoncture.</p><p><strong>Règles :</strong> Plus de superficie = prix/m² réduit. Ne jamais dépasser les seuils psychologiques. 2 fourchettes : marché + haute.</p><div class="hbox"><strong>Notre recette :</strong> 1. Estimation précise | 2. Marché local (800 clients en 2025) | 3. Réseau pro | 4. Communication parfaite</div>',q:'Clients accompagnés en 2025 ?',qo:['200','500','800','1000'],qc:2},
-{id:'juridique',t:'Expertise juridique',ic:'⚖️',st:'todo',body:'<h2>Les fondamentaux juridiques</h2><p><strong>Diagnostics :</strong> DPE (10 ans), Amiante (avant 1997), Plomb (avant 1949), Électricité & Gaz (>15 ans, 3 ans), Termites (6 mois), ERP (6 mois), Assainissement (3 ans), Carrez (copro, illimité).</p><p><strong>Compromis :</strong> engage les 2 parties. Rétractation SRU : 10 jours. Conditions suspensives : prêt (45-60j), urbanisme, préemption.</p><p><strong>Plus-values :</strong> RP exonérée. Secondaire : 36,2%. Exo totale après 30 ans.</p><p><strong>Frais notaire :</strong> Ancien ~7-8%, Neuf ~2-3%.</p><div class="tbox2"><strong>💡 Division foncière :</strong> Déclaration préalable ou permis d\'aménager. Vérifier PLU, servitudes, accès, réseaux. Bornage géomètre obligatoire.</div>',q:'Durée de validité du DPE ?',qo:['3 ans','6 mois','10 ans','Illimitée'],qc:2},
-{id:'acquereur',t:'Gérer l\'acquéreur',ic:'👥',st:'todo',body:'<h2>Gérer l\'acquéreur</h2><p><strong>Qualifier :</strong> Budget réel, projet précis, délais, finançabilité (<35% endettement).</p><div class="hbox"><strong>Règle d\'or :</strong> Un compromis avec un client non finançable fait perdre du temps à tout le monde.</div><p><strong>Visite :</strong> Laisser explorer, mettre en avant les points forts, noter les réactions.</p><p><strong>Offre :</strong> Par écrit. Présentation au vendeur avec analyse. Information mandant dans les 8 jours.</p><p><strong>Méthode Sandler :</strong> Ne vendez pas, faites acheter. "Qu\'est-ce qui vous a le plus marqué ?"</p>',q:'Délai max pour informer le mandant après signature ?',qo:['24h','3 jours','8 jours','15 jours'],qc:2}
-];
-var fmQA={},fmView='list',fmCurMod=null;
-function renderFormation(){
-  var done=FM_MODULES.filter(function(m){return fmQA[m.id]!==undefined&&fmQA[m.id]===m.qc;}).length;
-  var pct=Math.round(done/FM_MODULES.length*100);
-  var pb=document.getElementById('fm-prog-bar');if(pb)pb.style.width=pct+'%';
-  var pl=document.getElementById('fm-prog-lbl');if(pl)pl.textContent=done+'/'+FM_MODULES.length+' — '+pct+'%';
-  var ct=document.getElementById('fm-content');if(!ct)return;
-  if(fmView==='list'){
-    ct.innerHTML='<div class="fm-grid">'+FM_MODULES.map(function(m,i){
-      var isDone=fmQA[m.id]!==undefined&&fmQA[m.id]===m.qc;
-      return'<div class="fm-card" onclick="fmOpen(\''+m.id+'\')"><div class="fm-card-ic">'+m.ic+'</div><h4>'+m.t+'</h4><p>Module '+(i+1)+'</p><span class="fm-st" style="background:'+(isDone?'var(--greenl);color:var(--green)':'var(--orl);color:var(--or)')+';">'+(isDone?'✓ Validé':'○ À faire')+'</span></div>';
-    }).join('')+'<div class="fm-card" onclick="goChatbot(document.getElementById(\'nav-chatbot\'))" style="border-color:var(--borderor);"><div class="fm-card-ic">💬</div><h4>Assistant IA</h4><p>Coach commercial + expert technique 24h/24</p><span class="fm-st" style="background:var(--greenl);color:var(--green);">🔥 Disponible</span></div></div>';
-  } else {
-    var m=FM_MODULES.find(function(x){return x.id===fmCurMod;});if(!m)return;
-    var idx=FM_MODULES.indexOf(m),prev=idx>0?FM_MODULES[idx-1]:null,next=idx<FM_MODULES.length-1?FM_MODULES[idx+1]:null;
-    var ans=fmQA[m.id];
-    var qh='<div class="fm-quiz"><h3>🧠 Quiz</h3><p style="margin-bottom:10px;font-size:12px;">'+m.q+'</p>'+m.qo.map(function(o,i){var cl='fm-qopt';if(ans!==undefined){if(i===m.qc)cl+=' qok';else if(i===ans)cl+=' qko';}return'<div class="'+cl+'" onclick="fmQuiz(\''+m.id+'\','+i+')" style="cursor:'+(ans!==undefined?'default':'pointer')+';">'+o+'</div>';}).join('')+(ans!==undefined&&ans===m.qc?'<p style="margin-top:8px;color:var(--green);font-size:11px;font-weight:500;">✅ Module validé !</p>':'')+(ans!==undefined&&ans!==m.qc?'<p style="margin-top:8px;color:var(--red);font-size:11px;font-weight:500;">❌ Relisez et réessayez.</p>':'')+'</div>';
-    ct.innerHTML='<div style="font-size:11px;color:var(--txt3);margin-bottom:8px;cursor:pointer;" onclick="fmBack()">← Retour aux modules</div><div class="fm-body">'+m.body+'</div>'+qh+'<div class="fm-nav">'+(prev?'<button class="bs" onclick="fmOpen(\''+prev.id+'\')">← '+prev.t+'</button>':'<div></div>')+(next?'<button class="bp" style="width:auto;margin:0;padding:6px 16px;" onclick="fmOpen(\''+next.id+'\')">'+next.t+' →</button>':'<button class="bp" style="width:auto;margin:0;padding:6px 16px;" onclick="fmBack()">Tableau de bord</button>')+'</div>';
+// CONTACTS — date, navigation semaine, résumé, édition, cartes
+var viewWeekOffset=0;
+function getMonday(d){try{var dt=new Date(d);var day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.getFullYear(),dt.getMonth(),diff);}catch(e){return new Date();}}
+function fmtDate(d){try{var dt=new Date(d);if(isNaN(dt.getTime()))return new Date().toISOString().slice(0,10);return dt.toISOString().slice(0,10);}catch(e){return new Date().toISOString().slice(0,10);}}
+function getWeekRange(){var now=new Date();var mon=getMonday(now);mon.setDate(mon.getDate()+viewWeekOffset*7);var sun=new Date(mon);sun.setDate(sun.getDate()+6);return{start:fmtDate(mon),end:fmtDate(sun),mon:mon,sun:sun};}
+function getWeekContacts(){var who=curWho;if(!who)return[];var wr=getWeekRange();return D[who].contacts.filter(function(c){var d=c.contact_date||'';return d>=wr.start&&d<=wr.end;});}
+function changeWeek(dir){viewWeekOffset+=dir;renderContacts();}
+function goToCurrentWeek(){viewWeekOffset=0;renderContacts();}
+function renderDatePicker(selected){
+  var pk=document.getElementById('cf-date-picker');if(!pk)return;
+  var today=fmtDate(new Date());
+  if(!selected)selected=today;
+  // Afficher les 14 derniers jours
+  var h='';
+  for(var i=13;i>=0;i--){
+    var dt=new Date();dt.setDate(dt.getDate()-i);
+    var ds=fmtDate(dt);
+    var lbl=dt.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+    var isToday=ds===today;
+    var isSel=ds===selected;
+    var bg=isSel?'var(--or)':isToday?'var(--bg4)':'var(--bg3)';
+    var col=isSel?'#1a0f00':isToday?'var(--or)':'var(--txt2)';
+    var brd=isSel?'var(--or)':isToday?'var(--borderor)':'var(--border)';
+    h+='<button type="button" onclick="pickDate(\''+ds+'\')" style="background:'+bg+';color:'+col+';border:1px solid '+brd+';border-radius:6px;padding:4px 7px;font-size:10px;cursor:pointer;font-family:inherit;white-space:nowrap;">'+lbl+'</button>';
   }
+  pk.innerHTML=h;
 }
-function fmOpen(id){fmView='detail';fmCurMod=id;renderFormation();}
-function fmBack(){fmView='list';fmCurMod=null;renderFormation();}
-function fmQuiz(id,i){if(fmQA[id]!==undefined)return;fmQA[id]=i;renderFormation();}
+function pickDate(ds){
+  document.getElementById('cf-date').value=ds;
+  renderDatePicker(ds);
+}
+function toggleContactForm(){
+  var f=document.getElementById('contact-form'),b=document.getElementById('btn-add-contact');
+  if(f.style.display==='none'){f.style.display='block';b.textContent='✕ Fermer';document.getElementById('cf-edit-idx').value='-1';document.getElementById('cf-submit-btn').textContent='Enregistrer le contact';var today=fmtDate(new Date());document.getElementById('cf-date').value=today;renderDatePicker(today);}
+  else{f.style.display='none';b.textContent='+ Ajouter';resetContactForm();}
+}
+function resetContactForm(){
+  ['cf-nom','cf-secteur','cf-rdv','cf-notes','cf-relance'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('cf-date').value=fmtDate(new Date());document.getElementById('cf-edit-idx').value='-1';
+  ['cf-canal','cf-cat','cf-mandat','cf-statut'].forEach(function(id){var e=document.getElementById(id);if(e)e.selectedIndex=0;});
+}
+function editContact(idx){
+  var who=curWho;if(!who)return;var c=D[who].contacts[idx];if(!c)return;
+  document.getElementById('contact-form').style.display='block';document.getElementById('btn-add-contact').textContent='✕ Fermer';
+  document.getElementById('cf-edit-idx').value=idx;document.getElementById('cf-submit-btn').textContent='Modifier le contact';
+  document.getElementById('cf-nom').value=c.nom||'';
+  var cd=c.contact_date||fmtDate(new Date());document.getElementById('cf-date').value=cd;renderDatePicker(cd);
+  document.getElementById('cf-canal').value=c.canal||'Pige';document.getElementById('cf-cat').value=c.categorie||'Vendeur';
+  document.getElementById('cf-secteur').value=c.secteur||'';document.getElementById('cf-rdv').value=c.rdv||'';
+  document.getElementById('cf-mandat').value=c.type_man||'—';document.getElementById('cf-statut').value=c.statut||'À rappeler';
+  document.getElementById('cf-relance').value=c.relance_date||'';document.getElementById('cf-notes').value=c.notes||'';
+}
+function submitContact(){
+  var who=curWho;if(!who)return;var nom=(document.getElementById('cf-nom').value||'').trim();
+  if(!nom){alert('Le nom est requis.');return;}
+  var data={id:Date.now(),nom:nom,contact_date:document.getElementById('cf-date').value||fmtDate(new Date()),canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim()};
+  var editIdx=parseInt(document.getElementById('cf-edit-idx').value);
+  if(editIdx>=0&&editIdx<D[who].contacts.length){data.id=D[who].contacts[editIdx].id||Date.now();D[who].contacts[editIdx]=data;}else{D[who].contacts.push(data);}
+  save(who);resetContactForm();document.getElementById('contact-form').style.display='none';document.getElementById('btn-add-contact').textContent='+ Ajouter';renderContacts();renderNeg();
+}
+function contactToComp(idx){
+  var who=curWho;if(!who)return;var c=D[who].contacts[idx];if(!c)return;
+  // Basculer vers l'onglet Compromis
+  curSub='compromis';
+  document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('stab-compromis').classList.add('active');
+  document.getElementById('stc-compromis').classList.add('active');
+  renderComp();
+  // Pré-remplir le formulaire compromis avec le nom du contact + type mandat
+  var cpNom=document.getElementById('cp-nom');if(cpNom)cpNom.value=c.nom||'';
+  var cpType=document.getElementById('cp-type');if(cpType&&c.type_man&&c.type_man!=='—')cpType.value=c.type_man;
+  if(cpNom)cpNom.focus();
+}
+function delContact(who,idx){
+  if(!confirm('Êtes-vous sûr de vouloir supprimer ce contact ?'))return;
+  D[who].contacts.splice(idx,1);save(who);renderContacts();renderNeg();
+}
+function renderContacts(){
+  var who=curWho;if(!who)return;
+  var wr=getWeekRange(),opts={day:'numeric',month:'short'};
+  var wl=document.getElementById('week-label');
+  if(wl)wl.textContent=wr.mon.toLocaleDateString('fr-FR',opts)+' — '+wr.sun.toLocaleDateString('fr-FR',opts)+(viewWeekOffset===0?' (cette semaine)':'');
+  var filtered=getWeekContacts();
+  var wc=document.getElementById('week-count');
+  if(wc)wc.textContent=filtered.length+' contact'+(filtered.length>1?'s':'')+' cette semaine';
+  var sm=document.getElementById('journal-summary');
+  if(sm){var byCanal={},byStat={};filtered.forEach(function(c){byCanal[c.canal]=(byCanal[c.canal]||0)+1;byStat[c.statut]=(byStat[c.statut]||0)+1;});var h='';Object.keys(byCanal).forEach(function(k){h+='<span class="pill '+(CCLASS[k]||'ca')+'" style="font-size:9px;">'+byCanal[k]+' '+k+'</span>';});Object.keys(byStat).forEach(function(k){var sc=k==='Mandat signé'?'p-gr':k==='RDV fixé'?'p-bl':k==='Pas intéressé'?'p-re':'p-gy';h+='<span class="pill '+sc+'" style="font-size:9px;">'+byStat[k]+' '+k+'</span>';});sm.innerHTML=h||'<span style="font-size:10px;color:var(--txt3);">Aucun contact cette semaine</span>';}
+  var jt=document.getElementById('journal-title');if(jt)jt.textContent='Contacts ('+filtered.length+')';
+  var box=document.getElementById('contact-cards');if(!box)return;
+  if(!filtered.length){box.innerHTML='<div class="ct-empty">Aucun contact cette semaine — cliquez « + Ajouter »</div>';return;}
+  var sorted=filtered.slice().sort(function(a,b){return(b.contact_date||'').localeCompare(a.contact_date||'');});
+  box.innerHTML=sorted.map(function(c){
+    var realIdx=D[who].contacts.indexOf(c);
+    var cc=CCLASS[c.canal]||'ca',mc=MPC[c.type_man]||'',url=gcalUrl(c);
+    var statCol=c.statut==='Mandat signé'?'p-gr':c.statut==='RDV fixé'?'p-bl':c.statut==='RDV effectué'?'p-pu':c.statut==='Pas intéressé'?'p-re':'p-or';
+    var dateStr=c.contact_date?new Date(c.contact_date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}):'';
+    return '<div class="ct-card"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(dateStr?' <span style="font-weight:normal;font-size:10px;color:var(--txt3);">· '+dateStr+'</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div><div class="ct-card-grid"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:2px 6px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:2px 6px;margin-left:4px;">✏️</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="margin-left:4px;">×</button></div></div>';
+  }).join('');
+}
 
-// =====================================================
-// NEW: CHATBOT AI
-// =====================================================
-var CHAT_SYS="Tu es l'ASSISTANT IA MANSION AQUITAINE. Tu combines : l'ADN Mansion (SAS MANSION BORDEAUX, 69 rue Nationale Saint-André-de-Cubzac, RCS Libourne 994 896 249, carte pro CPI33012026000000004, Présidente Lisa Olivier, DG Alexis Leduc, 2 agences SAC+Langon, activités estimation/vente/achat/location/division foncière, 800 clients en 2025, plateformes SeLoger/LeBonCoin/Logic-Immo/Bien'ici/FigaroImmo/Jinka/MeilleursAgents, outils drone/vidéos immersives, Instagram @mansion_aquitaine), les meilleures techniques de vente au monde (SPIN Selling, Sandler, Feel-Felt-Found, closing par l'alternative, silence stratégique, takeaway, méthode entonnoir Mansion), et une expertise technique immobilière complète (diagnostics DPE/amiante/plomb/électricité/gaz/termites/ERP/assainissement/Carrez, compromis vs promesse, rétractation SRU 10j, préemption, plus-values, frais notaire, copropriété Alur, division foncière, urbanisme PLU). Process commercial Mansion : 1.Chasse(pige/PAP/entourage/RS) 2.Closing R1(glace→découverte→audit→solution) 3.Mandats(simple/exclusif, 3 mois, honoraires charge acquéreur, agents co non habilités à signer) 4.Suivi vendeur(rapport promotionnel 6 sections) 5.Baisse prix(données DVF) 6.Acquéreur(qualification/visite/offre/compromis). Tu réponds en français, tu es pro mais chaleureux. Tu peux faire des jeux de rôle. Tu donnes des conseils concrets.";
-var chatMsgs=[{r:'bot',t:"Bonjour ! 👋 Je suis l'assistant IA de **Mansion Aquitaine**.\n\nJe connais vos process, les meilleures techniques de vente, et tout le cadre juridique immobilier. Je peux aussi **chercher sur internet**.\n\nQue puis-je faire pour vous ?",w:false}];
-var chatInit=false,chatTyping=false;
-function initChat(){
-  if(chatInit)return;chatInit=true;
-  renderChatMsgs();
-  var sugs=['Comment closer un mandat au R1 ?','Simule un appel de pige difficile','Quels diagnostics obligatoires ?','Comment argumenter une baisse de prix ?','Rédige une annonce immobilière','Explique la méthode SPIN Selling'];
-  var sb=document.getElementById('chat-sugs-box');
-  if(sb)sb.innerHTML=sugs.map(function(s){return'<div class="chat-sug2" onclick="chatSend(\''+s.replace(/'/g,"\\'")+'\')">'+s+'</div>';}).join('');
-  document.getElementById('chat-input').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();}});
+// WEEK
+function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"></div>';}wg.innerHTML=h;renderWeekKpis();}
+
+function renderWeekKpis(){
+    var who=curWho;if(!who)return;var d=D[who];
+    var tC=d.wd.reduce(function(a,b){return a+b;},0);
+    var tR=d.wr.reduce(function(a,b){return a+b;},0);
+    var tM=d.wm.reduce(function(a,b){return a+b;},0);
+    var now=new Date(),dw=Math.max(1,now.getDay()===0?5:Math.min(now.getDay(),5)),dlt=tC-(dw*OBJ_J);
+    document.getElementById('neg-week-kpis').innerHTML=
+        '<div class="kc or"><div class="kl">Contacts semaine</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : 60</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/60*100),100)+'%;background:var(--or);"></div></div></div>'+
+        '<div class="kc bl"><div class="kl">Avance / Retard</div><div class="kv sm" style="color:'+(dlt>=0?'var(--green)':'var(--red)')+';">'+(dlt>=0?'+':'')+dlt+'</div></div>'+
+        '<div class="kc pu"><div class="kl">RDV</div><div class="kv sm" style="color:var(--pur);">'+tR+'</div></div>'+
+        '<div class="kc gr"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--green);">'+tM+'</div><div class="ks">'+(tR>0?Math.round(tM/tR*100)+'% conv.':'—')+'</div></div>';
 }
-function renderChatMsgs(){
-  var box=document.getElementById('chat-msgs-box');if(!box)return;
-  box.innerHTML=chatMsgs.map(function(m){
-    var cls=m.r==='bot'?'bot':'usr';
-    return'<div class="cmsg '+cls+'"><div class="cmsg-av">'+(m.r==='bot'?'M':'A')+'</div><div class="cmsg-bub">'+(m.w?'<div class="chat-web-badge">🌐 Web</div>':'')+fmtChat(m.t)+'</div></div>';
-  }).join('')+(chatTyping?'<div class="cmsg bot"><div class="cmsg-av">M</div><div class="cmsg-bub"><div class="ctyping"><span></span><span></span><span></span></div></div></div>':'');
-  box.scrollTop=box.scrollHeight;
+
+// COMPROMIS — avec édition et confirmation suppression
+var cpEditIdx=-1;
+function addComp(){var who=curWho;if(!who)return;var nom=document.getElementById('cp-nom').value.trim(),ttc=parseFloat(document.getElementById('cp-ttc').value);if(!nom||isNaN(ttc)||ttc<=0){alert('Nom et montant requis.');return;}
+  var data={id:Date.now(),nom:nom,ttc:ttc,type:document.getElementById('cp-type').value||'—',es:document.getElementById('cp-es').value||'entree',bin:document.getElementById('cp-bin').checked,bnom:document.getElementById('cp-bnom').value.trim(),date:new Date().toLocaleDateString('fr-FR')};
+  if(cpEditIdx>=0&&cpEditIdx<D[who].compromis.length){data.id=D[who].compromis[cpEditIdx].id||Date.now();D[who].compromis[cpEditIdx]=data;cpEditIdx=-1;}else{D[who].compromis.push(data);}
+  save(who);['cp-nom','cp-ttc','cp-bnom'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('cp-type').value='';document.getElementById('cp-bin').checked=false;renderComp();renderNeg();}
+function editComp(idx){var who=curWho;if(!who)return;var c=D[who].compromis[idx];if(!c)return;cpEditIdx=idx;
+  document.getElementById('cp-nom').value=c.nom||'';document.getElementById('cp-ttc').value=c.ttc||'';document.getElementById('cp-type').value=c.type||'';document.getElementById('cp-es').value=c.es||'entree';document.getElementById('cp-bin').checked=!!c.bin;document.getElementById('cp-bnom').value=c.bnom||'';
+  document.getElementById('cp-nom').focus();}
+function delComp(who,idx){
+  if(!confirm('Êtes-vous sûr de vouloir supprimer ce compromis ?'))return;
+  D[who].compromis.splice(idx,1);save(who);renderComp();renderNeg();
 }
-function fmtChat(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^\* (.*)/gm,'<li>$1</li>').replace(/^- (.*)/gm,'<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g,'').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
-async function chatSend(text){
-  var t=text||document.getElementById('chat-input').value;
-  if(!t||!t.trim())return;
-  chatMsgs.push({r:'user',t:t.trim()});
-  document.getElementById('chat-input').value='';
-  var sb=document.getElementById('chat-sugs-box');if(sb)sb.innerHTML='';
-  chatTyping=true;renderChatMsgs();
-  try{
-    var hist=chatMsgs.slice(-12).map(function(m){return{role:m.r==='bot'?'assistant':'user',content:m.t};});
-    var res=await fetch('https://mansion-ai-proxy.alexisleducvarta.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:CHAT_SYS,messages:hist,tools:[{type:'web_search_20250305',name:'web_search'}]})});
-    var data=await res.json();
-    var txt='',usedWeb=false;
-    if(data.content){data.content.forEach(function(b){if(b.type==='text')txt+=b.text;if(b.type==='web_search_tool_result')usedWeb=true;});}
-    if(!txt)txt="Désolé, je n'ai pas pu traiter votre demande.";
-    chatMsgs.push({r:'bot',t:txt,w:usedWeb});
-  }catch(e){chatMsgs.push({r:'bot',t:"Erreur de connexion. Réessayez.",w:false});}
-  chatTyping=false;renderChatMsgs();
+function renderComp(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who);setEl('cp-fees',fmt(st.ca));setEl('cp-com',fmt(st.com));pBar(st.ca,OBJ_FEES,'cp-pb');setEl('cp-obj-lbl','Obj. : '+fmt(OBJ_FEES)+' TTC');setEl('cp-reste',st.ca>=OBJ_FEES?'Objectif atteint !':'Reste '+fmt(Math.max(0,OBJ_FEES-st.ca)));var tb=document.getElementById('comp-tbody');if(!tb)return;if(!d.compromis.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}var h='',totCom=0,caA=0;d.compromis.forEach(function(c,i){var cv=comForWho(who,c,caA);totCom+=cv;caA+=c.ttc*(c.bin?.5:1);var mc=MPC[c.type]||'';h+='<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td style="color:var(--txt);font-weight:500;">'+escH(c.nom)+'</td><td style="color:var(--or);">'+fmt(c.ttc)+'</td><td>'+(c.type&&c.type!=='—'?'<span class="pill '+mc+'">'+c.type+'</span>':'—')+'</td><td><span class="pill '+(c.es==='entree'?'p-gr':'p-bl')+'">'+(c.es==='entree'?'E':'S')+'</span></td><td>'+(c.bin?'<span class="pill p-pu">'+escH(c.bnom||'—')+'</span>':'<span class="pill p-gy">Solo</span>')+'</td><td style="color:var(--green);font-weight:500;">'+fmt(cv)+'</td><td><button class="bs" onclick="editComp('+i+')" style="font-size:9px;padding:2px 5px;">✏️</button> <button class="bd" onclick="delComp(\''+who+'\','+i+')">×</button></td></tr>';});tb.innerHTML=h;var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='<tr><td colspan="6">TOTAL</td><td style="color:var(--green);">'+fmt(totCom)+'</td><td></td></tr>';}
+
+// INDICATEURS
+function drawMeter(id,pct,color){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext('2d');c.width=60;c.height=60;ctx.clearRect(0,0,60,60);ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,2.25*Math.PI);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();var pv=Math.min(pct/100,1);if(pv>0){ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,(.75+1.5*pv)*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();}ctx.fillStyle=color;ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.round(pct)+'%',30,30);}
+function renderPerf(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),tC=d.contacts.length,tR=d.contacts.reduce(function(s,c){return s+(c.nb_rdv||0);},0),tM=d.contacts.reduce(function(s,c){return s+(c.nb_man||0);},0),wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0),wM=d.wm.reduce(function(a,b){return a+b;},0),aC=tC+wC,aR=tR+wR,aM=tM+wM,txCR=aC>0?Math.round(aR/aC*100):0,txRM=aR>0?Math.round(aM/aR*100):0,txF=Math.round(st.ca/OBJ_FEES*100);document.getElementById('perf-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">RDV→Mandat</div><div class="kv sm" style="color:var(--green)">'+txRM+'%</div><div class="ks">'+aM+'/'+aR+'</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(OBJ_FEES)+'</div></div>';document.getElementById('perf-meters').innerHTML='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Contacts→RDV</div><canvas id="m-cr" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--or);">'+txCR+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">RDV→Mandat</div><canvas id="m-rm" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--green);">'+txRM+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Obj. honoraires</div><canvas id="m-f" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Georgia,serif;color:var(--blue);">'+txF+'%</div></div>';setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4a9c5d');drawMeter('m-f',txF,'#4a82c0');},80);var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
+
+// MENSUEL
+function renderMensuel(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),wC=d.wd.reduce(function(a,b){return a+b;},0),allC=d.contacts.length+wC,txF=Math.round(st.ca/OBJ_FEES*100),now=new Date(),jO=Math.max(1,Math.round(now.getDate()*5/7)),proj=jO>0?Math.round(st.ca/jO*21):0;document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC</div><div class="kv gold">'+fmt(st.ca)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">Commission</div><div class="kv sm" style="color:var(--blue)">'+fmt(st.com)+'</div></div><div class="kc gr"><div class="kl">Contacts mois</div><div class="kv sm" style="color:var(--green)">'+allC+'</div></div><div class="kc pu"><div class="kl">Projection</div><div class="kv sm" style="color:var(--pur)">'+fmt(proj)+'</div></div>';var ma=document.getElementById('mens-alerts');if(ma){ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-st.ca))+'</div>';}if(charts.mens){charts.mens.destroy();charts.mens=null;}var mc=document.getElementById('mens-chart');if(mc){charts.mens=new Chart(mc,{type:'bar',data:{labels:JNOMS,datasets:[{label:'Contacts',data:d.wd.slice(),backgroundColor:COLORS[who]+'88',borderColor:COLORS[who],borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(5).fill(OBJ_J),type:'line',borderColor:'rgba(201,168,76,.5)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+
+// PROSPECTION
+function renderProsp(){var tC=0,tR=0,tM=0;ALL.forEach(function(w){var d=D[w];tC+=d.wd.reduce(function(a,b){return a+b;},0);tR+=d.wr.reduce(function(a,b){return a+b;},0);tM+=d.wm.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var d=D[w],tot=d.wd.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+d.wd.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+JNOMS.map(function(_,i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(D[w].wd[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return D[w].wd.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+
+// PIPELINE — avec confirmation suppression
+// PIPELINE — filtre par mois
+var pipeMonthOffset=null; // null = tous, 0 = mois courant, -1 = mois dernier...
+function changePipeMonth(dir){if(pipeMonthOffset===null)pipeMonthOffset=0;pipeMonthOffset+=dir;renderPipeline();}
+function resetPipeMonth(){pipeMonthOffset=null;renderPipeline();}
+function getPipeMonthRange(){
+  if(pipeMonthOffset===null)return null;
+  var now=new Date();var m=new Date(now.getFullYear(),now.getMonth()+pipeMonthOffset,1);
+  var end=new Date(m.getFullYear(),m.getMonth()+1,0);
+  return{start:fmtDate(m),end:fmtDate(end),label:m.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})};
+}
+function getFilteredDossiers(){
+  var mr=getPipeMonthRange();
+  if(!mr)return dossiers;
+  return dossiers.filter(function(d){var cd=d.createdAt||'';return cd>=mr.start&&cd<=mr.end;});
+}
+function openModal(){resetPanel();openPanel();}
+function openPanel(){document.getElementById('slide-overlay').classList.add('open');document.getElementById('slide-panel').classList.add('open');}
+function closeModal(){closePanel();}
+function closePanel(){document.getElementById('slide-overlay').classList.remove('open');document.getElementById('slide-panel').classList.remove('open');}
+function savePanel(){
+  var ref=(document.getElementById('md-ref')||{}).value||'';
+  if(!ref.trim()){alert('Référence requise.');return;}
+  var editId=parseInt((document.getElementById('md-edit-id')||{}).value||'0');
+  var data={
+    id:editId||Date.now(),
+    ref:ref.trim(),
+    neg:document.getElementById('md-neg').value,
+    fee:parseFloat(document.getElementById('md-fee').value)||0,
+    dateComp:document.getElementById('md-dcomp').value,
+    dateActe:document.getElementById('md-dacte').value,
+    stage:document.getElementById('md-stage').value,
+    notes:document.getElementById('md-notes').value.trim(),
+    client:(document.getElementById('md-client').value||'').trim(),
+    tel:(document.getElementById('md-tel').value||'').trim(),
+    email:(document.getElementById('md-email').value||'').trim(),
+    notaire:(document.getElementById('md-notaire').value||'').trim(),
+    adresse:(document.getElementById('md-adresse').value||'').trim(),
+    createdAt:fmtDate(new Date()),
+    encaisse:false
+  };
+  if(editId){
+    // Édition : préserver createdAt et encaisse
+    var existing=dossiers.find(function(x){return x.id===editId;});
+    if(existing){data.createdAt=existing.createdAt||data.createdAt;data.encaisse=existing.encaisse;
+      dossiers=dossiers.map(function(x){return x.id===editId?data:x;});
+    }
+  } else {
+    dossiers.push(data);
+  }
+  saveDoss();closePanel();resetPanel();renderPipeline();
+}
+function resetPanel(){
+  ['md-ref','md-fee','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var eid=document.getElementById('md-edit-id');if(eid)eid.value='';
+  var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Nouveau dossier';
+  var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Enregistrer';
+}
+function editDoss(id){
+  var d=dossiers.find(function(x){return x.id===id;});if(!d)return;
+  openPanel();
+  document.getElementById('md-edit-id').value=id;
+  document.getElementById('md-ref').value=d.ref||'';
+  document.getElementById('md-neg').value=d.neg||'Swan Dumas';
+  document.getElementById('md-fee').value=d.fee||'';
+  document.getElementById('md-stage').value=d.stage||'mandat';
+  document.getElementById('md-dcomp').value=d.dateComp||'';
+  document.getElementById('md-dacte').value=d.dateActe||'';
+  document.getElementById('md-client').value=d.client||'';
+  document.getElementById('md-tel').value=d.tel||'';
+  document.getElementById('md-email').value=d.email||'';
+  document.getElementById('md-notaire').value=d.notaire||'';
+  document.getElementById('md-adresse').value=d.adresse||'';
+  document.getElementById('md-notes').value=d.notes||'';
+  var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Modifier le dossier';
+  var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Mettre à jour';
+}
+function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
+function renderPipeline(){
+  var filtered=getFilteredDossiers();
+  var mr=getPipeMonthRange();
+  var ml=document.getElementById('pipe-month-label');
+  if(ml)ml.textContent=mr?mr.label:'Tous les mois';
+  var mc=document.getElementById('pipe-month-count');
+  if(mc)mc.textContent=filtered.length+' dossier'+(filtered.length>1?'s':'')+(mr?' en '+mr.label:'');
+  var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};
+  filtered.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});
+  document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';
+  var board=document.getElementById('kanban-board');if(!board)return;
+  board.innerHTML=STAGES.map(function(stage){
+    var items=filtered.filter(function(d){return d.stage===stage;});
+    var cards=items.map(function(d){
+      var next=STAGES[STAGES.indexOf(stage)+1];
+      var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';
+      var coords='';
+      if(d.client)coords+='<div style="font-size:9px;color:var(--txt2);margin-top:3px;">👤 '+escH(d.client)+'</div>';
+      if(d.tel)coords+='<div style="font-size:9px;color:var(--txt3);">📞 '+escH(d.tel)+'</div>';
+      if(d.email)coords+='<div style="font-size:9px;color:var(--txt3);">✉️ '+escH(d.email)+'</div>';
+      if(d.notaire)coords+='<div style="font-size:9px;color:var(--txt3);">⚖️ '+escH(d.notaire)+'</div>';
+      if(d.adresse)coords+='<div style="font-size:9px;color:var(--txt3);">📍 '+escH(d.adresse)+'</div>';
+      var dateInfo=d.createdAt?'<div style="font-size:8px;color:var(--txt3);margin-top:2px;">Créé le '+new Date(d.createdAt+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div>':'';
+      var prev=STAGES[STAGES.indexOf(stage)-1];
+      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+    }).join('');
+    return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';
+  }).join('');
+}
+function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;saveDoss();renderPipeline();}}
+function delDoss(id){
+  if(!confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?'))return;
+  dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();
+}
+
+// ALEXIS
+function renderAlexis(){var who='alexis',d=D[who],st=getStats(who);var tct=document.getElementById('al-tab-content');if(!tct)return;var todayCt=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0);tct.innerHTML='<div class="kg k4"><div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' TTC</div></div><div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'/'+OBJ_J+'</div></div><div class="kc gr"><div class="kl">RDV semaine</div><div class="kv sm" style="color:var(--green)">'+wR+'</div></div><div class="kc pu"><div class="kl">Contacts semaine</div><div class="kv sm" style="color:var(--pur)">'+wC+'</div></div></div><div class="stitle">Données identiques aux autres négociateurs — sélectionnez Alexis dans la sidebar pour accéder à son journal complet.</div>';}
+
+// DIRECTION
+function renderDir(){var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/OBJ_FEES*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+
+// --- EXPORT CSV ---
+function exportCSV(){
+  var sep=';';
+  var lines=['Collaborateur'+sep+'Contrat'+sep+'Référence'+sep+'Honoraires TTC'+sep+'Type mandat'+sep+'Entrée/Sortie'+sep+'Binôme'+sep+'Nom binôme'+sep+'Commission'+sep+'Date'];
+  ALL.forEach(function(who){
+    var d=D[who],caA=0;
+    d.compromis.forEach(function(c){
+      var cv=comForWho(who,c,caA);
+      caA+=c.ttc*(c.bin?.5:1);
+      lines.push('"'+NAMES[who]+'"'+sep+'"'+CONTRATS[who]+'"'+sep+'"'+(c.nom||'').replace(/"/g,'""')+'"'+sep+(c.ttc||0)+sep+'"'+(c.type||'—')+'"'+sep+(c.es==='entree'?'Entrée':'Sortie')+sep+(c.bin?'Oui':'Non')+sep+'"'+(c.bnom||'').replace(/"/g,'""')+'"'+sep+Math.round(cv)+sep+'"'+(c.date||'')+'"');
+    });
+  });
+  var blob=new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='Mansion_Compromis_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
 // INIT
-// SEED HISTORICAL DATA (runs once, checks flag in Firebase)
-function seedHistoricalData(){
-  db.ref('mansion/seeded_v2').once('value').then(function(snap){
-    if(snap.val())return; // Already seeded
-    var hist={
-      alexis:[
-        {id:1001,nom:'Leyteire 12,5K',ttc:12500,type:'—',es:'entree',bin:false,bnom:'',date:'15/01/2026',dateComp:'2026-01-15',dateActe:'2026-04-15'},
-        {id:1002,nom:'Leyteire T4 7,5K',ttc:7500,type:'—',es:'entree',bin:false,bnom:'',date:'15/02/2026',dateComp:'2026-02-15',dateActe:'2026-04-08'},
-        {id:1003,nom:'Lesage Mérignac 6,5K',ttc:6500,type:'—',es:'entree',bin:false,bnom:'',date:'28/02/2026',dateComp:'2026-02-28',dateActe:''},
-        {id:1004,nom:'Leyteire T2 4375',ttc:4375,type:'—',es:'entree',bin:false,bnom:'',date:'15/03/2026',dateComp:'2026-03-15',dateActe:'2026-04-15'},
-        {id:1005,nom:'Leyteire Combles 4500',ttc:4500,type:'—',es:'entree',bin:false,bnom:'',date:'20/03/2026',dateComp:'2026-03-20',dateActe:'2026-04-20'}
-      ],
-      nicolas:[
-        {id:2001,nom:'Carbon Blanc 7K',ttc:7000,type:'—',es:'entree',bin:false,bnom:'',date:'10/02/2026',dateComp:'2026-02-10',dateActe:''},
-        {id:2002,nom:'Maison St Loubès 9,5K',ttc:9500,type:'—',es:'entree',bin:false,bnom:'',date:'20/02/2026',dateComp:'2026-02-20',dateActe:''},
-        {id:2003,nom:'Terrain St Gervais 13K',ttc:13000,type:'—',es:'entree',bin:false,bnom:'',date:'25/02/2026',dateComp:'2026-02-25',dateActe:''},
-        {id:2004,nom:'Izon 7,5K',ttc:7500,type:'—',es:'entree',bin:false,bnom:'',date:'10/03/2026',dateComp:'2026-03-10',dateActe:''},
-        {id:2005,nom:'Nicolas Mars sous offre 15K',ttc:15000,type:'—',es:'entree',bin:false,bnom:'',date:'20/03/2026',dateComp:'2026-03-20',dateActe:''}
-      ],
-      thibault:[
-        {id:3001,nom:'Biran Cenon 9K',ttc:9000,type:'—',es:'entree',bin:false,bnom:'',date:'17/02/2026',dateComp:'2026-02-17',dateActe:''},
-        {id:3002,nom:'Biran Cenon plateau 10K',ttc:10000,type:'—',es:'entree',bin:false,bnom:'',date:'25/02/2026',dateComp:'2026-02-25',dateActe:''},
-        {id:3003,nom:'Leyteire T4 7,5K',ttc:7500,type:'—',es:'entree',bin:false,bnom:'',date:'15/02/2026',dateComp:'2026-02-15',dateActe:'2026-04-08'},
-        {id:3004,nom:'Sophie 6,5K',ttc:6500,type:'—',es:'entree',bin:false,bnom:'',date:'20/02/2026',dateComp:'2026-02-20',dateActe:'2026-04-15'},
-        {id:3005,nom:'Lesage Mérignac 6,5K',ttc:6500,type:'—',es:'entree',bin:false,bnom:'',date:'28/02/2026',dateComp:'2026-02-28',dateActe:''},
-        {id:3006,nom:'Izon 7,5K',ttc:7500,type:'—',es:'entree',bin:false,bnom:'',date:'10/03/2026',dateComp:'2026-03-10',dateActe:''},
-        {id:3007,nom:'Leyteire T2 4375',ttc:4375,type:'—',es:'entree',bin:false,bnom:'',date:'15/03/2026',dateComp:'2026-03-15',dateActe:''},
-        {id:3008,nom:'Leyteire Combles 4500',ttc:4500,type:'—',es:'entree',bin:false,bnom:'',date:'20/03/2026',dateComp:'2026-03-20',dateActe:''}
-      ],
-      pauline:[
-        {id:4001,nom:'Sophie 6,5K',ttc:6500,type:'—',es:'entree',bin:false,bnom:'',date:'20/02/2026',dateComp:'2026-02-20',dateActe:'2026-04-15'}
-      ],
-      swan:[
-        {id:5001,nom:'Rions 4K',ttc:4000,type:'—',es:'entree',bin:false,bnom:'',date:'15/03/2026',dateComp:'2026-03-15',dateActe:''}
-      ]
-    };
-    // Inject into each agent, avoiding duplicates by checking existing ids
-    Object.keys(hist).forEach(function(who){
-      if(!D[who])D[who]=mkE();
-      var existingIds={};
-      (D[who].compromis||[]).forEach(function(c){existingIds[c.id]=true;});
-      hist[who].forEach(function(c){
-        if(!existingIds[c.id]){
-          D[who].compromis.push(c);
-          // Also add to pipeline
-          dossiers.push({id:c.id,ref:c.nom,neg:NAMES[who],fee:c.ttc,dateComp:c.dateComp||'',dateActe:c.dateActe||'',stage:'compromis',notes:'Import historique',encaisse:false});
-        }
-      });
-      save(who);
-    });
-    saveDoss();
-    db.ref('mansion/seeded_v2').set(true);
-    console.log('Historical data seeded successfully!');
-    setTimeout(function(){location.reload();},1000);
-  });
-}
 loadAll();
-setTimeout(seedHistoricalData,2000);
 </script>
 </body>
 </html>
