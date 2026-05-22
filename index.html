@@ -1094,19 +1094,28 @@ function uploadFiles(files){
   })(files[i]);}
 }
 function findMatchingDossiers(filename,pdfContent){
+  // Mots à ignorer car trop génériques en immobilier
+  var STOP=['maison','appartement','studio','t1','t2','t3','t4','t5','vente','achat','mandat','compromis','acte','diagnostic','diagnostics','dpe','attestation','document','ddt','rue','avenue','boulevard','place','impasse','chemin','allee','allée','dossier','vendeur','acquereur','acquéreur','proprietaire','propriétaire','client','monsieur','madame','mme','mr','mlle','jpg','jpeg','png','pdf','docx','doc','signe','signé','final','version','copie','scan','st','saint','sainte','ste','le','la','les','de','des','du','et','en','par','pour','sur','avec','aux','au','un','une','dans','chez','sous'];
   // Combine nom de fichier + contenu PDF pour matcher
   var searchSpace=normalizeName((filename.replace(/\.[^.]+$/,'').replace(/[_-]/g,' '))+' '+(pdfContent||''));
+  // Extraire les mots significatifs du searchSpace (>3 chars et pas dans STOP)
+  var searchWords=searchSpace.split(/\s+/).filter(function(w){return w.length>=4&&STOP.indexOf(w)<0;});
+  var searchSet={};searchWords.forEach(function(w){searchSet[w]=true;});
+  
   return dossiers.map(function(d){
-    var hay=normalizeName((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||'')+' '+(d.neg||''));
-    // Découper le dossier en mots-clés et chercher chacun dans searchSpace
-    var keywords=hay.split(' ').filter(function(w){return w.length>3;});
+    var dosKeys=normalizeName((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||''));
+    var dosWords=dosKeys.split(/\s+/).filter(function(w){return w.length>=4&&STOP.indexOf(w)<0;});
     var score=0;
-    keywords.forEach(function(w){if(searchSpace.indexOf(w)>=0)score++;});
-    // Bonus si le client OU la ref apparaît tel quel dans le contenu
-    if(d.client&&searchSpace.indexOf(normalizeName(d.client))>=0)score+=3;
-    if(d.ref&&searchSpace.indexOf(normalizeName(d.ref))>=0)score+=2;
-    return{dossier:d,id:d.id,score:score};
-  }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,3);
+    var matched=[];
+    dosWords.forEach(function(w){if(searchSet[w]){score+=1;matched.push(w);}});
+    // Bonus si le client OU la ref apparaît tel quel dans le contenu (nom complet)
+    if(d.client){var cn=normalizeName(d.client);if(cn.length>3&&searchSpace.indexOf(cn)>=0)score+=5;}
+    if(d.ref){var rn=normalizeName(d.ref);if(rn.length>4&&searchSpace.indexOf(rn)>=0)score+=4;}
+    // Bonus code postal (5 chiffres consécutifs)
+    var cpMatch=dosKeys.match(/\b(\d{5})\b/);
+    if(cpMatch&&searchSpace.indexOf(cpMatch[1])>=0)score+=3;
+    return{dossier:d,id:d.id,score:score,matched:matched};
+  }).filter(function(x){return x.score>=2;}).sort(function(a,b){return b.score-a.score;}).slice(0,3); // Min score 2
 }
 var pendingFiles=[];
 if(db){
@@ -1136,7 +1145,7 @@ function renderFiles(){
         '</div>'+
         (suggested.length?'<div style="font-size:10px;color:var(--green);margin-bottom:4px;">✨ Matching suggéré :</div>':'<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Aucune correspondance auto — choisissez :</div>')+
         suggested.map(function(d){return'<button class="bs" onclick="assignFileToDoss(\''+f._key+'\','+d.id+')" style="font-size:10px;padding:3px 8px;margin:2px 4px 2px 0;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">✅ '+escH(d.ref)+' ('+escH(d.neg)+')</button>';}).join('')+
-        '<div style="margin-top:4px;"><input type="text" placeholder="🔍 Tapez pour chercher un dossier..." oninput="filterFileDoss(this.value,\''+f._key+'\')" onfocus="this.nextElementSibling.style.display=\'block\'" class="ci" style="margin:0;padding:4px 8px;font-size:10px;"><div id="ddoss-'+f._key+'" style="max-height:220px;overflow-y:auto;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px;display:none;margin-top:3px;"></div></div>'+
+        '<div style="margin-top:4px;"><input type="text" placeholder="🔍 Tapez 2 lettres pour chercher un dossier..." oninput="filterFileDoss(this.value,\''+f._key+'\')" onclick="filterFileDoss(this.value,\''+f._key+'\')" class="ci" style="margin:0;padding:4px 8px;font-size:10px;"><div id="ddoss-'+f._key+'" style="max-height:220px;overflow-y:auto;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px;display:none;margin-top:3px;"></div></div>'+
       '</div>';
     }).join('');
   }
