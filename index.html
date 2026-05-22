@@ -446,6 +446,20 @@ try {
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+<script>
+// Configurer PDF.js worker
+if(typeof window!=='undefined'){
+  window.addEventListener('load',function(){
+    try{
+      var script=document.createElement('script');
+      script.type='module';
+      script.textContent='import * as pdfjs from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs"; pdfjs.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs"; window.pdfjsLib = pdfjs;';
+      document.head.appendChild(script);
+    }catch(e){console.warn('PDF.js setup error',e);}
+  });
+}
+</script>
 <script>
 // --- THEME NUIT / JOUR ---
 if(localStorage.getItem('mansion-theme') === 'light') { document.body.classList.add('light-theme'); }
@@ -1045,27 +1059,52 @@ function handleFileSelect(evt){
   uploadFiles(files);
   evt.target.value=''; // reset
 }
+async function extractPdfText(file){
+  if(!window.pdfjsLib)return '';
+  try{
+    var arrayBuffer=await file.arrayBuffer();
+    var pdf=await window.pdfjsLib.getDocument({data:arrayBuffer}).promise;
+    var text='';
+    var pages=Math.min(pdf.numPages,5); // 5 premières pages max
+    for(var i=1;i<=pages;i++){
+      var page=await pdf.getPage(i);
+      var content=await page.getTextContent();
+      text+=content.items.map(function(it){return it.str;}).join(' ')+' ';
+    }
+    return text.substring(0,3000); // 3000 caractères max
+  }catch(e){console.warn('PDF extract error',e);return '';}
+}
 function uploadFiles(files){
   if(!storageRef){alert('Firebase Storage non configuré — voir l\'aide.');return;}
   for(var i=0;i<files.length;i++){(function(f){
     if(f.size>10*1024*1024){alert(f.name+' dépasse 10 MB');return;}
     var path='mansion/files/'+Date.now()+'_'+f.name;
     var task=storageRef.child(path).put(f);
-    task.then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
-      var matches=findMatchingDossiers(f.name);
-      var meta={id:Date.now()+Math.random(),name:f.name,size:f.size,path:path,url:url,uploadedAt:fmtDate(new Date()),matchedDossierId:null,suggestedMatches:matches.map(function(m){return m.id;})};
+    var pdfText='';
+    var pdfPromise=f.type==='application/pdf'?extractPdfText(f):Promise.resolve('');
+    Promise.all([task,pdfPromise]).then(function(results){
+      pdfText=results[1]||'';
+      return results[0].ref.getDownloadURL();
+    }).then(function(url){
+      var matches=findMatchingDossiers(f.name,pdfText);
+      var meta={id:Date.now()+Math.random(),name:f.name,size:f.size,path:path,url:url,uploadedAt:fmtDate(new Date()),matchedDossierId:null,suggestedMatches:matches.map(function(m){return m.id;}),contentPreview:pdfText.substring(0,200)};
       if(!db)return;
       db.ref('mansion/pendingFiles').push(meta).then(function(){renderFiles();});
     }).catch(function(e){alert('Erreur upload '+f.name+': '+e.message);});
   })(files[i]);}
 }
-function findMatchingDossiers(filename){
-  var name=normalizeName(filename.replace(/\.[^.]+$/,'').replace(/[_-]/g,' '));
-  var words=name.split(' ').filter(function(w){return w.length>2;});
+function findMatchingDossiers(filename,pdfContent){
+  // Combine nom de fichier + contenu PDF pour matcher
+  var searchSpace=normalizeName((filename.replace(/\.[^.]+$/,'').replace(/[_-]/g,' '))+' '+(pdfContent||''));
   return dossiers.map(function(d){
-    var hay=normalizeName((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||''));
+    var hay=normalizeName((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||'')+' '+(d.neg||''));
+    // Découper le dossier en mots-clés et chercher chacun dans searchSpace
+    var keywords=hay.split(' ').filter(function(w){return w.length>3;});
     var score=0;
-    words.forEach(function(w){if(hay.indexOf(w)>=0)score++;});
+    keywords.forEach(function(w){if(searchSpace.indexOf(w)>=0)score++;});
+    // Bonus si le client OU la ref apparaît tel quel dans le contenu
+    if(d.client&&searchSpace.indexOf(normalizeName(d.client))>=0)score+=3;
+    if(d.ref&&searchSpace.indexOf(normalizeName(d.ref))>=0)score+=2;
     return{dossier:d,id:d.id,score:score};
   }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,3);
 }
@@ -1092,12 +1131,12 @@ function renderFiles(){
       var sizeKb=Math.round((f.size||0)/1024);
       return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:6px;">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'+
-          '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);font-size:12px;font-weight:500;text-decoration:none;">📄 '+escH(f.name)+'</a><div style="font-size:9px;color:var(--txt3);">'+sizeKb+' Ko · '+escH(f.uploadedAt||'')+'</div></div>'+
+          '<div><a href="'+f.url+'" target="_blank" style="color:var(--or);font-size:12px;font-weight:500;text-decoration:none;">📄 '+escH(f.name)+'</a><div style="font-size:9px;color:var(--txt3);">'+sizeKb+' Ko · '+escH(f.uploadedAt||'')+(f.contentPreview?' · 🔍 Contenu lu':'')+'</div></div>'+
           '<div style="display:flex;gap:4px;"><a href="'+f.url+'" target="_blank" class="bs" style="font-size:10px;text-decoration:none;">Voir</a><button class="bd" onclick="deletePendingFile(\''+f._key+'\')">×</button></div>'+
         '</div>'+
         (suggested.length?'<div style="font-size:10px;color:var(--green);margin-bottom:4px;">✨ Matching suggéré :</div>':'<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Aucune correspondance auto — choisissez :</div>')+
         suggested.map(function(d){return'<button class="bs" onclick="assignFileToDoss(\''+f._key+'\','+d.id+')" style="font-size:10px;padding:3px 8px;margin:2px 4px 2px 0;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">✅ '+escH(d.ref)+' ('+escH(d.neg)+')</button>';}).join('')+
-        '<select onchange="if(this.value)assignFileToDoss(\''+f._key+'\',parseInt(this.value));" class="ci" style="margin:4px 0 0;padding:4px 6px;font-size:10px;width:auto;"><option value="">Choisir un autre dossier...</option>'+dossiers.map(function(d){return'<option value="'+d.id+'">'+escH(d.ref)+' — '+escH(d.neg)+'</option>';}).join('')+'</select>'+
+        '<div style="margin-top:4px;"><input type="text" placeholder="🔍 Tapez pour chercher un dossier..." oninput="filterFileDoss(this.value,\''+f._key+'\')" onfocus="this.nextElementSibling.style.display=\'block\'" class="ci" style="margin:0;padding:4px 8px;font-size:10px;"><div id="ddoss-'+f._key+'" style="max-height:220px;overflow-y:auto;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px;display:none;margin-top:3px;"></div></div>'+
       '</div>';
     }).join('');
   }
@@ -1112,6 +1151,33 @@ function renderFiles(){
       '</div>';
     }).join('');
   }
+  box.innerHTML=h;
+}
+function filterFileDoss(query,fileKey){
+  var box=document.getElementById('ddoss-'+fileKey);if(!box)return;
+  box.style.display='block';
+  var q=(query||'').toLowerCase().trim();
+  // Filtrer
+  var filtered=dossiers.filter(function(d){
+    if(!q)return true;
+    var hay=((d.ref||'')+' '+(d.neg||'')+' '+(d.client||'')+' '+(d.adresse||'')).toLowerCase();
+    return hay.indexOf(q)>=0;
+  });
+  if(!filtered.length){box.innerHTML='<div style="padding:8px;color:var(--txt3);font-size:10px;text-align:center;">Aucun dossier trouvé</div>';return;}
+  // Grouper par négociateur
+  var groups={};
+  filtered.forEach(function(d){var k=d.neg||'?';if(!groups[k])groups[k]=[];groups[k].push(d);});
+  var h='';
+  Object.keys(groups).sort().forEach(function(neg){
+    var key=ALL.find(function(w){return NAMES[w]===neg;})||'swan';
+    var col=COLORS[key]||'var(--or)';
+    h+='<div style="margin-bottom:4px;"><div style="font-size:9px;color:'+col+';font-weight:500;text-transform:uppercase;padding:3px 6px;border-bottom:1px solid var(--border);">'+escH(neg)+' ('+groups[neg].length+')</div>';
+    h+=groups[neg].map(function(d){
+      var stageCol=STAGE_COL[d.stage]||'var(--txt3)';
+      return'<div onclick="assignFileToDoss(\''+fileKey+'\','+d.id+')" style="padding:5px 8px;cursor:pointer;border-radius:4px;font-size:10px;display:flex;justify-content:space-between;align-items:center;gap:6px;" onmouseover="this.style.background=\'var(--bg4)\'" onmouseout="this.style.background=\'transparent\'"><span style="color:var(--txt);">'+escH(d.ref)+'</span><span style="font-size:9px;color:'+stageCol+';white-space:nowrap;">'+escH(STAGE_LBL[d.stage]||'')+'</span></div>';
+    }).join('');
+    h+='</div>';
+  });
   box.innerHTML=h;
 }
 function assignFileToDoss(fileKey,dossId){
