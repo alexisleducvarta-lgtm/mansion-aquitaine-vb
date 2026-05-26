@@ -333,7 +333,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="subtab-content" id="stc-semaine"><div class="wr" id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
   <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
   <div class="subtab-content" id="stc-perf"><div class="kg k4" id="perf-kpis"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.8rem;" id="perf-meters"></div><div id="perf-alerts"></div></div>
-  <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw"><div class="cwt">Contacts semaine vs objectif</div><div style="position:relative;width:100%;height:175px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-alerts"></div></div>
+  <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw" style="margin-top:8px;"><div class="cwt">Évolution 12 derniers mois — Contacts, RDV vendeurs, Mandats</div><div style="position:relative;width:100%;height:200px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-history"></div><div id="mens-alerts" style="margin-top:8px;"></div></div>
 </div>
 
 <div class="pg" id="pg-pipeline">
@@ -967,7 +967,98 @@ setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4
 var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
 
 // MENSUEL
-function renderMensuel(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who),wC=d.wd.reduce(function(a,b){return a+b;},0),allC=d.contacts.length+wC,txF=Math.round(st.ca/OBJ_FEES*100),now=new Date(),jO=Math.max(1,Math.round(now.getDate()*5/7)),proj=jO>0?Math.round(st.ca/jO*21):0;document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC</div><div class="kv gold">'+fmt(st.ca)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">Commission</div><div class="kv sm" style="color:var(--blue)">'+fmt(st.com)+'</div></div><div class="kc gr"><div class="kl">Contacts mois</div><div class="kv sm" style="color:var(--green)">'+allC+'</div></div><div class="kc pu"><div class="kl">Projection</div><div class="kv sm" style="color:var(--pur)">'+fmt(proj)+'</div></div>';var ma=document.getElementById('mens-alerts');if(ma){ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-st.ca))+'</div>';}if(charts.mens){charts.mens.destroy();charts.mens=null;}var mc=document.getElementById('mens-chart');if(mc){charts.mens=new Chart(mc,{type:'bar',data:{labels:JNOMS,datasets:[{label:'Contacts',data:d.wd.slice(),backgroundColor:COLORS[who]+'88',borderColor:COLORS[who],borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(5).fill(OBJ_J),type:'line',borderColor:'rgba(201,168,76,.5)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderMensuel(){
+  var who=curWho;if(!who)return;
+  var d=D[who],st=getStats(who);
+  var now=new Date();
+  // 1. KPIs MOIS EN COURS (vrais chiffres du mois)
+  var ms=getCurrentMonthStats(who);
+  var ob=getObjForMonth(who,ms.yearMonth);
+  // Compter contacts du mois (Journal + Semaine si existe pour ce mois — pour simplifier on prend que le Journal historique pour les vrais mois)
+  var monthStart=ms.yearMonth+'-01';
+  var nextMonth=new Date(now.getFullYear(),now.getMonth()+1,1);
+  var monthEnd=fmtDate(new Date(nextMonth.getTime()-86400000));
+  var monthContacts=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=monthStart&&cd<=monthEnd;});
+  // Compromis du mois (encaissés via dossiers Pipeline ou compromis Journal historique)
+  var monthFees=0;
+  dossiers.forEach(function(dos){
+    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=monthStart&&dos.createdAt<=monthEnd){
+      var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+      if(isNeg||isNeg2)monthFees+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+    }
+  });
+  var txF=Math.round(monthFees/OBJ_FEES*100);
+  var monthLabel=new Date(monthStart+'T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC '+monthLabel+'</div><div class="kv gold">'+fmt(monthFees)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div>'+
+    '<div class="kc bl"><div class="kl">Contacts ce mois</div><div class="kv sm" style="color:var(--blue)">'+monthContacts.length+'</div></div>'+
+    '<div class="kc gr"><div class="kl">RDV vendeurs</div><div class="kv sm" style="color:var(--green)">'+ms.rdv_vendeurs+'</div>'+(ob?'<div class="ks">Obj. : '+ob.rdv_vendeurs+'</div>':'')+'</div>'+
+    '<div class="kc pu"><div class="kl">Mandats signés</div><div class="kv sm" style="color:var(--pur)">'+ms.mandats+'</div>'+(ob?'<div class="ks">Obj. : '+ob.mandats+'</div>':'')+'</div>';
+  // 2. HISTORIQUE 12 MOIS (récap mois par mois)
+  var historyHtml='<div class="stitle" style="margin-top:12px;">Historique mois par mois (12 derniers mois)</div>';
+  historyHtml+='<div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Mois</th><th>Contacts</th><th>RDV vendeurs</th><th>Mandats</th><th>Honos TTC</th><th>Objectif</th><th>%</th></tr></thead><tbody>';
+  for(var i=0;i<12;i++){
+    var dt=new Date(now.getFullYear(),now.getMonth()-i,1);
+    var ym=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    var ms2_start=ym+'-01';
+    var nm=new Date(dt.getFullYear(),dt.getMonth()+1,1);
+    var ms2_end=fmtDate(new Date(nm.getTime()-86400000));
+    var mc=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms2_start&&cd<=ms2_end;});
+    var mRdv=mc.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+    var mMan=mc.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+    var mFee=0;
+    dossiers.forEach(function(dos){
+      if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms2_start&&dos.createdAt<=ms2_end){
+        var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+        if(isNeg||isNeg2)mFee+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+      }
+    });
+    var mObj=getObjForMonth(who,ym);
+    var objFee=mObj&&mObj.compromis_ttc?mObj.compromis_ttc:OBJ_FEES;
+    var pct=objFee>0?Math.round(mFee/objFee*100):0;
+    var pctCol=pct>=100?'var(--green)':pct>=70?'var(--or)':pct>0?'var(--red)':'var(--txt3)';
+    var isCurrent=ym===ms.yearMonth;
+    var rowBg=isCurrent?'background:var(--orl);':'';
+    historyHtml+='<tr style="'+rowBg+'"><td style="color:'+(isCurrent?'var(--or)':'var(--txt2)')+';font-weight:'+(isCurrent?'500':'400')+';">'+dt.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})+(isCurrent?' (en cours)':'')+'</td><td>'+mc.length+'</td><td>'+mRdv+(mObj?'/'+mObj.rdv_vendeurs:'')+'</td><td>'+mMan+(mObj?'/'+mObj.mandats:'')+'</td><td style="color:var(--or);">'+fmt(mFee)+'</td><td style="font-size:10px;color:var(--txt3);">'+fmt(objFee)+'</td><td style="color:'+pctCol+';font-weight:500;">'+pct+'%</td></tr>';
+  }
+  historyHtml+='</tbody></table></div></div>';
+  // 3. GRAPHIQUE 12 MOIS
+  document.getElementById('mens-history').innerHTML=historyHtml;
+  // Calculer les datasets pour le graphique
+  var months12=[];var contactsArr=[];var rdvArr=[];var manArr=[];var feeArr=[];
+  for(var j=11;j>=0;j--){
+    var dt2=new Date(now.getFullYear(),now.getMonth()-j,1);
+    var ym2=dt2.getFullYear()+'-'+String(dt2.getMonth()+1).padStart(2,'0');
+    months12.push(dt2.toLocaleDateString('fr-FR',{month:'short'}));
+    var ms3_start=ym2+'-01';
+    var nm2=new Date(dt2.getFullYear(),dt2.getMonth()+1,1);
+    var ms3_end=fmtDate(new Date(nm2.getTime()-86400000));
+    var mc2=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms3_start&&cd<=ms3_end;});
+    contactsArr.push(mc2.length);
+    rdvArr.push(mc2.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length);
+    manArr.push(mc2.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length);
+    var f2=0;
+    dossiers.forEach(function(dos){
+      if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms3_start&&dos.createdAt<=ms3_end){
+        var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+        if(isNeg||isNeg2)f2+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+      }
+    });
+    feeArr.push(f2);
+  }
+  if(charts.mens){charts.mens.destroy();charts.mens=null;}
+  var mc2=document.getElementById('mens-chart');
+  if(mc2){
+    charts.mens=new Chart(mc2,{type:'bar',data:{labels:months12,datasets:[
+      {label:'Contacts',data:contactsArr,backgroundColor:COLORS[who]+'66',borderColor:COLORS[who],borderWidth:1,borderRadius:4,yAxisID:'y'},
+      {label:'RDV vendeurs',data:rdvArr,backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:4,yAxisID:'y'},
+      {label:'Mandats',data:manArr,backgroundColor:'rgba(122,108,192,.5)',borderColor:'#7a6cc0',borderWidth:1,borderRadius:4,yAxisID:'y'}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#6b5f52',font:{size:10}}}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});
+  }
+  var ma=document.getElementById('mens-alerts');
+  if(ma){
+    ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint pour '+monthLabel+' !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-monthFees))+' pour atteindre l\'objectif du mois.</div>';
+  }
+}
 
 // PROSPECTION
 function renderProsp(){var tC=0,tR=0,tM=0;ALL.forEach(function(w){var d=D[w];tC+=d.wd.reduce(function(a,b){return a+b;},0);tR+=d.wr.reduce(function(a,b){return a+b;},0);tM+=d.wm.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var d=D[w],tot=d.wd.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+d.wd.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+JNOMS.map(function(_,i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(D[w].wd[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return D[w].wd.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
