@@ -723,8 +723,8 @@ function renderNeg(){
     var wr=getMonday(now);wr.setHours(0,0,0,0);
     var wrEnd=new Date(wr);wrEnd.setDate(wrEnd.getDate()+6);
     var wrStart=fmtDate(wr),wrEndStr=fmtDate(wrEnd);
-    // Source 1 : Journal
-    var todayCtJournal=d.contacts.filter(function(c){return(c.contact_date||'')===today;}).length;
+    // Source 1 : Journal (exclure les acquéreurs du compteur "Contacts aujourd'hui")
+    var todayCtJournal=d.contacts.filter(function(c){return(c.contact_date||'')===today&&c.categorie!=='Acquéreur';}).length;
     var weekContactsJournal=d.contacts.filter(function(c){var cd=c.contact_date||'';return cd>=wrStart&&cd<=wrEndStr;});
     var wRJournal=weekContactsJournal.filter(function(c){return c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé';}).length;
     var wMJournal=weekContactsJournal.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
@@ -740,16 +740,16 @@ function renderNeg(){
     var wM=wMJournal+wMWeek;
     document.getElementById('neg-kpis').innerHTML=
         '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>'+
-        '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
+        '<div class="kc bl"><div class="kl">Contacts prospection auj.</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+' (hors acquéreurs)</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
         '<div class="kc pu"><div class="kl">RDV sem.</div><div class="kv sm" style="color:var(--pur)">'+wR+'</div></div>'+
         '<div class="kc gr"><div class="kl">Mandats sem.</div><div class="kv sm" style="color:var(--green)">'+wM+'</div></div>';
     var az=document.getElementById('neg-alert');
     if(az){
         var m='';
         m+=renderObjBlock(who);
-        if(todayCt>=OBJ_J)m+='<div class="al ag2"><div class="ald"></div>Objectif journalier atteint !</div>';
-        else if(todayCt>0)m+='<div class="al aw"><div class="ald"></div>'+(OBJ_J-todayCt)+' contacts restants.</div>';
-        else m+='<div class="al aw"><div class="ald"></div>Aucun contact. Objectif : '+OBJ_J+'.</div>';
+        if(todayCt>=OBJ_J)m+='<div class="al ag2"><div class="ald"></div>Objectif prospection atteint !</div>';
+        else if(todayCt>0)m+='<div class="al aw"><div class="ald"></div>'+(OBJ_J-todayCt)+' contacts prospection restants (hors acquéreurs).</div>';
+        else m+='<div class="al aw"><div class="ald"></div>Aucun contact prospection. Objectif : '+OBJ_J+' (hors acquéreurs).</div>';
         az.innerHTML=m;
     }
     if(curSub==='journal')renderContacts();else if(curSub==='semaine')renderWeek();else if(curSub==='compromis')renderComp();else if(curSub==='perf')renderPerf();else if(curSub==='mensuel')renderMensuel();
@@ -985,9 +985,9 @@ function getMonthStatsAll(who,yearMonth){
   var ms_start=yearMonth+'-01';
   var dt=new Date(parseInt(yearMonth.split('-')[0]),parseInt(yearMonth.split('-')[1]),1);
   var ms_end=fmtDate(new Date(dt.getTime()-86400000));
-  // 1) Journal
+  // 1) Journal (contacts prospection — exclure les acquéreurs)
   var mc=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms_start&&cd<=ms_end;});
-  var jContacts=mc.length;
+  var jContacts=mc.filter(function(c){return c.categorie!=='Acquéreur';}).length;
   var jRdv=mc.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
   var jMan=mc.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
   // 2) weekArchive (saisies du tableau Semaine archivées)
@@ -1041,7 +1041,7 @@ function renderMensuel(){
   var txF=Math.round(ms.fees/OBJ_FEES*100);
   var monthLabel=new Date(curYM+'-01T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
   document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC '+monthLabel+'</div><div class="kv gold">'+fmt(ms.fees)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div>'+
-    '<div class="kc bl"><div class="kl">Contacts ce mois</div><div class="kv sm" style="color:var(--blue)">'+ms.contacts+'</div></div>'+
+    '<div class="kc bl"><div class="kl">Contacts prospection ce mois</div><div class="kv sm" style="color:var(--blue)">'+ms.contacts+'</div><div class="ks">Hors acquéreurs</div></div>'+
     '<div class="kc gr"><div class="kl">RDV vendeurs</div><div class="kv sm" style="color:var(--green)">'+ms.rdv+'</div>'+(ob?'<div class="ks">Obj. : '+ob.rdv_vendeurs+'</div>':'')+'</div>'+
     '<div class="kc pu"><div class="kl">Mandats signés</div><div class="kv sm" style="color:var(--pur)">'+ms.mandats+'</div>'+(ob?'<div class="ks">Obj. : '+ob.mandats+'</div>':'')+'</div>';
   // HISTORIQUE 12 MOIS
