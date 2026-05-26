@@ -376,7 +376,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
 
 <!-- SLIDE PANEL pour nouveau dossier -->
@@ -472,6 +472,82 @@ function toggleTheme() {
 }
 
 var TVA=1.2,OBJ_J=12,OBJ_FEES=7000;
+
+// OBJECTIFS PERSONNALISÉS PAR NÉGOCIATEUR
+// Format: { who: [{from: 'YYYY-MM', rdv_vendeurs: X, mandats: X, compromis_ttc: X, label: ''}, ...] }
+// Les périodes sont cumulatives : la plus récente s'applique jusqu'à la suivante
+var OBJECTIFS_NEGO={
+  enrik:[
+    // cumul_from = date depuis laquelle on cumule les stats (pour Enrik: depuis mai)
+    {from:'2026-05',cumul_from:'2026-05-01',cumul_to:'2026-06-30',rdv_vendeurs:15,mandats:8,compromis_ttc:0,label:'Période intégration (mai-juin 2026)'},
+    {from:'2026-07',rdv_vendeurs:15,mandats:8,compromis_ttc:10000,label:'Juillet 2026'},
+    {from:'2026-08',rdv_vendeurs:15,mandats:8,compromis_ttc:10000,label:'Août 2026'},
+    {from:'2026-09',rdv_vendeurs:15,mandats:8,compromis_ttc:13000,label:'À partir de Sept. 2026'}
+  ]
+};
+function getObjForMonth(who,yearMonth){
+  // yearMonth format 'YYYY-MM'
+  var list=OBJECTIFS_NEGO[who];
+  if(!list||!list.length)return null;
+  // Trouver la période active (la plus récente <= yearMonth)
+  var active=null;
+  list.forEach(function(o){if(o.from<=yearMonth&&(!active||o.from>active.from))active=o;});
+  return active;
+}
+function getCurrentMonthStats(who){
+  // Retourne {rdv_vendeurs, mandats, compromis_ttc} pour la période active
+  var now=new Date();
+  var yearMonth=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var obj=getObjForMonth(who,yearMonth);
+  // Plage par défaut : mois en cours
+  var rangeStart=yearMonth+'-01';
+  var nextMonth=new Date(now.getFullYear(),now.getMonth()+1,1);
+  var rangeEnd=fmtDate(new Date(nextMonth.getTime()-86400000));
+  // Si l'objectif a cumul_from/cumul_to, on les utilise
+  if(obj&&obj.cumul_from)rangeStart=obj.cumul_from;
+  if(obj&&obj.cumul_to)rangeEnd=obj.cumul_to;
+  var d=D[who];
+  if(!d)return{rdv_vendeurs:0,mandats:0,compromis_ttc:0,yearMonth:yearMonth};
+  var rangeContacts=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=rangeStart&&cd<=rangeEnd;});
+  var rdv_vendeurs=rangeContacts.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+  var mandats=rangeContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+  var compromis_ttc=0;
+  dossiers.forEach(function(dos){
+    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=rangeStart&&dos.createdAt<=rangeEnd){
+      var isNeg=dos.neg===NAMES[who];
+      var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+      if(isNeg||isNeg2){
+        compromis_ttc+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+      }
+    }
+  });
+  return{rdv_vendeurs:rdv_vendeurs,mandats:mandats,compromis_ttc:compromis_ttc,yearMonth:yearMonth};
+}
+function objStatus(actual,target){
+  if(!target)return{color:'var(--txt3)',bg:'var(--bg3)',pct:0,status:'no-target'};
+  var pct=Math.round(actual/target*100);
+  if(actual>=target)return{color:'var(--green)',bg:'var(--greenl)',pct:pct,status:'ok'};
+  if(pct>=70)return{color:'var(--or)',bg:'var(--orl)',pct:pct,status:'warn'};
+  return{color:'var(--red)',bg:'var(--redl)',pct:pct,status:'bad'};
+}
+function renderObjBlock(who){
+  // HTML du bloc objectifs pour un négo
+  var stats=getCurrentMonthStats(who);
+  var obj=getObjForMonth(who,stats.yearMonth);
+  if(!obj)return''; // Pas d'objectifs définis pour ce négo
+  var sRdv=objStatus(stats.rdv_vendeurs,obj.rdv_vendeurs);
+  var sMan=objStatus(stats.mandats,obj.mandats);
+  var sCa=obj.compromis_ttc>0?objStatus(stats.compromis_ttc,obj.compromis_ttc):null;
+  var monthLabel=new Date(stats.yearMonth+'-01T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  var h='<div style="background:var(--bg2);border:1px solid var(--borderor);border-radius:11px;padding:10px 12px;margin-bottom:8px;">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;"><div><div style="font-family:Georgia,serif;font-size:13px;color:var(--or);">🎯 Objectifs '+monthLabel+'</div><div style="font-size:9px;color:var(--txt3);">'+escH(obj.label)+'</div></div></div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;">';
+  h+='<div style="background:'+sRdv.bg+';border:1px solid '+sRdv.color+'33;border-radius:8px;padding:7px 9px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">RDV Vendeurs</div><div style="font-size:16px;font-family:Georgia,serif;color:'+sRdv.color+';">'+stats.rdv_vendeurs+'<span style="font-size:11px;color:var(--txt3);"> / '+obj.rdv_vendeurs+'</span></div><div class="bbar"><div class="bbarf" style="width:'+Math.min(sRdv.pct,100)+'%;background:'+sRdv.color+';"></div></div></div>';
+  h+='<div style="background:'+sMan.bg+';border:1px solid '+sMan.color+'33;border-radius:8px;padding:7px 9px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Mandats signés</div><div style="font-size:16px;font-family:Georgia,serif;color:'+sMan.color+';">'+stats.mandats+'<span style="font-size:11px;color:var(--txt3);"> / '+obj.mandats+'</span></div><div class="bbar"><div class="bbarf" style="width:'+Math.min(sMan.pct,100)+'%;background:'+sMan.color+';"></div></div></div>';
+  if(sCa)h+='<div style="background:'+sCa.bg+';border:1px solid '+sCa.color+'33;border-radius:8px;padding:7px 9px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Compromis TTC</div><div style="font-size:16px;font-family:Georgia,serif;color:'+sCa.color+';">'+fmt(stats.compromis_ttc)+'<span style="font-size:11px;color:var(--txt3);"> / '+fmt(obj.compromis_ttc)+'</span></div><div class="bbar"><div class="bbarf" style="width:'+Math.min(sCa.pct,100)+'%;background:'+sCa.color+';"></div></div></div>';
+  h+='</div></div>';
+  return h;
+}
 var SWAN_RATES={Exclusif:.12,'Semi-exclusif':.12,'Exclusivité morale':.12,Simple:.10};
 var PALIERS=[{min:0,max:35000,t:40},{min:35000,max:65000,t:45},{min:65000,max:100000,t:50},{min:100000,max:135000,t:55},{min:135000,max:null,t:60}];
 var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:50};
@@ -642,15 +718,26 @@ function renderNeg(){
     setEl('neg-title',NAMES[who]);
     setEl('neg-sub',ROLES[who]+' · Mansion Aquitaine');
     setEl('neg-date',now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}));
-    // Compter depuis les VRAIS contacts du Journal
+    // Calcul des indicateurs en combinant les 2 sources : Journal + tableau Semaine
     var today=fmtDate(now);
     var wr=getMonday(now);wr.setHours(0,0,0,0);
     var wrEnd=new Date(wr);wrEnd.setDate(wrEnd.getDate()+6);
     var wrStart=fmtDate(wr),wrEndStr=fmtDate(wrEnd);
-    var todayCt=d.contacts.filter(function(c){return(c.contact_date||'')===today;}).length;
-    var weekContacts=d.contacts.filter(function(c){var cd=c.contact_date||'';return cd>=wrStart&&cd<=wrEndStr;});
-    var wR=weekContacts.filter(function(c){return c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé';}).length;
-    var wM=weekContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+    // Source 1 : Journal
+    var todayCtJournal=d.contacts.filter(function(c){return(c.contact_date||'')===today;}).length;
+    var weekContactsJournal=d.contacts.filter(function(c){var cd=c.contact_date||'';return cd>=wrStart&&cd<=wrEndStr;});
+    var wRJournal=weekContactsJournal.filter(function(c){return c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé';}).length;
+    var wMJournal=weekContactsJournal.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+    // Source 2 : tableau Semaine (wd/wr/wm)
+    var dayIdx=Math.min(Math.max(now.getDay()-1,0),4); // 0=lundi, 4=vendredi
+    var todayCtWeek=(d.wd&&d.wd[dayIdx])||0;
+    var wCWeek=(d.wd||[0,0,0,0,0]).reduce(function(a,b){return a+(b||0);},0);
+    var wRWeek=(d.wr||[0,0,0,0,0]).reduce(function(a,b){return a+(b||0);},0);
+    var wMWeek=(d.wm||[0,0,0,0,0]).reduce(function(a,b){return a+(b||0);},0);
+    // Total combiné
+    var todayCt=todayCtJournal+todayCtWeek;
+    var wR=wRJournal+wRWeek;
+    var wM=wMJournal+wMWeek;
     document.getElementById('neg-kpis').innerHTML=
         '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>'+
         '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
@@ -659,9 +746,10 @@ function renderNeg(){
     var az=document.getElementById('neg-alert');
     if(az){
         var m='';
-        if(todayCt>=OBJ_J)m='<div class="al ag2"><div class="ald"></div>Objectif journalier atteint !</div>';
-        else if(todayCt>0)m='<div class="al aw"><div class="ald"></div>'+(OBJ_J-todayCt)+' contacts restants.</div>';
-        else m='<div class="al aw"><div class="ald"></div>Aucun contact. Objectif : '+OBJ_J+'.</div>';
+        m+=renderObjBlock(who);
+        if(todayCt>=OBJ_J)m+='<div class="al ag2"><div class="ald"></div>Objectif journalier atteint !</div>';
+        else if(todayCt>0)m+='<div class="al aw"><div class="ald"></div>'+(OBJ_J-todayCt)+' contacts restants.</div>';
+        else m+='<div class="al aw"><div class="ald"></div>Aucun contact. Objectif : '+OBJ_J+'.</div>';
         az.innerHTML=m;
     }
     if(curSub==='journal')renderContacts();else if(curSub==='semaine')renderWeek();else if(curSub==='compromis')renderComp();else if(curSub==='perf')renderPerf();else if(curSub==='mensuel')renderMensuel();
@@ -1050,7 +1138,36 @@ function delDoss(id){
 function renderAlexis(){var who='alexis',d=D[who],st=getStats(who);var tct=document.getElementById('al-tab-content');if(!tct)return;var todayCt=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0);tct.innerHTML='<div class="kg k4"><div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' TTC</div></div><div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'/'+OBJ_J+'</div></div><div class="kc gr"><div class="kl">RDV semaine</div><div class="kv sm" style="color:var(--green)">'+wR+'</div></div><div class="kc pu"><div class="kl">Contacts semaine</div><div class="kv sm" style="color:var(--pur)">'+wC+'</div></div></div><div class="stitle">Données identiques aux autres négociateurs — sélectionnez Alexis dans la sidebar pour accéder à son journal complet.</div>';}
 
 // DIRECTION
-function renderDir(){var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/OBJ_FEES*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderDir(){var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';
+// AFFICHAGE OBJECTIFS PERSONNALISÉS
+var objBox=document.getElementById('dir-objectifs');
+if(objBox){
+  var objHtml='';
+  ALL.forEach(function(w){
+    if(OBJECTIFS_NEGO[w]){
+      var ms=getCurrentMonthStats(w);
+      var ob=getObjForMonth(w,ms.yearMonth);
+      if(ob){
+        var sRdv=objStatus(ms.rdv_vendeurs,ob.rdv_vendeurs);
+        var sMan=objStatus(ms.mandats,ob.mandats);
+        var sCa=ob.compromis_ttc>0?objStatus(ms.compromis_ttc,ob.compromis_ttc):null;
+        var allOk=sRdv.status==='ok'&&sMan.status==='ok'&&(!sCa||sCa.status==='ok');
+        var anyBad=sRdv.status==='bad'||sMan.status==='bad'||(sCa&&sCa.status==='bad');
+        var globalBadge=allOk?'<span class="pill p-gr" style="font-size:9px;">✓ Tous atteints</span>':anyBad?'<span class="pill p-re" style="font-size:9px;">⚠ Retard</span>':'<span class="pill p-or" style="font-size:9px;">En cours</span>';
+        objHtml+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:6px;">';
+        objHtml+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:5px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:24px;height:24px;border-radius:50%;background:'+COLORS[w]+'22;color:'+COLORS[w]+';border:1px solid '+COLORS[w]+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[w]+'</span><span style="font-size:9px;color:var(--txt3);">— '+escH(ob.label)+'</span></div>'+globalBadge+'</div>';
+        objHtml+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:5px;">';
+        objHtml+='<div style="background:'+sRdv.bg+';border:1px solid '+sRdv.color+'33;border-radius:6px;padding:5px 8px;"><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;">RDV Vendeurs</div><div style="font-size:13px;font-family:Georgia,serif;color:'+sRdv.color+';">'+ms.rdv_vendeurs+'/'+ob.rdv_vendeurs+' <span style="font-size:9px;">('+sRdv.pct+'%)</span></div></div>';
+        objHtml+='<div style="background:'+sMan.bg+';border:1px solid '+sMan.color+'33;border-radius:6px;padding:5px 8px;"><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;">Mandats</div><div style="font-size:13px;font-family:Georgia,serif;color:'+sMan.color+';">'+ms.mandats+'/'+ob.mandats+' <span style="font-size:9px;">('+sMan.pct+'%)</span></div></div>';
+        if(sCa)objHtml+='<div style="background:'+sCa.bg+';border:1px solid '+sCa.color+'33;border-radius:6px;padding:5px 8px;"><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;">Compromis TTC</div><div style="font-size:13px;font-family:Georgia,serif;color:'+sCa.color+';">'+fmt(ms.compromis_ttc)+'/'+fmt(ob.compromis_ttc)+' <span style="font-size:9px;">('+sCa.pct+'%)</span></div></div>';
+        objHtml+='</div></div>';
+      }
+    }
+  });
+  if(objHtml)objBox.innerHTML='<div class="stitle">🎯 Suivi objectifs mensuels</div>'+objHtml;
+  else objBox.innerHTML='';
+}
+var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/OBJ_FEES*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // --- EXPORT CSV ---
 function exportCSV(){
