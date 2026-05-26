@@ -1292,10 +1292,15 @@ function resetPanel(){
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Enregistrer';
 }
 function editDoss(id){
-  var d=dossiers.find(function(x){return x.id==id;});if(!d)return;
-  resetPanel(); // Reset complet avant
+  console.log('[editDoss] appelée avec id:',id,'(type:',typeof id,')');
+  var d=dossiers.find(function(x){return x.id==id;});
+  console.log('[editDoss] dossier trouvé:',d?d.ref:'NON TROUVÉ');
+  if(!d){alert('Dossier introuvable (id:'+id+'). Rechargez la page.');return;}
+  resetPanel();
   openPanel();
-  document.getElementById('md-edit-id').value=String(d.id);
+  var eidEl=document.getElementById('md-edit-id');
+  console.log('[editDoss] md-edit-id element:',eidEl);
+  if(eidEl)eidEl.value=String(d.id);
   document.getElementById('md-ref').value=d.ref||'';
   document.getElementById('md-neg').value=d.neg||'Swan Dumas';
   document.getElementById('md-bin').checked=!!d.bin;
@@ -1313,6 +1318,7 @@ function editDoss(id){
   document.getElementById('md-notes').value=d.notes||'';
   var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Modifier le dossier';
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Mettre à jour';
+  console.log('[editDoss] terminé, panel doit être visible');
 }
 function renderPipeline(){
   var filtered=getFilteredDossiers();
@@ -1375,7 +1381,7 @@ function renderPipeline(){
         alertHtml='<div style="margin-top:4px;background:rgba(192,68,74,.15);border:1px solid rgba(192,68,74,.3);border-radius:5px;padding:3px 6px;font-size:9px;color:var(--red);">⚠️ '+check.missing.length+' pièce'+(check.missing.length>1?'s':'')+' manquante'+(check.missing.length>1?'s':'')+'</div>';
       }
       var prev=STAGES[STAGES.indexOf(stage)-1];
-      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+(d.bin&&d.neg2?' <span style="color:var(--pur);">+ '+escH(d.neg2)+'</span>':'')+(d.bin?' <span class="pill p-pu" style="font-size:9px;">Binôme 50/50</span>':'')+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+(d.bin&&d.neg2?' <span style="color:var(--pur);">+ '+escH(d.neg2)+'</span>':'')+(d.bin?' <span class="pill p-pu" style="font-size:9px;">Binôme 50/50</span>':'')+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:5px;">'+(prev?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:3px 6px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:3px 6px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button type="button" class="bs" onclick="editDoss('+d.id+');return false;" style="font-size:10px;padding:3px 8px;margin-left:auto;background:rgba(201,168,76,.15);border-color:var(--borderor);color:var(--or);">✏️ Modifier</button><button type="button" class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
     }).join('');
     return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';
   }).join('');
