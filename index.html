@@ -333,7 +333,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="subtab-content" id="stc-semaine"><div class="wr" id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
   <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
   <div class="subtab-content" id="stc-perf"><div class="kg k4" id="perf-kpis"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.8rem;" id="perf-meters"></div><div id="perf-alerts"></div></div>
-  <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw" style="margin-top:8px;"><div class="cwt">Évolution 12 derniers mois — Contacts, RDV vendeurs, Mandats</div><div style="position:relative;width:100%;height:200px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-history"></div><div id="mens-alerts" style="margin-top:8px;"></div></div>
+  <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw" style="margin-top:8px;"><div class="cwt">Évolution 12 derniers mois — Contacts, RDV vendeurs, Mandats</div><div style="position:relative;width:100%;height:200px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-history"></div><details style="margin-top:10px;"><summary style="cursor:pointer;font-size:11px;color:var(--or);font-weight:500;padding:8px 12px;background:var(--bg2);border:1px solid var(--borderor);border-radius:8px;list-style:none;">✏️ Saisir manuellement les chiffres d'un mois passé (rattrapage historique)</summary><div id="mens-manual" style="margin-top:8px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;"></div></details><div id="mens-alerts" style="margin-top:8px;"></div></div>
 </div>
 
 <div class="pg" id="pg-pipeline">
@@ -921,7 +921,19 @@ function renderContacts(){
 }
 
 // WEEK
-function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;save(\''+who+'\');renderNeg();"></div>';}wg.innerHTML=h;renderWeekKpis();}
+function archiveWeekDay(who,idx,field,val){
+  // Archiver une valeur journalière dans D[who].weekArchive[YYYY-MM-DD][field]
+  // field = 'c' (contacts), 'r' (rdv), 'm' (mandats)
+  var d=D[who];if(!d)return;
+  d.weekArchive=d.weekArchive||{};
+  // Calculer la date du jour idx (0=lundi) de la semaine en cours
+  var mon=getMonday(new Date());
+  var dayDate=new Date(mon);dayDate.setDate(mon.getDate()+idx);
+  var key=fmtDate(dayDate);
+  d.weekArchive[key]=d.weekArchive[key]||{c:0,r:0,m:0};
+  d.weekArchive[key][field]=val;
+}
+function renderWeek(){var who=curWho;if(!who)return;var d=D[who],wg=document.getElementById('neg-week');if(!wg)return;var now=new Date(),cur=Math.min(Math.max(now.getDay()-1,0),4);var h='';for(var i=0;i<5;i++){var v=d.wd[i]||0,rv=d.wr[i]||0,mv=d.wm[i]||0,pp=Math.min(Math.round(v/OBJ_J*100),100),cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');h+='<div class="dc'+(i===cur?' td':'')+'"><div class="dcn">'+JNOMS[i]+(i===cur?' ·':'')+'</div><div class="dcv" style="color:'+cl+';">'+v+'</div><div class="dcb"><div class="dcbf" style="width:'+pp+'%;background:'+cl+';"></div></div><div class="dcm">Contacts</div><input type="number" min="0" value="'+v+'" class="dci" oninput="D[\''+who+'\'].wd['+i+']=parseInt(this.value)||0;archiveWeekDay(\''+who+'\','+i+',\'c\',parseInt(this.value)||0);save(\''+who+'\');renderWeekKpis()"><div class="dcm">RDV</div><input type="number" min="0" value="'+rv+'" class="dci" oninput="D[\''+who+'\'].wr['+i+']=parseInt(this.value)||0;archiveWeekDay(\''+who+'\','+i+',\'r\',parseInt(this.value)||0);save(\''+who+'\');renderNeg();"><div class="dcm">Mandats</div><input type="number" min="0" value="'+mv+'" class="dci" oninput="D[\''+who+'\'].wm['+i+']=parseInt(this.value)||0;archiveWeekDay(\''+who+'\','+i+',\'m\',parseInt(this.value)||0);save(\''+who+'\');renderNeg();"></div>';}wg.innerHTML=h;renderWeekKpis();}
 
 function renderWeekKpis(){
     var who=curWho;if(!who)return;var d=D[who];
@@ -967,97 +979,161 @@ setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4
 var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
 
 // MENSUEL
+function getMonthStatsAll(who,yearMonth){
+  // Combine Journal + weekArchive + saisie manuelle pour un mois donné
+  var d=D[who];if(!d)return{contacts:0,rdv:0,mandats:0,fees:0};
+  var ms_start=yearMonth+'-01';
+  var dt=new Date(parseInt(yearMonth.split('-')[0]),parseInt(yearMonth.split('-')[1]),1);
+  var ms_end=fmtDate(new Date(dt.getTime()-86400000));
+  // 1) Journal
+  var mc=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms_start&&cd<=ms_end;});
+  var jContacts=mc.length;
+  var jRdv=mc.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+  var jMan=mc.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+  // 2) weekArchive (saisies du tableau Semaine archivées)
+  var aContacts=0,aRdv=0,aMan=0;
+  if(d.weekArchive){
+    Object.keys(d.weekArchive).forEach(function(date){
+      if(date>=ms_start&&date<=ms_end){
+        aContacts+=(d.weekArchive[date].c||0);
+        aRdv+=(d.weekArchive[date].r||0);
+        aMan+=(d.weekArchive[date].m||0);
+      }
+    });
+  }
+  // 3) Saisie manuelle
+  var manContacts=0,manRdv=0,manMan=0;
+  if(d.manualMonth&&d.manualMonth[yearMonth]){
+    manContacts=d.manualMonth[yearMonth].contacts||0;
+    manRdv=d.manualMonth[yearMonth].rdv||0;
+    manMan=d.manualMonth[yearMonth].mandats||0;
+  }
+  // Honoraires depuis dossiers Pipeline
+  var fees=0;
+  dossiers.forEach(function(dos){
+    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms_start&&dos.createdAt<=ms_end){
+      var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+      if(isNeg||isNeg2)fees+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+    }
+  });
+  return{
+    contacts:jContacts+aContacts+manContacts,
+    rdv:jRdv+aRdv+manRdv,
+    mandats:jMan+aMan+manMan,
+    fees:fees,
+    sources:{journal:jContacts,archive:aContacts,manual:manContacts}
+  };
+}
+function setManualMonth(who,yearMonth,field,val){
+  D[who].manualMonth=D[who].manualMonth||{};
+  D[who].manualMonth[yearMonth]=D[who].manualMonth[yearMonth]||{contacts:0,rdv:0,mandats:0};
+  D[who].manualMonth[yearMonth][field]=parseInt(val)||0;
+  save(who);
+  renderMensuel();
+}
 function renderMensuel(){
   var who=curWho;if(!who)return;
   var d=D[who],st=getStats(who);
   var now=new Date();
-  // 1. KPIs MOIS EN COURS (vrais chiffres du mois)
-  var ms=getCurrentMonthStats(who);
-  var ob=getObjForMonth(who,ms.yearMonth);
-  // Compter contacts du mois (Journal + Semaine si existe pour ce mois — pour simplifier on prend que le Journal historique pour les vrais mois)
-  var monthStart=ms.yearMonth+'-01';
-  var nextMonth=new Date(now.getFullYear(),now.getMonth()+1,1);
-  var monthEnd=fmtDate(new Date(nextMonth.getTime()-86400000));
-  var monthContacts=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=monthStart&&cd<=monthEnd;});
-  // Compromis du mois (encaissés via dossiers Pipeline ou compromis Journal historique)
-  var monthFees=0;
-  dossiers.forEach(function(dos){
-    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=monthStart&&dos.createdAt<=monthEnd){
-      var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
-      if(isNeg||isNeg2)monthFees+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
-    }
-  });
-  var txF=Math.round(monthFees/OBJ_FEES*100);
-  var monthLabel=new Date(monthStart+'T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-  document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC '+monthLabel+'</div><div class="kv gold">'+fmt(monthFees)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div>'+
-    '<div class="kc bl"><div class="kl">Contacts ce mois</div><div class="kv sm" style="color:var(--blue)">'+monthContacts.length+'</div></div>'+
-    '<div class="kc gr"><div class="kl">RDV vendeurs</div><div class="kv sm" style="color:var(--green)">'+ms.rdv_vendeurs+'</div>'+(ob?'<div class="ks">Obj. : '+ob.rdv_vendeurs+'</div>':'')+'</div>'+
+  var curYM=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var ms=getMonthStatsAll(who,curYM);
+  var ob=getObjForMonth(who,curYM);
+  var txF=Math.round(ms.fees/OBJ_FEES*100);
+  var monthLabel=new Date(curYM+'-01T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  document.getElementById('mens-kpis').innerHTML='<div class="kc or"><div class="kl">Honos TTC '+monthLabel+'</div><div class="kv gold">'+fmt(ms.fees)+'</div><div class="ks">Obj. : '+fmt(OBJ_FEES)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(txF,100)+'%;background:var(--or);"></div></div></div>'+
+    '<div class="kc bl"><div class="kl">Contacts ce mois</div><div class="kv sm" style="color:var(--blue)">'+ms.contacts+'</div></div>'+
+    '<div class="kc gr"><div class="kl">RDV vendeurs</div><div class="kv sm" style="color:var(--green)">'+ms.rdv+'</div>'+(ob?'<div class="ks">Obj. : '+ob.rdv_vendeurs+'</div>':'')+'</div>'+
     '<div class="kc pu"><div class="kl">Mandats signés</div><div class="kv sm" style="color:var(--pur)">'+ms.mandats+'</div>'+(ob?'<div class="ks">Obj. : '+ob.mandats+'</div>':'')+'</div>';
-  // 2. HISTORIQUE 12 MOIS (récap mois par mois)
+  // HISTORIQUE 12 MOIS
   var historyHtml='<div class="stitle" style="margin-top:12px;">Historique mois par mois (12 derniers mois)</div>';
   historyHtml+='<div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Mois</th><th>Contacts</th><th>RDV vendeurs</th><th>Mandats</th><th>Honos TTC</th><th>Objectif</th><th>%</th></tr></thead><tbody>';
   for(var i=0;i<12;i++){
     var dt=new Date(now.getFullYear(),now.getMonth()-i,1);
     var ym=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
-    var ms2_start=ym+'-01';
-    var nm=new Date(dt.getFullYear(),dt.getMonth()+1,1);
-    var ms2_end=fmtDate(new Date(nm.getTime()-86400000));
-    var mc=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms2_start&&cd<=ms2_end;});
-    var mRdv=mc.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
-    var mMan=mc.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
-    var mFee=0;
-    dossiers.forEach(function(dos){
-      if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms2_start&&dos.createdAt<=ms2_end){
-        var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
-        if(isNeg||isNeg2)mFee+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
-      }
-    });
+    var s=getMonthStatsAll(who,ym);
     var mObj=getObjForMonth(who,ym);
     var objFee=mObj&&mObj.compromis_ttc?mObj.compromis_ttc:OBJ_FEES;
-    var pct=objFee>0?Math.round(mFee/objFee*100):0;
+    var pct=objFee>0?Math.round(s.fees/objFee*100):0;
     var pctCol=pct>=100?'var(--green)':pct>=70?'var(--or)':pct>0?'var(--red)':'var(--txt3)';
-    var isCurrent=ym===ms.yearMonth;
+    var isCurrent=ym===curYM;
     var rowBg=isCurrent?'background:var(--orl);':'';
-    historyHtml+='<tr style="'+rowBg+'"><td style="color:'+(isCurrent?'var(--or)':'var(--txt2)')+';font-weight:'+(isCurrent?'500':'400')+';">'+dt.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})+(isCurrent?' (en cours)':'')+'</td><td>'+mc.length+'</td><td>'+mRdv+(mObj?'/'+mObj.rdv_vendeurs:'')+'</td><td>'+mMan+(mObj?'/'+mObj.mandats:'')+'</td><td style="color:var(--or);">'+fmt(mFee)+'</td><td style="font-size:10px;color:var(--txt3);">'+fmt(objFee)+'</td><td style="color:'+pctCol+';font-weight:500;">'+pct+'%</td></tr>';
+    historyHtml+='<tr style="'+rowBg+'"><td style="color:'+(isCurrent?'var(--or)':'var(--txt2)')+';font-weight:'+(isCurrent?'500':'400')+';">'+dt.toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})+(isCurrent?' (en cours)':'')+'</td><td>'+s.contacts+'</td><td>'+s.rdv+(mObj?'/'+mObj.rdv_vendeurs:'')+'</td><td>'+s.mandats+(mObj?'/'+mObj.mandats:'')+'</td><td style="color:var(--or);">'+fmt(s.fees)+'</td><td style="font-size:10px;color:var(--txt3);">'+fmt(objFee)+'</td><td style="color:'+pctCol+';font-weight:500;">'+pct+'%</td></tr>';
   }
   historyHtml+='</tbody></table></div></div>';
-  // 3. GRAPHIQUE 12 MOIS
   document.getElementById('mens-history').innerHTML=historyHtml;
-  // Calculer les datasets pour le graphique
-  var months12=[];var contactsArr=[];var rdvArr=[];var manArr=[];var feeArr=[];
+  // SAISIE MANUELLE
+  var manualBox=document.getElementById('mens-manual');
+  if(manualBox){
+    var mh='<div style="font-size:10px;color:var(--txt3);margin-bottom:8px;">Pour rattraper l\'historique : tape les chiffres totaux d\'un mois passé. Ils s\'ajoutent automatiquement aux données auto-archivées.</div>';
+    mh+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;align-items:end;">';
+    mh+='<div><div class="fct">Mois</div><select id="man-month" class="ci" style="margin:0;padding:5px 6px;font-size:11px;">';
+    for(var k=0;k<12;k++){
+      var dtK=new Date(now.getFullYear(),now.getMonth()-k,1);
+      var ymK=dtK.getFullYear()+'-'+String(dtK.getMonth()+1).padStart(2,'0');
+      mh+='<option value="'+ymK+'">'+dtK.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</option>';
+    }
+    mh+='</select></div>';
+    // Affichage des valeurs actuelles pour le mois sélectionné par défaut (mois précédent)
+    var prevMonth=new Date(now.getFullYear(),now.getMonth()-1,1);
+    var prevYM=prevMonth.getFullYear()+'-'+String(prevMonth.getMonth()+1).padStart(2,'0');
+    var cur=(d.manualMonth&&d.manualMonth[prevYM])||{contacts:0,rdv:0,mandats:0};
+    mh+='<div><div class="fct">Contacts</div><input id="man-c" type="number" min="0" value="'+cur.contacts+'" class="ci" style="margin:0;padding:5px 6px;font-size:11px;"></div>';
+    mh+='<div><div class="fct">RDV vendeurs</div><input id="man-r" type="number" min="0" value="'+cur.rdv+'" class="ci" style="margin:0;padding:5px 6px;font-size:11px;"></div>';
+    mh+='<div><div class="fct">Mandats</div><input id="man-m" type="number" min="0" value="'+cur.mandats+'" class="ci" style="margin:0;padding:5px 6px;font-size:11px;"></div>';
+    mh+='</div>';
+    mh+='<button class="bs" style="margin-top:8px;background:var(--orb);border-color:var(--borderor);color:var(--or);" onclick="saveManualMonth()">💾 Enregistrer ces chiffres</button>';
+    mh+='<div id="man-status" style="font-size:10px;color:var(--green);margin-top:4px;display:none;">✓ Enregistré</div>';
+    manualBox.innerHTML=mh;
+    // Quand on change le mois, recharger les valeurs
+    var monthSelect=document.getElementById('man-month');
+    if(monthSelect){
+      monthSelect.value=prevYM;
+      monthSelect.onchange=function(){
+        var ymM=this.value;
+        var v=(d.manualMonth&&d.manualMonth[ymM])||{contacts:0,rdv:0,mandats:0};
+        document.getElementById('man-c').value=v.contacts;
+        document.getElementById('man-r').value=v.rdv;
+        document.getElementById('man-m').value=v.mandats;
+      };
+    }
+  }
+  // GRAPHIQUE 12 MOIS
+  var months12=[];var contactsArr=[];var rdvArr=[];var manArr=[];
   for(var j=11;j>=0;j--){
     var dt2=new Date(now.getFullYear(),now.getMonth()-j,1);
     var ym2=dt2.getFullYear()+'-'+String(dt2.getMonth()+1).padStart(2,'0');
     months12.push(dt2.toLocaleDateString('fr-FR',{month:'short'}));
-    var ms3_start=ym2+'-01';
-    var nm2=new Date(dt2.getFullYear(),dt2.getMonth()+1,1);
-    var ms3_end=fmtDate(new Date(nm2.getTime()-86400000));
-    var mc2=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms3_start&&cd<=ms3_end;});
-    contactsArr.push(mc2.length);
-    rdvArr.push(mc2.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length);
-    manArr.push(mc2.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length);
-    var f2=0;
-    dossiers.forEach(function(dos){
-      if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms3_start&&dos.createdAt<=ms3_end){
-        var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
-        if(isNeg||isNeg2)f2+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
-      }
-    });
-    feeArr.push(f2);
+    var s2=getMonthStatsAll(who,ym2);
+    contactsArr.push(s2.contacts);
+    rdvArr.push(s2.rdv);
+    manArr.push(s2.mandats);
   }
   if(charts.mens){charts.mens.destroy();charts.mens=null;}
   var mc2=document.getElementById('mens-chart');
   if(mc2){
     charts.mens=new Chart(mc2,{type:'bar',data:{labels:months12,datasets:[
-      {label:'Contacts',data:contactsArr,backgroundColor:COLORS[who]+'66',borderColor:COLORS[who],borderWidth:1,borderRadius:4,yAxisID:'y'},
-      {label:'RDV vendeurs',data:rdvArr,backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:4,yAxisID:'y'},
-      {label:'Mandats',data:manArr,backgroundColor:'rgba(122,108,192,.5)',borderColor:'#7a6cc0',borderWidth:1,borderRadius:4,yAxisID:'y'}
+      {label:'Contacts',data:contactsArr,backgroundColor:COLORS[who]+'66',borderColor:COLORS[who],borderWidth:1,borderRadius:4},
+      {label:'RDV vendeurs',data:rdvArr,backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:4},
+      {label:'Mandats',data:manArr,backgroundColor:'rgba(122,108,192,.5)',borderColor:'#7a6cc0',borderWidth:1,borderRadius:4}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#6b5f52',font:{size:10}}}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});
   }
   var ma=document.getElementById('mens-alerts');
   if(ma){
-    ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint pour '+monthLabel+' !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-monthFees))+' pour atteindre l\'objectif du mois.</div>';
+    ma.innerHTML=txF>=100?'<div class="al ag2"><div class="ald"></div>Objectif atteint pour '+monthLabel+' !</div>':'<div class="al aw"><div class="ald"></div>Reste '+fmt(Math.max(0,OBJ_FEES-ms.fees))+' pour atteindre l\'objectif du mois.</div>';
   }
+}
+function saveManualMonth(){
+  var who=curWho;if(!who)return;
+  var ym=document.getElementById('man-month').value;
+  var c=parseInt(document.getElementById('man-c').value)||0;
+  var r=parseInt(document.getElementById('man-r').value)||0;
+  var m=parseInt(document.getElementById('man-m').value)||0;
+  D[who].manualMonth=D[who].manualMonth||{};
+  D[who].manualMonth[ym]={contacts:c,rdv:r,mandats:m};
+  save(who);
+  var st=document.getElementById('man-status');
+  if(st){st.style.display='block';setTimeout(function(){st.style.display='none';},2000);}
+  setTimeout(renderMensuel,300);
 }
 
 // PROSPECTION
