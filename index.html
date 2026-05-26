@@ -369,14 +369,9 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div id="file-list"></div>
 </div>
 
-<div class="pg" id="pg-alexis" style="position:relative;min-height:500px;">
-  <div class="pin-ov" id="al-pin-ov"><div class="pin-bx"><div class="pin-t">Alexis Leduc</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="ap0"></div><div class="pin-d" id="ap1"></div><div class="pin-d" id="ap2"></div><div class="pin-d" id="ap3"></div></div><div class="pin-g"><button class="pin-b" onclick="alPin('1')">1</button><button class="pin-b" onclick="alPin('2')">2</button><button class="pin-b" onclick="alPin('3')">3</button><button class="pin-b" onclick="alPin('4')">4</button><button class="pin-b" onclick="alPin('5')">5</button><button class="pin-b" onclick="alPin('6')">6</button><button class="pin-b" onclick="alPin('7')">7</button><button class="pin-b" onclick="alPin('8')">8</button><button class="pin-b" onclick="alPin('9')">9</button><button class="pin-b" onclick="alPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="alPin('0')">0</button><button class="pin-b" onclick="alPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="al-err"></div></div></div>
-  <div id="al-ct" style="display:none;"><div class="ph"><div><div class="pt">Alexis Leduc — Gérant</div><div class="pss">50% CA TTC</div></div><button class="bs" onclick="alLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div><div id="al-tab-content"><div style="color:var(--txt3);padding:1rem;">Chargement...</div></div></div>
-</div>
-
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
 
 <!-- SLIDE PANEL pour nouveau dossier -->
@@ -591,7 +586,6 @@ function checkDossDocs(d){
 function mkE(){return{compromis:[],contacts:[],wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};}
 var D={};ALL.forEach(function(w){D[w]=mkE();});
 var dossiers=[];
-var alPinCode='1994',alPinBuf='',alOpen=false;
 var dirPinCode='1994',dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
 var charts={prosp:null,mens:null,dir:null};
@@ -750,14 +744,8 @@ function goProsp(btn){clearAll();btn.classList.add('active');setFooter('Mansion 
 function goPipeline(btn){clearAll();btn.classList.add('active');setFooter('Pipeline','Vision Board');document.getElementById('pg-pipeline').classList.add('active');renderPipeline();}
 function goClients(btn){clearAll();btn.classList.add('active');setFooter('Clients','Fiches unifiées');document.getElementById('pg-clients').classList.add('active');renderClients();}
 function goFiles(btn){clearAll();btn.classList.add('active');setFooter('Fichiers','Pièces jointes');document.getElementById('pg-files').classList.add('active');renderFiles();}
-function goAlexis(btn){clearAll();btn.classList.add('active');setFooter('Alexis Leduc','Gérant');document.getElementById('pg-alexis').classList.add('active');if(!alOpen){document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}else{document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}}
 function goDir(btn){clearAll();btn.classList.add('active');setFooter('Vue Direction','Accès restreint');document.getElementById('pg-dir').classList.add('active');if(!dirOpen){document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}else{document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}}
 function updDots(pfx,buf){for(var i=0;i<4;i++){var d=document.getElementById(pfx+i);if(d)d.className='pin-d'+(i<buf.length?' on':'');}}
-
-function alPin(d){if(alPinBuf.length>=4)return;alPinBuf+=d;updDots('ap',alPinBuf);}
-function alPinClear(){alPinBuf=alPinBuf.slice(0,-1);updDots('ap',alPinBuf);}
-function alPinSubmit(){if(alPinBuf===alPinCode){alOpen=true;document.getElementById('al-pin-ov').style.display='none';document.getElementById('al-ct').style.display='block';renderAlexis();}else{document.getElementById('al-err').textContent='Code incorrect';alPinBuf='';updDots('ap',alPinBuf);setTimeout(function(){document.getElementById('al-err').textContent='';},2000);}}
-function alLock(){alOpen=false;document.getElementById('al-pin-ov').style.display='flex';document.getElementById('al-ct').style.display='none';alPinBuf='';updDots('ap',alPinBuf);}
 
 function dirPin(d){if(dirPinBuf.length>=4)return;dirPinBuf+=d;updDots('dp',dirPinBuf);}
 function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
@@ -1006,6 +994,19 @@ function renderWeekKpis(){
 // COMPROMIS — avec édition et confirmation suppression
 var cpEditIdx=-1;
 function addComp(){var who=curWho;if(!who)return;var nom=document.getElementById('cp-nom').value.trim(),ttc=parseFloat(document.getElementById('cp-ttc').value);if(!nom||isNaN(ttc)||ttc<=0){alert('Nom et montant requis.');return;}
+  // Détection double comptage : vérifier si un dossier Pipeline correspond
+  if(cpEditIdx<0){
+    var nomNorm=normalizeName(nom);
+    var dup=dossiers.find(function(d){
+      if(d.stage!=='compromis'&&d.stage!=='acte')return false;
+      var isNeg=d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);
+      if(!isNeg)return false;
+      return normalizeName(d.client||'')===nomNorm||normalizeName(d.ref||'')===nomNorm;
+    });
+    if(dup){
+      if(!confirm('⚠️ Attention : un dossier Pipeline "'+dup.ref+'" pour '+NAMES[who]+' semble correspondre.\n\nSi tu ajoutes ce compromis ici en plus du Pipeline, il sera compté 2 fois.\n\nContinuer quand même ?'))return;
+    }
+  }
   var data={id:Date.now(),nom:nom,ttc:ttc,type:document.getElementById('cp-type').value||'—',es:document.getElementById('cp-es').value||'entree',bin:document.getElementById('cp-bin').checked,bnom:document.getElementById('cp-bnom').value.trim(),date:new Date().toLocaleDateString('fr-FR')};
   if(cpEditIdx>=0&&cpEditIdx<D[who].compromis.length){data.id=D[who].compromis[cpEditIdx].id||Date.now();D[who].compromis[cpEditIdx]=data;cpEditIdx=-1;}else{D[who].compromis.push(data);}
   save(who);['cp-nom','cp-ttc','cp-bnom'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('cp-type').value='';document.getElementById('cp-bin').checked=false;renderComp();renderNeg();}
@@ -1241,7 +1242,9 @@ function closePanel(){document.getElementById('slide-overlay').classList.remove(
 function savePanel(){
   var ref=(document.getElementById('md-ref')||{}).value||'';
   if(!ref.trim()){alert('Référence requise.');return;}
-  var editId=parseInt((document.getElementById('md-edit-id')||{}).value||'0');
+  var editIdRaw=(document.getElementById('md-edit-id')||{}).value||'';
+  var editId=editIdRaw?Number(editIdRaw):0;
+  if(isNaN(editId))editId=0;
   var data={
     id:editId||Date.now(),
     ref:ref.trim(),
@@ -1262,10 +1265,17 @@ function savePanel(){
     encaisse:false
   };
   if(editId){
-    // Édition : préserver createdAt et encaisse
-    var existing=dossiers.find(function(x){return x.id===editId;});
-    if(existing){data.createdAt=existing.createdAt||data.createdAt;data.encaisse=existing.encaisse;
-      dossiers=dossiers.map(function(x){return x.id===editId?data:x;});
+    // Édition : trouver par == au lieu de === pour gérer string vs number
+    var existing=dossiers.find(function(x){return x.id==editId;});
+    if(existing){
+      data.id=existing.id; // garder le type original
+      data.createdAt=existing.createdAt||data.createdAt;
+      data.encaisse=existing.encaisse;
+      data.files=existing.files||[]; // PRÉSERVER les fichiers attachés !
+      dossiers=dossiers.map(function(x){return x.id==editId?data:x;});
+    } else {
+      // Pas trouvé, on crée
+      dossiers.push(data);
     }
   } else {
     dossiers.push(data);
@@ -1282,9 +1292,10 @@ function resetPanel(){
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Enregistrer';
 }
 function editDoss(id){
-  var d=dossiers.find(function(x){return x.id===id;});if(!d)return;
+  var d=dossiers.find(function(x){return x.id==id;});if(!d)return;
+  resetPanel(); // Reset complet avant
   openPanel();
-  document.getElementById('md-edit-id').value=id;
+  document.getElementById('md-edit-id').value=String(d.id);
   document.getElementById('md-ref').value=d.ref||'';
   document.getElementById('md-neg').value=d.neg||'Swan Dumas';
   document.getElementById('md-bin').checked=!!d.bin;
@@ -1380,9 +1391,6 @@ function delDoss(id){
   dossiers=dossiers.filter(function(x){return x.id!==id;});saveDoss();renderPipeline();
 }
 
-// ALEXIS
-function renderAlexis(){var who='alexis',d=D[who],st=getStats(who);var tct=document.getElementById('al-tab-content');if(!tct)return;var todayCt=d.contacts.length,wC=d.wd.reduce(function(a,b){return a+b;},0),wR=d.wr.reduce(function(a,b){return a+b;},0);tct.innerHTML='<div class="kg k4"><div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis — '+fmt(st.ca)+' TTC</div></div><div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'/'+OBJ_J+'</div></div><div class="kc gr"><div class="kl">RDV semaine</div><div class="kv sm" style="color:var(--green)">'+wR+'</div></div><div class="kc pu"><div class="kl">Contacts semaine</div><div class="kv sm" style="color:var(--pur)">'+wC+'</div></div></div><div class="stitle">Données identiques aux autres négociateurs — sélectionnez Alexis dans la sidebar pour accéder à son journal complet.</div>';}
-
 // DIRECTION
 function renderDir(){var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';
 // AFFICHAGE OBJECTIFS PERSONNALISÉS
@@ -1431,6 +1439,25 @@ function exportCSV(){
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='Mansion_Compromis_'+new Date().toISOString().slice(0,10)+'.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function exportFullBackup(){
+  // Sauvegarde complète JSON de TOUTES les données (agents + dossiers + objectifs + fichiers en attente)
+  var backup={
+    timestamp:new Date().toISOString(),
+    version:'1.0',
+    agency:'Mansion Aquitaine',
+    agents:D,
+    dossiers:dossiers,
+    objectifs:OBJECTIFS_NEGO,
+    pendingFiles:pendingFiles
+  };
+  var json=JSON.stringify(backup,null,2);
+  var blob=new Blob([json],{type:'application/json;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='Mansion_Backup_'+new Date().toISOString().slice(0,10)+'_'+new Date().toISOString().slice(11,16).replace(':','h')+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
 }
 
 // ====== CLIENTS UNIFIÉS ======
