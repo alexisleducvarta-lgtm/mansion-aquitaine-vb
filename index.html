@@ -685,7 +685,62 @@ function calcProgPer(c,caB){var part=c.ttc*(c.bin?.5:1),com=0,caS=caB,r=part;for
 function activePal(ca){var p=PALIERS[0];for(var i=0;i<PALIERS.length;i++){if(ca>=PALIERS[i].min)p=PALIERS[i];}return p;}
 function fixeCom(ttc,bin,t){return ttc*(t/100)*(bin?.5:1);}
 function comForWho(who,c,caB){if(SAL.indexOf(who)>=0)return swanCom(c.ttc,c.type,c.bin);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
-function getStats(who){var d=D[who],ca=0,com=0;if(SAL.indexOf(who)>=0){d.compromis.forEach(function(c){ca+=c.ttc;com+=swanCom(c.ttc,c.type,c.bin);});}else if(PROG.indexOf(who)>=0){var r=calcProg(who);ca=r.ca;com=r.com;}else{var t=TAUX_FIXE[who]||50;d.compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});}return{ca:ca,com:com,nb:d.compromis.length};}
+function getDossiersForWho(who){
+  // Récupère les dossiers du Pipeline (étapes Compromis ou Acte) attribués à ce négo
+  // Les retourne au format compromis pour réutilisation des calculs
+  var name=NAMES[who];
+  var list=[];
+  dossiers.forEach(function(d){
+    if(d.stage!=='compromis'&&d.stage!=='acte')return;
+    var isNeg=d.neg===name;
+    var isNeg2=d.bin&&d.neg2===name;
+    if(!isNeg&&!isNeg2)return;
+    // Si binôme, chaque négo voit le dossier comme un compromis "binôme"
+    // Le calcul de commission prendra le bin en compte
+    list.push({
+      ttc:d.fee||0,
+      type:d.type_mandat||'Simple',
+      bin:!!d.bin,
+      bnom:d.bin?(isNeg?d.neg2:d.neg):'',
+      es:'entree',
+      nom:d.client||d.ref||'',
+      _fromPipeline:true,
+      _stage:d.stage,
+      _id:d.id
+    });
+  });
+  return list;
+}
+function getStats(who){
+  var d=D[who],ca=0,com=0;
+  // 1) Compromis personnels (tableau historique)
+  var pers=d.compromis||[];
+  // 2) Dossiers du Pipeline (compromis + acte)
+  var fromPipe=getDossiersForWho(who);
+  // Concaténer les 2
+  var all=pers.concat(fromPipe);
+  if(SAL.indexOf(who)>=0){
+    all.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=swanCom(c.ttc,c.type,c.bin);});
+  }else if(PROG.indexOf(who)>=0){
+    // Pour les progressifs, on doit recalculer avec la totalité
+    var r=calcProgAll(who,all);ca=r.ca;com=r.com;
+  }else{
+    var t=TAUX_FIXE[who]||50;
+    all.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=fixeCom(c.ttc,c.bin,t);});
+  }
+  return{ca:ca,com:com,nb:all.length};
+}
+function calcProgAll(who,all){
+  // Comme calcProg mais sur une liste donnée
+  var ca=0,com=0;
+  all.forEach(function(c){
+    var cval=c.ttc*(c.bin?.5:1);
+    var pal=activePal(ca);
+    ca+=cval;
+    com+=cval*(pal.t/100);
+  });
+  return{ca:ca,com:com};
+}
 
 // NAV
 function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});}
@@ -961,7 +1016,31 @@ function delComp(who,idx){
   if(!confirm('Êtes-vous sûr de vouloir supprimer ce compromis ?'))return;
   D[who].compromis.splice(idx,1);save(who);renderComp();renderNeg();
 }
-function renderComp(){var who=curWho;if(!who)return;var d=D[who],st=getStats(who);setEl('cp-fees',fmt(st.ca));setEl('cp-com',fmt(st.com));pBar(st.ca,OBJ_FEES,'cp-pb');setEl('cp-obj-lbl','Obj. : '+fmt(OBJ_FEES)+' TTC');setEl('cp-reste',st.ca>=OBJ_FEES?'Objectif atteint !':'Reste '+fmt(Math.max(0,OBJ_FEES-st.ca)));var tb=document.getElementById('comp-tbody');if(!tb)return;if(!d.compromis.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}var h='',totCom=0,caA=0;d.compromis.forEach(function(c,i){var cv=comForWho(who,c,caA);totCom+=cv;caA+=c.ttc*(c.bin?.5:1);var mc=MPC[c.type]||'';h+='<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td style="color:var(--txt);font-weight:500;">'+escH(c.nom)+'</td><td style="color:var(--or);">'+fmt(c.ttc)+'</td><td>'+(c.type&&c.type!=='—'?'<span class="pill '+mc+'">'+c.type+'</span>':'—')+'</td><td><span class="pill '+(c.es==='entree'?'p-gr':'p-bl')+'">'+(c.es==='entree'?'E':'S')+'</span></td><td>'+(c.bin?'<span class="pill p-pu">'+escH(c.bnom||'—')+'</span>':'<span class="pill p-gy">Solo</span>')+'</td><td style="color:var(--green);font-weight:500;">'+fmt(cv)+'</td><td><button class="bs" onclick="editComp('+i+')" style="font-size:9px;padding:2px 5px;">✏️</button> <button class="bd" onclick="delComp(\''+who+'\','+i+')">×</button></td></tr>';});tb.innerHTML=h;var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='<tr><td colspan="6">TOTAL</td><td style="color:var(--green);">'+fmt(totCom)+'</td><td></td></tr>';}
+function renderComp(){
+  var who=curWho;if(!who)return;
+  var d=D[who],st=getStats(who);
+  setEl('cp-fees',fmt(st.ca));setEl('cp-com',fmt(st.com));
+  pBar(st.ca,OBJ_FEES,'cp-pb');
+  setEl('cp-obj-lbl','Obj. : '+fmt(OBJ_FEES)+' TTC');
+  setEl('cp-reste',st.ca>=OBJ_FEES?'Objectif atteint !':'Reste '+fmt(Math.max(0,OBJ_FEES-st.ca)));
+  var tb=document.getElementById('comp-tbody');if(!tb)return;
+  // Combiner les 2 sources
+  var pers=(d.compromis||[]).map(function(c,i){var x=Object.assign({},c);x._fromPipeline=false;x._persIdx=i;return x;});
+  var fromPipe=getDossiersForWho(who);
+  var all=pers.concat(fromPipe);
+  if(!all.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}
+  var h='',totCom=0,caA=0;
+  all.forEach(function(c,i){
+    var cv=comForWho(who,c,caA);totCom+=cv;caA+=c.ttc*(c.bin?.5:1);
+    var mc=MPC[c.type]||'';
+    var sourceBadge=c._fromPipeline?'<span class="pill p-or" style="font-size:9px;">📂 '+(c._stage==='acte'?'Acte':'Compromis')+'</span>':'';
+    var actionBtn=c._fromPipeline?'<span style="font-size:9px;color:var(--txt3);">Modifier dans Pipeline</span>':'<button class="bs" onclick="editComp('+c._persIdx+')" style="font-size:9px;padding:2px 5px;">✏️</button> <button class="bd" onclick="delComp(\''+who+'\','+c._persIdx+')">×</button>';
+    h+='<tr><td style="color:var(--txt3);font-size:10px;">'+(i+1)+'</td><td style="color:var(--txt);font-weight:500;">'+escH(c.nom)+' '+sourceBadge+'</td><td style="color:var(--or);">'+fmt(c.ttc)+'</td><td>'+(c.type&&c.type!=='—'?'<span class="pill '+mc+'">'+c.type+'</span>':'—')+'</td><td><span class="pill '+(c.es==='entree'?'p-gr':'p-bl')+'">'+(c.es==='entree'?'E':'S')+'</span></td><td>'+(c.bin?'<span class="pill p-pu">'+escH(c.bnom||'—')+'</span>':'<span class="pill p-gy">Solo</span>')+'</td><td style="color:var(--green);font-weight:500;">'+fmt(cv)+'</td><td>'+actionBtn+'</td></tr>';
+  });
+  tb.innerHTML=h;
+  var tf=document.getElementById('comp-tfoot');
+  if(tf)tf.innerHTML='<tr><td colspan="6">TOTAL</td><td style="color:var(--green);">'+fmt(totCom)+'</td><td></td></tr>';
+}
 
 // INDICATEURS
 function drawMeter(id,pct,color){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext('2d');c.width=60;c.height=60;ctx.clearRect(0,0,60,60);ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,2.25*Math.PI);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();var pv=Math.min(pct/100,1);if(pv>0){ctx.beginPath();ctx.arc(30,30,22,.75*Math.PI,(.75+1.5*pv)*Math.PI);ctx.strokeStyle=color;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();}ctx.fillStyle=color;ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.round(pct)+'%',30,30);}
