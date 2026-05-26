@@ -198,7 +198,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .ct-card-lbl{color:var(--txt3);text-transform:uppercase;font-size:9px;letter-spacing:.3px;white-space:nowrap;}
 .ct-card-val{color:var(--txt2);}
 .ct-card-notes{font-size:10px;color:var(--txt3);margin-top:5px;font-style:italic;}
-.ct-card-del{position:absolute;top:8px;right:8px;}
+.ct-card-del{display:flex;gap:4px;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px solid var(--border);}
 .ct-empty{text-align:center;padding:20px;color:var(--txt3);font-size:11px;}
 
 .na{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:11px;color:var(--txt2);resize:vertical;min-height:40px;margin-top:4px;font-family:inherit;outline:none;}
@@ -390,8 +390,10 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <input type="hidden" id="md-edit-id" value="">
     <div class="fct">Référence</div>
     <input class="ci" type="text" id="md-ref" placeholder="12 rue des Lilas">
-    <div class="fct" style="margin-top:8px;">Négociateur</div>
+    <div class="fct" style="margin-top:8px;">Négociateur principal</div>
     <select class="ci" id="md-neg"><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Laurent</option><option>Alexis Leduc</option></select>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><input type="checkbox" id="md-bin" style="width:auto;accent-color:var(--or);" onchange="document.getElementById('md-neg2-wrap').style.display=this.checked?'block':'none';"><label for="md-bin" style="font-size:10px;color:var(--txt2);">Dossier en binôme (50/50 commission)</label></div>
+    <div id="md-neg2-wrap" style="display:none;"><div class="fct" style="margin-top:8px;">Co-négociateur</div><select class="ci" id="md-neg2"><option value="">— Choisir —</option><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Laurent</option><option>Alexis Leduc</option></select></div>
     <div class="fct" style="margin-top:8px;">Honoraires TTC (€)</div>
     <input class="ci" type="number" id="md-fee" placeholder="9500">
     <div class="fct" style="margin-top:8px;">Étape</div>
@@ -640,9 +642,15 @@ function renderNeg(){
     setEl('neg-title',NAMES[who]);
     setEl('neg-sub',ROLES[who]+' · Mansion Aquitaine');
     setEl('neg-date',now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}));
-    var todayCt=d.contacts.length;
-    var wR=d.wr.reduce(function(a,b){return a+b;},0);
-    var wM=d.wm.reduce(function(a,b){return a+b;},0);
+    // Compter depuis les VRAIS contacts du Journal
+    var today=fmtDate(now);
+    var wr=getMonday(now);wr.setHours(0,0,0,0);
+    var wrEnd=new Date(wr);wrEnd.setDate(wrEnd.getDate()+6);
+    var wrStart=fmtDate(wr),wrEndStr=fmtDate(wrEnd);
+    var todayCt=d.contacts.filter(function(c){return(c.contact_date||'')===today;}).length;
+    var weekContacts=d.contacts.filter(function(c){var cd=c.contact_date||'';return cd>=wrStart&&cd<=wrEndStr;});
+    var wR=weekContacts.filter(function(c){return c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé';}).length;
+    var wM=weekContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
     document.getElementById('neg-kpis').innerHTML=
         '<div class="kc or"><div class="kl">Commission</div><div class="kv gold">'+fmt(st.com)+'</div><div class="ks">'+st.nb+' compromis</div></div>'+
         '<div class="kc bl"><div class="kl">Contacts aujourd\'hui</div><div class="kv sm" style="color:var(--blue)">'+todayCt+'</div><div class="ks">Obj. : '+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--blue);"></div></div></div>'+
@@ -791,12 +799,11 @@ function renderContacts(){
   var jt=document.getElementById('journal-title');if(jt)jt.textContent='Contacts ('+filtered.length+(filtered.length!==weekFiltered.length?'/'+weekFiltered.length:'')+')';
   var box=document.getElementById('contact-cards');if(!box)return;
   if(!filtered.length){box.innerHTML='<div class="ct-empty">'+(weekFiltered.length===0?'Aucun contact cette semaine — cliquez « + Ajouter »':'Aucun résultat avec ces filtres')+'</div>';return;}
-  var sorted=filtered.slice().sort(function(a,b){return(b.contact_date||'').localeCompare(a.contact_date||'');});
-  box.innerHTML=sorted.map(function(c){
+  // Fonction interne : rendu d'une carte
+  function renderCard(c){
     var realIdx=D[who].contacts.indexOf(c);
     var cc=CCLASS[c.canal]||'ca',mc=MPC[c.type_man]||'',url=gcalUrl(c);
     var statCol=c.statut==='Mandat signé'?'p-gr':c.statut==='RDV fixé'?'p-bl':c.statut==='RDV effectué'?'p-pu':c.statut==='Pas intéressé'?'p-re':'p-or';
-    var dateStr=c.contact_date?new Date(c.contact_date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}):'';
     var relanceUrgente=c.relance_date&&c.relance_date<=today&&c.statut!=='Mandat signé'&&c.statut!=='Pas intéressé';
     var border=relanceUrgente?'border-color:var(--red);box-shadow:0 0 0 1px rgba(192,68,74,.3);':'';
     var contacts='';
@@ -804,8 +811,25 @@ function renderContacts(){
     if(c.email)contacts+='<a href="mailto:'+escH(c.email)+'" style="font-size:10px;color:var(--pur);text-decoration:none;">✉️ '+escH(c.email)+'</a>';
     var tagsHtml='';
     if(c.tags&&c.tags.length){tagsHtml='<div style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;">#'+escH(t)+'</span>';}).join('')+'</div>';}
-    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(dateStr?' <span style="font-weight:normal;font-size:10px;color:var(--txt3);">· '+dateStr+'</span>':'')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:2px 6px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:2px 6px;margin-left:4px;">✏️</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="margin-left:4px;">×</button></div></div>';
-  }).join('');
+    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:3px 8px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:3px 8px;">✏️ Éditer</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="padding:3px 8px;">×</button></div></div>';
+  }
+  // GROUPEMENT PAR JOUR
+  var byDay={};
+  filtered.forEach(function(c){var d=c.contact_date||'sans-date';if(!byDay[d])byDay[d]=[];byDay[d].push(c);});
+  var days=Object.keys(byDay).sort().reverse(); // plus récent en premier
+  var h='';
+  days.forEach(function(d){
+    var contacts=byDay[d];
+    var isToday=d===today;
+    var dateLabel=d==='sans-date'?'Sans date':new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+    if(isToday)dateLabel='Aujourd\'hui · '+dateLabel;
+    var collapsed=!isToday; // tout sauf aujourd'hui est replié
+    var openAttr=collapsed?'':' open';
+    h+='<details'+openAttr+' style="margin-bottom:8px;"><summary style="cursor:pointer;font-size:11px;color:'+(isToday?'var(--or)':'var(--txt2)')+';font-weight:500;padding:6px 10px;background:var(--bg2);border:1px solid '+(isToday?'var(--borderor)':'var(--border)')+';border-radius:8px;display:flex;justify-content:space-between;align-items:center;list-style:none;">';
+    h+='<span>'+(isToday?'📅 ':'')+escH(dateLabel)+'</span><span style="font-size:10px;color:var(--txt3);">'+contacts.length+' contact'+(contacts.length>1?'s':'')+'</span></summary>';
+    h+='<div style="margin-top:6px;">'+contacts.map(renderCard).join('')+'</div></details>';
+  });
+  box.innerHTML=h;
 }
 
 // WEEK
@@ -888,6 +912,8 @@ function savePanel(){
     id:editId||Date.now(),
     ref:ref.trim(),
     neg:document.getElementById('md-neg').value,
+    bin:document.getElementById('md-bin').checked,
+    neg2:document.getElementById('md-bin').checked?(document.getElementById('md-neg2').value||'').trim():'',
     fee:parseFloat(document.getElementById('md-fee').value)||0,
     dateComp:document.getElementById('md-dcomp').value,
     dateActe:document.getElementById('md-dacte').value,
@@ -915,6 +941,9 @@ function savePanel(){
 function resetPanel(){
   ['md-ref','md-fee','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   var eid=document.getElementById('md-edit-id');if(eid)eid.value='';
+  var bb=document.getElementById('md-bin');if(bb)bb.checked=false;
+  var nn=document.getElementById('md-neg2');if(nn)nn.value='';
+  var nw=document.getElementById('md-neg2-wrap');if(nw)nw.style.display='none';
   var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Nouveau dossier';
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Enregistrer';
 }
@@ -924,6 +953,9 @@ function editDoss(id){
   document.getElementById('md-edit-id').value=id;
   document.getElementById('md-ref').value=d.ref||'';
   document.getElementById('md-neg').value=d.neg||'Swan Dumas';
+  document.getElementById('md-bin').checked=!!d.bin;
+  document.getElementById('md-neg2-wrap').style.display=d.bin?'block':'none';
+  if(document.getElementById('md-neg2'))document.getElementById('md-neg2').value=d.neg2||'';
   document.getElementById('md-fee').value=d.fee||'';
   document.getElementById('md-stage').value=d.stage||'mandat';
   document.getElementById('md-dcomp').value=d.dateComp||'';
@@ -998,7 +1030,7 @@ function renderPipeline(){
         alertHtml='<div style="margin-top:4px;background:rgba(192,68,74,.15);border:1px solid rgba(192,68,74,.3);border-radius:5px;padding:3px 6px;font-size:9px;color:var(--red);">⚠️ '+check.missing.length+' pièce'+(check.missing.length>1?'s':'')+' manquante'+(check.missing.length>1?'s':'')+'</div>';
       }
       var prev=STAGES[STAGES.indexOf(stage)-1];
-      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+(d.bin&&d.neg2?' <span style="color:var(--pur);">+ '+escH(d.neg2)+'</span>':'')+(d.bin?' <span class="pill p-pu" style="font-size:9px;">Binôme 50/50</span>':'')+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">'+(prev?'<button class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:2px 5px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:2px 5px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button class="bs" onclick="editDoss('+d.id+')" style="font-size:9px;padding:2px 5px;margin-left:auto;">✏️</button><button class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
     }).join('');
     return'<div class="kb-col"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';
   }).join('');
