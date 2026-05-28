@@ -314,7 +314,9 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
           <div><div class="fct">Canal</div><select class="ci" id="cf-canal"><option>Pige</option><option>Boîtage</option><option>Porte à porte</option><option>Téléphone</option><option>Réseau / Parrainage</option><option>Autre</option></select></div>
           <div><div class="fct">Catégorie</div><select class="ci" id="cf-cat"><option>Vendeur</option><option>Acquéreur</option><option>Propriétaire</option><option>Investisseur</option><option>Locataire</option><option>Autre</option></select></div>
           <div><div class="fct">Secteur</div><input class="ci" type="text" id="cf-secteur" placeholder="Quartier / ville"></div>
-          <div><div class="fct">RDV (nom)</div><input class="ci" type="text" id="cf-rdv" placeholder="Nom du RDV"></div>
+          <div><div class="fct">RDV (nom/objet)</div><input class="ci" type="text" id="cf-rdv" placeholder="ex: Estimation maison"></div>
+          <div><div class="fct">Date du RDV</div><input class="ci" type="date" id="cf-rdv-date"></div>
+          <div><div class="fct">Heure du RDV</div><input class="ci" type="time" id="cf-rdv-heure"></div>
           <div><div class="fct">Mandat</div><select class="ci" id="cf-mandat"><option>—</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select></div>
           <div><div class="fct">Statut</div><select class="ci" id="cf-statut"><option>À rappeler</option><option>RDV fixé</option><option>RDV effectué</option><option>Mandat signé</option><option>Pas intéressé</option><option>En attente</option></select></div>
           <div><div class="fct">Relance</div><input class="ci" type="date" id="cf-relance"></div>
@@ -671,7 +673,81 @@ function fmt(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function setEl(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function pBar(v,m,id){var e=document.getElementById(id);if(e)e.style.width=Math.min(Math.round(v/m*100),100)+'%';}
-function gcalUrl(c){if(!c.relance_date)return null;try{var d=new Date(c.relance_date+'T'+(c.relance_heure||'10:00')+':00');var dE=new Date(d.getTime()+30*60000);var f=function(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';};return'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Relance — '+(c.nom||'Contact'))+'&dates='+f(d)+'/'+f(dE)+'&sf=true&output=xml';}catch(e){return null;}}
+function buildEventData(c,type){
+  // type='rdv' ou 'relance'. Retourne {title, start, end, desc, location} ou null
+  var dateStr,heureStr,title;
+  if(type==='rdv'){
+    if(!c.rdv_date)return null;
+    dateStr=c.rdv_date;heureStr=c.rdv_heure||'10:00';
+    title='RDV '+(c.nom||'Contact')+(c.categorie?' ('+c.categorie+')':'');
+  }else{
+    if(!c.relance_date)return null;
+    dateStr=c.relance_date;heureStr=c.relance_heure||'10:00';
+    title='Relance — '+(c.nom||'Contact');
+  }
+  try{
+    var start=new Date(dateStr+'T'+heureStr+':00');
+    var end=new Date(start.getTime()+60*60000); // 1h par défaut
+    var descParts=[];
+    if(c.tel)descParts.push('Tél : '+c.tel);
+    if(c.email)descParts.push('Email : '+c.email);
+    if(c.categorie)descParts.push('Catégorie : '+c.categorie);
+    if(c.rdv&&type==='rdv')descParts.push('Objet : '+c.rdv);
+    if(c.notes)descParts.push('Notes : '+c.notes);
+    descParts.push('— Mansion Aquitaine');
+    return{title:title,start:start,end:end,desc:descParts.join('\n'),location:c.secteur||''};
+  }catch(e){return null;}
+}
+function gcalUrl(c,type){
+  type=type||'relance';
+  var ev=buildEventData(c,type);if(!ev)return null;
+  var f=function(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';};
+  return'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(ev.title)+'&dates='+f(ev.start)+'/'+f(ev.end)+'&details='+encodeURIComponent(ev.desc)+'&location='+encodeURIComponent(ev.location)+'&sf=true&output=xml';
+}
+function outlookUrl(c,type){
+  type=type||'relance';
+  var ev=buildEventData(c,type);if(!ev)return null;
+  return'https://outlook.live.com/calendar/0/deeplink/compose?subject='+encodeURIComponent(ev.title)+'&startdt='+ev.start.toISOString()+'&enddt='+ev.end.toISOString()+'&body='+encodeURIComponent(ev.desc)+'&location='+encodeURIComponent(ev.location)+'&path=/calendar/action/compose';
+}
+function downloadICS(contactId,type){
+  // Génère et télécharge un fichier .ics (Apple Calendar, Outlook desktop, etc.)
+  var who=curWho;if(!who)return;
+  var c=D[who].contacts.find(function(x){return x.id==contactId;});
+  if(!c)return;
+  var ev=buildEventData(c,type);if(!ev){alert('Pas de date renseignée pour cet événement.');return;}
+  var f=function(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';};
+  var ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mansion Aquitaine//Dashboard//FR','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:'+Date.now()+'@mansion-aquitaine','DTSTAMP:'+f(new Date()),'DTSTART:'+f(ev.start),'DTEND:'+f(ev.end),'SUMMARY:'+ev.title.replace(/,/g,'\\,'),'DESCRIPTION:'+ev.desc.replace(/\n/g,'\\n').replace(/,/g,'\\,'),'LOCATION:'+ev.location.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:Rappel','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=(ev.title.replace(/[^a-z0-9]/gi,'_'))+'.ics';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+function calendarMenu(contactId,type){
+  // Affiche un mini-menu avec les 3 options
+  var who=curWho;if(!who)return;
+  var c=D[who].contacts.find(function(x){return x.id==contactId;});
+  if(!c)return;
+  var g=gcalUrl(c,type),o=outlookUrl(c,type);
+  var existing=document.getElementById('cal-menu-'+contactId);
+  if(existing){existing.remove();return;}
+  var menu=document.createElement('div');
+  menu.id='cal-menu-'+contactId;
+  menu.style.cssText='position:fixed;background:var(--bg1);border:1px solid var(--borderor);border-radius:8px;padding:6px;z-index:1000;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:4px;min-width:180px;';
+  menu.innerHTML='<a href="'+g+'" target="_blank" onclick="this.parentNode.remove()" style="text-decoration:none;color:var(--txt);font-size:11px;padding:6px 8px;border-radius:5px;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">📅 Google Agenda</a><a href="'+o+'" target="_blank" onclick="this.parentNode.remove()" style="text-decoration:none;color:var(--txt);font-size:11px;padding:6px 8px;border-radius:5px;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">📧 Outlook</a><a onclick="downloadICS('+contactId+',\''+type+'\');this.parentNode.remove()" style="cursor:pointer;text-decoration:none;color:var(--txt);font-size:11px;padding:6px 8px;border-radius:5px;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">🍎 Apple / Autre (.ics)</a>';
+  document.body.appendChild(menu);
+  // Positionner près du curseur
+  var ev=window.event;
+  var x=ev?ev.clientX:200,y=ev?ev.clientY:200;
+  menu.style.left=Math.min(x,window.innerWidth-200)+'px';
+  menu.style.top=Math.min(y,window.innerHeight-150)+'px';
+  // Fermer au clic ailleurs
+  setTimeout(function(){
+    document.addEventListener('click',function closeMenu(e){
+      if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',closeMenu);}
+    });
+  },100);
+}
 
 function swanCom(ttc,type,bin){return(ttc/TVA)*(SWAN_RATES[type]||.10)*(bin?.5:1);}
 function calcProg(who){var ca=0;D[who].compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);});var com=0;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(ca<=p.min)break;com+=(Math.min(ca,mx)-p.min)*p.t/100;}return{ca:ca,com:com};}
@@ -835,7 +911,7 @@ function toggleContactForm(){
   else{f.style.display='none';b.textContent='+ Ajouter';resetContactForm();}
 }
 function resetContactForm(){
-  ['cf-nom','cf-secteur','cf-rdv','cf-notes','cf-relance','cf-tel','cf-email','cf-tags'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['cf-nom','cf-secteur','cf-rdv','cf-rdv-date','cf-rdv-heure','cf-notes','cf-relance','cf-tel','cf-email','cf-tags'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('cf-date').value=fmtDate(new Date());document.getElementById('cf-edit-idx').value='-1';
   ['cf-canal','cf-cat','cf-mandat','cf-statut'].forEach(function(id){var e=document.getElementById(id);if(e)e.selectedIndex=0;});
 }
@@ -849,6 +925,8 @@ function editContact(idx){
   document.getElementById('cf-email').value=c.email||'';
   document.getElementById('cf-canal').value=c.canal||'Pige';document.getElementById('cf-cat').value=c.categorie||'Vendeur';
   document.getElementById('cf-secteur').value=c.secteur||'';document.getElementById('cf-rdv').value=c.rdv||'';
+  if(document.getElementById('cf-rdv-date'))document.getElementById('cf-rdv-date').value=c.rdv_date||'';
+  if(document.getElementById('cf-rdv-heure'))document.getElementById('cf-rdv-heure').value=c.rdv_heure||'';
   document.getElementById('cf-mandat').value=c.type_man||'—';document.getElementById('cf-statut').value=c.statut||'À rappeler';
   document.getElementById('cf-relance').value=c.relance_date||'';document.getElementById('cf-notes').value=c.notes||'';
   document.getElementById('cf-tags').value=(c.tags||[]).join(', ');
@@ -859,7 +937,7 @@ function submitContact(){
   var who=curWho;if(!who)return;var nom=(document.getElementById('cf-nom').value||'').trim();
   if(!nom){alert('Le nom est requis.');return;}
   var tags=(document.getElementById('cf-tags').value||'').split(',').map(function(t){return t.trim();}).filter(function(t){return t;});
-  var data={id:Date.now(),nom:nom,contact_date:document.getElementById('cf-date').value||fmtDate(new Date()),tel:(document.getElementById('cf-tel').value||'').trim(),email:(document.getElementById('cf-email').value||'').trim(),canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim(),tags:tags};
+  var data={id:Date.now(),nom:nom,contact_date:document.getElementById('cf-date').value||fmtDate(new Date()),tel:(document.getElementById('cf-tel').value||'').trim(),email:(document.getElementById('cf-email').value||'').trim(),canal:document.getElementById('cf-canal').value,categorie:document.getElementById('cf-cat').value,secteur:(document.getElementById('cf-secteur').value||'').trim(),rdv:(document.getElementById('cf-rdv').value||'').trim(),rdv_date:(document.getElementById('cf-rdv-date')||{}).value||'',rdv_heure:(document.getElementById('cf-rdv-heure')||{}).value||'',nb_rdv:0,nb_man:0,type_man:document.getElementById('cf-mandat').value,statut:document.getElementById('cf-statut').value,relance_date:document.getElementById('cf-relance').value||'',relance_heure:'',notes:(document.getElementById('cf-notes').value||'').trim(),tags:tags};
   var editIdx=parseInt(document.getElementById('cf-edit-idx').value);
   if(editIdx>=0&&editIdx<D[who].contacts.length){data.id=D[who].contacts[editIdx].id||Date.now();D[who].contacts[editIdx]=data;}else{D[who].contacts.push(data);}
   save(who);resetContactForm();document.getElementById('contact-form').style.display='none';document.getElementById('btn-add-contact').textContent='+ Ajouter';renderContacts();renderNeg();
@@ -942,7 +1020,7 @@ function renderContacts(){
     if(c.email)contacts+='<a href="mailto:'+escH(c.email)+'" style="font-size:10px;color:var(--pur);text-decoration:none;">✉️ '+escH(c.email)+'</a>';
     var tagsHtml='';
     if(c.tags&&c.tags.length){tagsHtml='<div style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;">#'+escH(t)+'</span>';}).join('')+'</div>';}
-    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv)+'</span></div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span>'+(url?' <a href="'+url+'" target="_blank" class="gcal-btn">Agenda</a>':'')+'</div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:3px 8px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:3px 8px;">✏️ Éditer</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="padding:3px 8px;">×</button></div></div>';
+    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv||c.rdv_date?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv||'')+(c.rdv_date?' '+new Date(c.rdv_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(c.rdv_heure?' à '+c.rdv_heure:''):'')+'</span>'+(c.rdv_date?' <a onclick="calendarMenu('+c.id+',\'rdv\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a>':'')+'</div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span> <a onclick="calendarMenu('+c.id+',\'relance\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a></div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:3px 8px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:3px 8px;">✏️ Éditer</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="padding:3px 8px;">×</button></div></div>';
   }
   // GROUPEMENT PAR JOUR
   var byDay={};
@@ -1292,14 +1370,11 @@ function resetPanel(){
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Enregistrer';
 }
 function editDoss(id){
-  console.log('[editDoss] appelée avec id:',id,'(type:',typeof id,')');
   var d=dossiers.find(function(x){return x.id==id;});
-  console.log('[editDoss] dossier trouvé:',d?d.ref:'NON TROUVÉ');
   if(!d){alert('Dossier introuvable (id:'+id+'). Rechargez la page.');return;}
   resetPanel();
   openPanel();
   var eidEl=document.getElementById('md-edit-id');
-  console.log('[editDoss] md-edit-id element:',eidEl);
   if(eidEl)eidEl.value=String(d.id);
   document.getElementById('md-ref').value=d.ref||'';
   document.getElementById('md-neg').value=d.neg||'Swan Dumas';
@@ -1318,7 +1393,6 @@ function editDoss(id){
   document.getElementById('md-notes').value=d.notes||'';
   var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Modifier le dossier';
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Mettre à jour';
-  console.log('[editDoss] terminé, panel doit être visible');
 }
 function renderPipeline(){
   var filtered=getFilteredDossiers();
