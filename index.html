@@ -204,25 +204,83 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .na{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:11px;color:var(--txt2);resize:vertical;min-height:40px;margin-top:4px;font-family:inherit;outline:none;}
 .na:focus{border-color:var(--or);}
 
-@media (max-width: 768px) {
-  .shell { flex-direction: column; }
-  .sb { width: 100%; height: auto; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 0.5rem; flex-wrap: nowrap; align-items: center; }
-  .sb-logo, .sep { display: none; }
-  .sb-logo { display: flex; border:none; margin:0; padding:0 10px; }
-  .sbf { display:none; }
-  .ng { display: flex; align-items: center; margin-bottom: 0; padding: 0; }
-  .ngl { display: none; }
-  .ni { white-space: nowrap; margin-right: 5px; margin-bottom: 0; padding: 6px 10px; }
-  .kg.k4, .kg.k3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .kanban { grid-template-columns: 1fr; gap: 15px; }
-  .wr { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  /* Sidebar devient un menu hamburger coulissant */
+  .shell { flex-direction: row; }
+  .sb {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 240px; max-width: 80vw; height: 100vh;
+    flex-direction: column; overflow-y: auto;
+    transform: translateX(-100%); transition: transform .25s ease;
+    z-index: 1000; border-right: 1px solid var(--border);
+    box-shadow: 2px 0 12px rgba(0,0,0,.2);
+  }
+  .sb.mobile-open { transform: translateX(0); }
+  .sb-logo, .sep { display: flex; }
+  .sbf { display: flex; }
+  .ng { display: block; margin-bottom: .5rem; }
+  .ngl { display: block; }
+  .ni { white-space: nowrap; margin-bottom: 3px; padding: 9px 12px; font-size: 13px; }
+  /* Bouton hamburger */
+  .mobile-burger { display: flex !important; }
+  /* Overlay derrière le menu */
+  .mobile-overlay { display: block; }
+  .mobile-overlay.open { opacity: 1; pointer-events: auto; }
+  /* Main prend tout l'écran */
+  .main { padding-top: 52px; }
+  /* KPIs en 2 colonnes */
+  .kg.k4, .kg.k3 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .kv { font-size: 18px; }
+  .kv.sm { font-size: 15px; }
+  /* Kanban en colonne unique scrollable */
+  .kanban { grid-template-columns: 1fr; gap: 12px; }
+  /* Tableaux scrollables horizontalement */
+  .tbl { font-size: 10px; }
+  .wr { grid-template-columns: 1fr 1fr; }
   .fg { grid-template-columns: 1fr; }
+  /* Header pages */
+  .ph { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .pt { font-size: 16px; }
+  /* Sous-onglets scrollables */
+  .sub-tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .stab { white-space: nowrap; flex-shrink: 0; }
+  /* Slide panel plein écran sur mobile */
+  .slide-panel { width: 100%; max-width: 100%; }
+  /* Cartes contact plus aérées */
+  .ct-card-grid { grid-template-columns: 1fr 1fr; }
+  /* Grille équipe Direction en 2 colonnes */
+  #dir-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  /* Formulaire reporting en 2 colonnes */
+  #stc-reporting [style*="grid-template-columns:1fr 1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .kg.k4, .kg.k3 { grid-template-columns: 1fr 1fr; }
+  .ct-card-grid { grid-template-columns: 1fr; }
+  #dir-grid { grid-template-columns: 1fr !important; }
+  .pt { font-size: 15px; }
+  .kv { font-size: 16px; }
+}
+/* Bouton hamburger (caché en desktop) */
+.mobile-burger {
+  display: none;
+  position: fixed; top: 8px; left: 8px; z-index: 1001;
+  width: 38px; height: 38px; border-radius: 9px;
+  background: var(--bg1); border: 1px solid var(--borderor);
+  align-items: center; justify-content: center; cursor: pointer;
+  color: var(--or);
+}
+.mobile-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
 }
 </style>
 </head>
 <body>
+<div class="mobile-burger" id="mobile-burger" onclick="toggleMobileMenu()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="toggleMobileMenu()"></div>
 <div class="shell">
-<div class="sb">
+<div class="sb" id="sidebar">
   <div class="sb-logo">
       <div class="lm"><div class="li"><svg viewBox="0 0 80 70" width="17" height="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 46 Q40 39 60 46" fill="#c9a84c"/><rect x="22" y="20" width="36" height="26" fill="#7a2228"/><rect x="14" y="26" width="12" height="20" fill="#7a2228"/><rect x="54" y="26" width="12" height="20" fill="#7a2228"/><path d="M18 26 L40 12 L62 26" fill="#5a1a1e"/><rect x="27" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="36" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="45" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/></svg></div><div class="bn" style="display:none;">Mansion<br>Aquitaine</div></div>
       <button class="btn-theme" onclick="toggleTheme()">🌓 Nuit/Jour</button>
@@ -278,6 +336,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="stab" id="stab-compromis" onclick="switchSub('compromis',this)">Compromis</button>
     <button class="stab" id="stab-perf" onclick="switchSub('perf',this)">Indicateurs</button>
     <button class="stab" id="stab-mensuel" onclick="switchSub('mensuel',this)">Vision mensuel</button>
+    <button class="stab" id="stab-reporting" onclick="switchSub('reporting',this)">📊 Sources</button>
   </div>
   <div class="subtab-content active" id="stc-journal">
     <!-- NAV SEMAINE -->
@@ -336,6 +395,23 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
   <div class="subtab-content" id="stc-perf"><div class="kg k4" id="perf-kpis"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.8rem;" id="perf-meters"></div><div id="perf-alerts"></div></div>
   <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw" style="margin-top:8px;"><div class="cwt">Évolution 12 derniers mois — Contacts, RDV vendeurs, Mandats</div><div style="position:relative;width:100%;height:200px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-history"></div><details style="margin-top:10px;"><summary style="cursor:pointer;font-size:11px;color:var(--or);font-weight:500;padding:8px 12px;background:var(--bg2);border:1px solid var(--borderor);border-radius:8px;list-style:none;">✏️ Saisir manuellement les chiffres d'un mois passé (rattrapage historique)</summary><div id="mens-manual" style="margin-top:8px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;"></div></details><div id="mens-alerts" style="margin-top:8px;"></div></div>
+  <div class="subtab-content" id="stc-reporting">
+    <div class="kg k4" id="rep-kpis"></div>
+    <!-- Saisie boîtage -->
+    <div style="background:var(--bg2);border:1px solid var(--borderor);border-radius:11px;padding:12px;margin:10px 0;">
+      <div style="font-family:Georgia,serif;font-size:13px;color:var(--or);margin-bottom:8px;">📬 Saisie boîtage / Porte-à-porte</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;align-items:end;">
+        <div><div class="fct">Date</div><input type="date" id="rep-bt-date" class="ci" style="margin:0;padding:5px 6px;font-size:11px;"></div>
+        <div><div class="fct">Type</div><select id="rep-bt-type" class="ci" style="margin:0;padding:5px 6px;font-size:11px;"><option value="boitage">📬 Boîtage (BAL)</option><option value="pap">🚪 Porte-à-porte</option></select></div>
+        <div><div class="fct">Quantité</div><input type="number" min="0" id="rep-bt-qty" class="ci" placeholder="ex: 150" style="margin:0;padding:5px 6px;font-size:11px;"></div>
+        <div><div class="fct">Secteur/Îlot</div><input type="text" id="rep-bt-secteur" class="ci" placeholder="ex: Centre Langon" style="margin:0;padding:5px 6px;font-size:11px;"></div>
+      </div>
+      <button class="bs" style="margin-top:8px;background:var(--orb);border-color:var(--borderor);color:var(--or);" onclick="addBoitage()">+ Enregistrer la session</button>
+    </div>
+    <div id="rep-sources"></div>
+    <div class="cw" style="margin-top:8px;"><div class="cwt">CA généré par source de prospection</div><div style="position:relative;width:100%;height:200px;"><canvas id="rep-chart"></canvas></div></div>
+    <div id="rep-boitage-history"></div>
+  </div>
 </div>
 
 <div class="pg" id="pg-pipeline">
@@ -349,6 +425,11 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <span style="font-size:10px;color:var(--txt3);margin-left:auto;" id="pipe-month-count"></span>
   </div>
   <div class="kg k4" id="pipe-kpis"></div>
+  <!-- FILTRES NÉGO + RECHERCHE -->
+  <div style="display:flex;align-items:center;gap:6px;margin:8px 0;flex-wrap:wrap;">
+    <input type="text" id="pipe-search" placeholder="🔍 Rechercher (réf, client, adresse...)" oninput="renderPipeline()" class="ci" style="flex:1;min-width:160px;margin:0;padding:6px 10px;font-size:11px;">
+    <select id="pipe-filter-neg" onchange="renderPipeline()" class="ci" style="margin:0;padding:6px 8px;font-size:11px;width:auto;"><option value="">Tous les négociateurs</option><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Laurent</option><option>Alexis Leduc</option></select>
+  </div>
   <div id="pipe-alerts" style="margin-bottom:8px;"></div>
   <div class="kanban" id="kanban-board"></div>
 </div>
@@ -507,17 +588,24 @@ function getCurrentMonthStats(who){
   if(!d)return{rdv_vendeurs:0,mandats:0,compromis_ttc:0,yearMonth:yearMonth};
   var rangeContacts=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=rangeStart&&cd<=rangeEnd;});
   var rdv_vendeurs=rangeContacts.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
-  var mandats=rangeContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+  // Mandats : contacts Journal "Mandat signé" + dossiers Pipeline (tout dossier = mandat rentré)
+  var mandatsJournal=rangeContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+  var mandatsPipeline=0;
   var compromis_ttc=0;
   dossiers.forEach(function(dos){
+    var isNeg=dos.neg===NAMES[who];
+    var isNeg2=dos.bin&&dos.neg2===NAMES[who];
+    if(!isNeg&&!isNeg2)return;
+    // Un dossier Pipeline créé sur la période = un mandat rentré (toutes étapes)
+    if(dos.createdAt&&dos.createdAt>=rangeStart&&dos.createdAt<=rangeEnd){
+      mandatsPipeline+=dos.bin?0.5:1;
+    }
+    // Compromis TTC : seulement étapes compromis/acte
     if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=rangeStart&&dos.createdAt<=rangeEnd){
-      var isNeg=dos.neg===NAMES[who];
-      var isNeg2=dos.bin&&dos.neg2===NAMES[who];
-      if(isNeg||isNeg2){
-        compromis_ttc+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
-      }
+      compromis_ttc+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
     }
   });
+  var mandats=mandatsJournal+Math.round(mandatsPipeline);
   return{rdv_vendeurs:rdv_vendeurs,mandats:mandats,compromis_ttc:compromis_ttc,yearMonth:yearMonth};
 }
 function objStatus(actual,target){
@@ -590,7 +678,7 @@ var D={};ALL.forEach(function(w){D[w]=mkE();});
 var dossiers=[];
 var dirPinCode='1994',dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
-var charts={prosp:null,mens:null,dir:null};
+var charts={prosp:null,mens:null,dir:null,rep:null};
 var _saving=false; // Flag pour empêcher le listener Firebase de re-render pendant une action
 
 // ====== FIREBASE STORAGE ======
@@ -813,7 +901,17 @@ function calcProgAll(who,all){
 }
 
 // NAV
-function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});}
+function toggleMobileMenu(){
+  var sb=document.getElementById('sidebar'),ov=document.getElementById('mobile-overlay');
+  if(sb){sb.classList.toggle('mobile-open');}
+  if(ov){ov.classList.toggle('open');}
+}
+function closeMobileMenu(){
+  var sb=document.getElementById('sidebar'),ov=document.getElementById('mobile-overlay');
+  if(sb)sb.classList.remove('mobile-open');
+  if(ov)ov.classList.remove('open');
+}
+function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});closeMobileMenu();}
 function setFooter(n,r){setEl('cur-name',n);setEl('cur-role',r);}
 function goNeg(who,btn){clearAll();btn.classList.add('active');curWho=who;var c=COLORS[who];var av=document.getElementById('cur-av');if(av){av.textContent=INITS[who];av.style.background=c+'22';av.style.color=c;av.style.borderColor=c+'44';}setFooter(NAMES[who],ROLES[who]);document.getElementById('pg-neg').classList.add('active');curSub='journal';document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stab-journal').classList.add('active');document.getElementById('stc-journal').classList.add('active');renderNeg();}
 function goProsp(btn){clearAll();btn.classList.add('active');setFooter('Mansion Aquitaine','Prospection');document.getElementById('pg-prosp').classList.add('active');renderProsp();}
@@ -828,7 +926,7 @@ function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
 
-function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();}
+function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();}
 
 // --- RENDER NEG (compteurs RDV et Mandats séparés) ---
 function renderNeg(){
@@ -1294,6 +1392,105 @@ function saveManualMonth(){
   setTimeout(renderMensuel,300);
 }
 
+// ====== REPORTING SOURCES DE PROSPECTION ======
+function addBoitage(){
+  var who=curWho;if(!who)return;
+  var date=document.getElementById('rep-bt-date').value||fmtDate(new Date());
+  var type=document.getElementById('rep-bt-type').value;
+  var qty=parseInt(document.getElementById('rep-bt-qty').value)||0;
+  var secteur=(document.getElementById('rep-bt-secteur').value||'').trim();
+  if(qty<=0){alert('Indiquez une quantité.');return;}
+  D[who].boitage=D[who].boitage||[];
+  D[who].boitage.push({id:Date.now(),date:date,type:type,qty:qty,secteur:secteur});
+  save(who);
+  document.getElementById('rep-bt-qty').value='';
+  document.getElementById('rep-bt-secteur').value='';
+  renderReporting();
+}
+function delBoitage(id){
+  var who=curWho;if(!who)return;
+  if(!confirm('Supprimer cette session ?'))return;
+  D[who].boitage=(D[who].boitage||[]).filter(function(b){return b.id!==id;});
+  save(who);renderReporting();
+}
+function renderReporting(){
+  var who=curWho;if(!who)return;
+  var d=D[who];
+  // Définir les sources de prospection à analyser
+  var SOURCES=[
+    {key:'Pige',icon:'📞',color:'var(--blue)'},
+    {key:'Boîtage',icon:'📬',color:'var(--or)'},
+    {key:'Porte à porte',icon:'🚪',color:'var(--green)'},
+    {key:'Téléphone',icon:'☎️',color:'var(--pur)'},
+    {key:'Réseau / Parrainage',icon:'🤝',color:'var(--red)'},
+    {key:'Autre',icon:'📋',color:'var(--txt3)'}
+  ];
+  // Pour chaque source : nombre de contacts, RDV, mandats, et CA généré
+  var contacts=d.contacts||[];
+  var stats={};
+  SOURCES.forEach(function(s){stats[s.key]={contacts:0,rdv:0,mandats:0,ca:0};});
+  contacts.forEach(function(c){
+    var canal=c.canal||'Autre';
+    if(!stats[canal])stats[canal]={contacts:0,rdv:0,mandats:0,ca:0};
+    stats[canal].contacts++;
+    if(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé')stats[canal].rdv++;
+    if(c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—'))stats[canal].mandats++;
+  });
+  // CA généré par source : croiser les dossiers Pipeline avec le canal du contact correspondant
+  // On matche par nom de client
+  var dossForWho=getDossiersForWho(who);
+  dossForWho.forEach(function(dos){
+    if(dos._stage!=='compromis'&&dos._stage!=='acte')return;
+    // Chercher le contact d'origine par nom
+    var nomNorm=normalizeName(dos.nom||'');
+    var matchContact=contacts.find(function(c){return normalizeName(c.nom)===nomNorm;});
+    var canal=matchContact?matchContact.canal:'Autre';
+    if(!stats[canal])stats[canal]={contacts:0,rdv:0,mandats:0,ca:0};
+    stats[canal].ca+=dos.ttc*(dos.bin?.5:1);
+  });
+  // KPIs globaux
+  var totalCA=0,totalBoitage=0,totalPAP=0;
+  Object.keys(stats).forEach(function(k){totalCA+=stats[k].ca;});
+  (d.boitage||[]).forEach(function(b){if(b.type==='boitage')totalBoitage+=b.qty;else totalPAP+=b.qty;});
+  document.getElementById('rep-kpis').innerHTML=
+    '<div class="kc or"><div class="kl">CA total généré</div><div class="kv gold">'+fmt(totalCA)+'</div></div>'+
+    '<div class="kc bl"><div class="kl">📬 BAL boîtées</div><div class="kv sm" style="color:var(--blue)">'+totalBoitage+'</div></div>'+
+    '<div class="kc gr"><div class="kl">🚪 Portes faites</div><div class="kv sm" style="color:var(--green)">'+totalPAP+'</div></div>'+
+    '<div class="kc pu"><div class="kl">Contacts total</div><div class="kv sm" style="color:var(--pur)">'+contacts.length+'</div></div>';
+  // Tableau détaillé par source
+  var sh='<div class="stitle">Performance par source</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Source</th><th>Contacts</th><th>RDV</th><th>Mandats</th><th>Tx conv.</th><th>CA généré</th></tr></thead><tbody>';
+  var orderedSources=Object.keys(stats).filter(function(k){return stats[k].contacts>0||stats[k].ca>0;}).sort(function(a,b){return stats[b].ca-stats[a].ca;});
+  orderedSources.forEach(function(k){
+    var s=stats[k];
+    var src=SOURCES.find(function(x){return x.key===k;})||{icon:'📋'};
+    var conv=s.contacts>0?Math.round(s.mandats/s.contacts*100):0;
+    sh+='<tr><td style="color:var(--txt);font-weight:500;">'+(src.icon||'📋')+' '+escH(k)+'</td><td>'+s.contacts+'</td><td>'+s.rdv+'</td><td>'+s.mandats+'</td><td style="color:'+(conv>=20?'var(--green)':conv>=10?'var(--or)':'var(--txt3)')+';">'+conv+'%</td><td style="color:var(--or);font-weight:500;">'+fmt(s.ca)+'</td></tr>';
+  });
+  sh+='</tbody></table></div></div>';
+  document.getElementById('rep-sources').innerHTML=sh;
+  // Graphique CA par source
+  var labels=orderedSources.length?orderedSources:['Aucune donnée'];
+  var data=orderedSources.length?orderedSources.map(function(k){return Math.round(stats[k].ca);}):[0];
+  var colors=orderedSources.map(function(k){var src=SOURCES.find(function(x){return x.key===k;});return src?src.color:'var(--txt3)';});
+  if(charts.rep){charts.rep.destroy();charts.rep=null;}
+  var rc=document.getElementById('rep-chart');
+  if(rc){
+    charts.rep=new Chart(rc,{type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:['#4a82c0','#c9a84c','#4a9c5d','#7a6cc0','#c0444a','#888'],borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#6b5f52',font:{size:10}}}}}});
+  }
+  // Historique boîtage
+  var bh='';
+  if(d.boitage&&d.boitage.length){
+    bh='<div class="stitle" style="margin-top:12px;">Historique boîtage / PAP</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Date</th><th>Type</th><th>Quantité</th><th>Secteur</th><th></th></tr></thead><tbody>';
+    d.boitage.slice().sort(function(a,b){return(b.date||'').localeCompare(a.date||'');}).forEach(function(b){
+      bh+='<tr><td>'+new Date(b.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'2-digit'})+'</td><td>'+(b.type==='boitage'?'📬 Boîtage':'🚪 PAP')+'</td><td style="color:var(--or);font-weight:500;">'+b.qty+'</td><td>'+escH(b.secteur||'—')+'</td><td><button class="bd" onclick="delBoitage('+b.id+')">×</button></td></tr>';
+    });
+    bh+='</tbody></table></div></div>';
+  }
+  document.getElementById('rep-boitage-history').innerHTML=bh;
+  // Pré-remplir date du jour
+  var btDate=document.getElementById('rep-bt-date');if(btDate&&!btDate.value)btDate.value=fmtDate(new Date());
+}
+
 // PROSPECTION
 function renderProsp(){var tC=0,tR=0,tM=0;ALL.forEach(function(w){var d=D[w];tC+=d.wd.reduce(function(a,b){return a+b;},0);tR+=d.wr.reduce(function(a,b){return a+b;},0);tM+=d.wm.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var d=D[w],tot=d.wd.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+d.wd.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+JNOMS.map(function(_,i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(D[w].wd[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return D[w].wd.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
@@ -1310,8 +1507,20 @@ function getPipeMonthRange(){
 }
 function getFilteredDossiers(){
   var mr=getPipeMonthRange();
-  if(!mr)return dossiers;
-  return dossiers.filter(function(d){var cd=d.createdAt||'';return cd>=mr.start&&cd<=mr.end;});
+  var fNeg=(document.getElementById('pipe-filter-neg')||{}).value||'';
+  var search=((document.getElementById('pipe-search')||{}).value||'').toLowerCase().trim();
+  return dossiers.filter(function(d){
+    // Filtre mois
+    if(mr){var cd=d.createdAt||'';if(cd<mr.start||cd>mr.end)return false;}
+    // Filtre négo (principal ou co-négo)
+    if(fNeg){if(d.neg!==fNeg&&!(d.bin&&d.neg2===fNeg))return false;}
+    // Recherche
+    if(search){
+      var hay=((d.ref||'')+' '+(d.client||'')+' '+(d.adresse||'')+' '+(d.neg||'')+' '+(d.neg2||'')+' '+(d.notaire||'')).toLowerCase();
+      if(hay.indexOf(search)<0)return false;
+    }
+    return true;
+  });
 }
 function openModal(){resetPanel();openPanel();}
 function openPanel(){document.getElementById('slide-overlay').classList.add('open');document.getElementById('slide-panel').classList.add('open');}
