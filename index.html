@@ -337,6 +337,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="stab" id="stab-perf" onclick="switchSub('perf',this)">Indicateurs</button>
     <button class="stab" id="stab-mensuel" onclick="switchSub('mensuel',this)">Vision mensuel</button>
     <button class="stab" id="stab-reporting" onclick="switchSub('reporting',this)">📊 Sources</button>
+    <button class="stab" id="stab-biens" onclick="switchSub('biens',this)">🏠 Biens/R1</button>
   </div>
   <div class="subtab-content active" id="stc-journal">
     <!-- NAV SEMAINE -->
@@ -411,6 +412,11 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <div id="rep-sources"></div>
     <div class="cw" style="margin-top:8px;"><div class="cwt">CA généré par source de prospection</div><div style="position:relative;width:100%;height:200px;"><canvas id="rep-chart"></canvas></div></div>
     <div id="rep-boitage-history"></div>
+  </div>
+  <div class="subtab-content" id="stc-biens">
+    <div class="kg k4" id="biens-kpis"></div>
+    <div style="font-size:10px;color:var(--txt3);margin:8px 0;">💡 Astuce : ajoutez une fiche bien depuis le Journal en cliquant sur 🏠 sur n'importe quel contact (idéal après un R1 non abouti pour garder photos + description).</div>
+    <div id="biens-list"></div>
   </div>
 </div>
 
@@ -497,6 +503,54 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <textarea class="na" id="md-notes" placeholder="Notes..."></textarea>
     <button class="bp" style="margin-top:10px;" id="md-submit-btn" onclick="savePanel()">Enregistrer</button>
     <button class="bs" style="width:100%;margin-top:6px;" onclick="closePanel()">Annuler</button>
+  </div>
+</div>
+
+<!-- SLIDE PANEL FICHE BIEN -->
+<div class="slide-overlay" id="bien-overlay" onclick="closeBienPanel()"></div>
+<div class="slide-panel" id="bien-panel">
+  <div class="slide-head">
+    <span class="slide-head-t" id="bien-panel-title">🏠 Fiche bien</span>
+    <button class="slide-close" onclick="closeBienPanel()">×</button>
+  </div>
+  <div class="slide-body">
+    <input type="hidden" id="bien-contact-id" value="">
+    <div style="font-size:11px;color:var(--txt2);margin-bottom:8px;" id="bien-contact-nom"></div>
+    <!-- PHOTOS -->
+    <div class="fct" style="color:var(--or);">📷 Photos du bien</div>
+    <div id="bien-photo-zone" style="border:2px dashed var(--borderor);border-radius:9px;padding:14px;text-align:center;background:var(--orl);cursor:pointer;margin:4px 0 8px;" onclick="document.getElementById('bien-photo-input').click()">
+      <div style="font-size:22px;">📷</div>
+      <div style="font-size:11px;color:var(--or);">Ajouter des photos</div>
+      <div style="font-size:9px;color:var(--txt3);">Max 10 MB par photo</div>
+      <input type="file" id="bien-photo-input" accept="image/*" multiple style="display:none;" onchange="uploadBienPhotos(event)">
+    </div>
+    <div id="bien-photo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;"></div>
+    <!-- INFOS BIEN -->
+    <div class="fct" style="color:var(--or);margin-top:6px;">Informations du bien</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div><div class="fct">Type</div><select class="ci" id="bien-type" style="margin:0;"><option>Maison</option><option>Appartement</option><option>Terrain</option><option>Immeuble</option><option>Local commercial</option><option>Autre</option></select></div>
+      <div><div class="fct">Surface (m²)</div><input class="ci" type="number" id="bien-surface" placeholder="120" style="margin:0;"></div>
+      <div><div class="fct">Pièces</div><input class="ci" type="number" id="bien-pieces" placeholder="5" style="margin:0;"></div>
+      <div><div class="fct">Chambres</div><input class="ci" type="number" id="bien-chambres" placeholder="3" style="margin:0;"></div>
+      <div><div class="fct">Prix souhaité (€)</div><input class="ci" type="number" id="bien-prix" placeholder="350000" style="margin:0;"></div>
+      <div><div class="fct">Prix estimé (€)</div><input class="ci" type="number" id="bien-prix-est" placeholder="320000" style="margin:0;"></div>
+    </div>
+    <div class="fct" style="margin-top:8px;">Adresse complète</div>
+    <input class="ci" type="text" id="bien-adresse" placeholder="12 rue des Lilas, 33000 Bordeaux">
+    <div class="fct" style="margin-top:8px;">Description détaillée</div>
+    <textarea class="na" id="bien-desc" placeholder="État, atouts, travaux à prévoir, environnement, exposition, points forts/faibles..." style="min-height:80px;"></textarea>
+    <!-- SUIVI R1 -->
+    <div class="fct" style="color:var(--or);margin-top:10px;">Suivi R1 / Relances</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div><div class="fct">Statut</div><select class="ci" id="bien-statut" style="margin:0;"><option>R1 effectué — à suivre</option><option>R2 à programmer</option><option>En réflexion</option><option>Mandat à venir</option><option>Perdu (autre agence)</option><option>Perdu (vendu seul)</option><option>Abandonné</option></select></div>
+      <div><div class="fct">Prochaine relance</div><input class="ci" type="date" id="bien-relance" style="margin:0;"></div>
+    </div>
+    <div class="fct" style="margin-top:8px;">Raison non-mandat (si applicable)</div>
+    <input class="ci" type="text" id="bien-raison" placeholder="ex: prix trop élevé, veut réfléchir, concurrence...">
+    <div class="fct" style="margin-top:8px;">Historique des échanges</div>
+    <textarea class="na" id="bien-historique" placeholder="Notes de suivi, appels, échanges..." style="min-height:60px;"></textarea>
+    <button class="bp" style="margin-top:10px;" onclick="saveBien()">Enregistrer la fiche bien</button>
+    <button class="bs" style="width:100%;margin-top:6px;" onclick="closeBienPanel()">Fermer</button>
   </div>
 </div>
 
@@ -837,6 +891,134 @@ function calendarMenu(contactId,type){
   },100);
 }
 
+// ====== FICHE BIEN (photos + description + suivi R1) ======
+function openBienPanel(contactId){
+  var who=curWho;if(!who)return;
+  var c=D[who].contacts.find(function(x){return x.id==contactId;});
+  if(!c)return;
+  document.getElementById('bien-overlay').classList.add('open');
+  document.getElementById('bien-panel').classList.add('open');
+  document.getElementById('bien-contact-id').value=contactId;
+  document.getElementById('bien-contact-nom').textContent='Contact : '+(c.nom||'—')+(c.secteur?' · '+c.secteur:'');
+  var b=c.bien||{};
+  document.getElementById('bien-type').value=b.type||'Maison';
+  document.getElementById('bien-surface').value=b.surface||'';
+  document.getElementById('bien-pieces').value=b.pieces||'';
+  document.getElementById('bien-chambres').value=b.chambres||'';
+  document.getElementById('bien-prix').value=b.prix||'';
+  document.getElementById('bien-prix-est').value=b.prixEst||'';
+  document.getElementById('bien-adresse').value=b.adresse||c.secteur||'';
+  document.getElementById('bien-desc').value=b.desc||'';
+  document.getElementById('bien-statut').value=b.statut||'R1 effectué — à suivre';
+  document.getElementById('bien-relance').value=b.relance||'';
+  document.getElementById('bien-raison').value=b.raison||'';
+  document.getElementById('bien-historique').value=b.historique||'';
+  renderBienPhotos(b.photos||[]);
+}
+function closeBienPanel(){
+  document.getElementById('bien-overlay').classList.remove('open');
+  document.getElementById('bien-panel').classList.remove('open');
+}
+var _bienPhotos=[];
+function renderBienPhotos(photos){
+  _bienPhotos=photos||[];
+  var grid=document.getElementById('bien-photo-grid');if(!grid)return;
+  grid.innerHTML=_bienPhotos.map(function(p,i){
+    return'<div style="position:relative;border-radius:6px;overflow:hidden;aspect-ratio:1;background:var(--bg3);"><a href="'+p.url+'" target="_blank"><img src="'+p.url+'" style="width:100%;height:100%;object-fit:cover;" loading="lazy"></a><button onclick="removeBienPhoto('+i+')" style="position:absolute;top:2px;right:2px;background:rgba(192,68,74,.9);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;">×</button></div>';
+  }).join('');
+}
+function uploadBienPhotos(evt){
+  var files=evt.target.files;if(!files||!files.length)return;
+  if(!storageRef){alert('Firebase Storage non configuré.');return;}
+  var contactId=document.getElementById('bien-contact-id').value;
+  for(var i=0;i<files.length;i++){(function(f){
+    if(f.size>10*1024*1024){alert(f.name+' dépasse 10 MB');return;}
+    if(!f.type.startsWith('image/')){alert(f.name+' n\'est pas une image');return;}
+    var path='mansion/biens/'+contactId+'_'+Date.now()+'_'+f.name;
+    var task=storageRef.child(path).put(f);
+    task.then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
+      _bienPhotos.push({url:url,path:path,name:f.name});
+      renderBienPhotos(_bienPhotos);
+    }).catch(function(e){alert('Erreur upload: '+e.message);});
+  })(files[i]);}
+  evt.target.value='';
+}
+function removeBienPhoto(idx){
+  var p=_bienPhotos[idx];
+  if(p&&storageRef){try{storageRef.child(p.path).delete();}catch(e){}}
+  _bienPhotos.splice(idx,1);
+  renderBienPhotos(_bienPhotos);
+}
+function saveBien(){
+  var who=curWho;if(!who)return;
+  var contactId=document.getElementById('bien-contact-id').value;
+  var idx=D[who].contacts.findIndex(function(x){return x.id==contactId;});
+  if(idx<0)return;
+  D[who].contacts[idx].bien={
+    type:document.getElementById('bien-type').value,
+    surface:document.getElementById('bien-surface').value,
+    pieces:document.getElementById('bien-pieces').value,
+    chambres:document.getElementById('bien-chambres').value,
+    prix:document.getElementById('bien-prix').value,
+    prixEst:document.getElementById('bien-prix-est').value,
+    adresse:document.getElementById('bien-adresse').value.trim(),
+    desc:document.getElementById('bien-desc').value.trim(),
+    statut:document.getElementById('bien-statut').value,
+    relance:document.getElementById('bien-relance').value,
+    raison:document.getElementById('bien-raison').value.trim(),
+    historique:document.getElementById('bien-historique').value.trim(),
+    photos:_bienPhotos,
+    updatedAt:fmtDate(new Date())
+  };
+  save(who);
+  closeBienPanel();
+  renderContacts();
+  if(curSub==='biens')renderBiens();
+}
+function renderBiens(){
+  var who=curWho;if(!who)return;
+  var d=D[who];
+  var biens=(d.contacts||[]).filter(function(c){return c.bien&&(c.bien.desc||c.bien.photos&&c.bien.photos.length||c.bien.surface);}).map(function(c){return{contact:c,b:c.bien};});
+  var box=document.getElementById('biens-list');if(!box)return;
+  // KPIs
+  var kp=document.getElementById('biens-kpis');
+  var total=biens.length;
+  var aSuivre=biens.filter(function(x){return x.b.statut&&x.b.statut.indexOf('suivre')>=0||x.b.statut==='R2 à programmer'||x.b.statut==='En réflexion'||x.b.statut==='Mandat à venir';}).length;
+  var perdus=biens.filter(function(x){return x.b.statut&&x.b.statut.indexOf('Perdu')>=0;}).length;
+  var caPotentiel=biens.reduce(function(s,x){var p=parseFloat(x.b.prixEst||x.b.prix||0);return s+(isNaN(p)?0:p);},0);
+  if(kp)kp.innerHTML='<div class="kc or"><div class="kl">Biens visités</div><div class="kv gold">'+total+'</div></div><div class="kc gr"><div class="kl">À suivre</div><div class="kv sm" style="color:var(--green)">'+aSuivre+'</div></div><div class="kc re"><div class="kl">Perdus</div><div class="kv sm" style="color:var(--red)">'+perdus+'</div></div><div class="kc bl"><div class="kl">Valeur potentielle</div><div class="kv sm" style="color:var(--blue)">'+fmt(caPotentiel)+'</div></div>';
+  if(!biens.length){box.innerHTML='<div class="ct-empty">Aucune fiche bien. Ajoutez-en depuis le Journal via le bouton 🏠 sur un contact.</div>';return;}
+  // Tri : à suivre en premier, perdus en dernier
+  biens.sort(function(a,b){
+    var aP=(a.b.statut||'').indexOf('Perdu')>=0||(a.b.statut||'').indexOf('Abandonné')>=0?1:0;
+    var bP=(b.b.statut||'').indexOf('Perdu')>=0||(b.b.statut||'').indexOf('Abandonné')>=0?1:0;
+    return aP-bP;
+  });
+  box.innerHTML=biens.map(function(x){
+    var c=x.contact,b=x.b;
+    var statCol=b.statut&&b.statut.indexOf('Perdu')>=0?'p-re':b.statut==='Mandat à venir'?'p-gr':b.statut&&b.statut.indexOf('Abandonné')>=0?'p-gy':'p-or';
+    var photosHtml=b.photos&&b.photos.length?'<div style="display:flex;gap:4px;margin-top:6px;overflow-x:auto;">'+b.photos.slice(0,5).map(function(p){return'<a href="'+p.url+'" target="_blank"><img src="'+p.url+'" style="width:60px;height:60px;object-fit:cover;border-radius:5px;border:1px solid var(--border);"></a>';}).join('')+(b.photos.length>5?'<div style="display:flex;align-items:center;color:var(--txt3);font-size:10px;padding:0 6px;">+'+(b.photos.length-5)+'</div>':'')+'</div>':'';
+    var infos=[];
+    if(b.type)infos.push(b.type);
+    if(b.surface)infos.push(b.surface+' m²');
+    if(b.pieces)infos.push(b.pieces+' pièces');
+    if(b.chambres)infos.push(b.chambres+' ch.');
+    var prixHtml='';
+    if(b.prix)prixHtml+='<span style="color:var(--or);">Souhaité : '+fmt(parseFloat(b.prix))+'</span>';
+    if(b.prixEst)prixHtml+=(prixHtml?' · ':'')+'<span style="color:var(--green);">Estimé : '+fmt(parseFloat(b.prixEst))+'</span>';
+    return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;"><div><div style="font-family:Georgia,serif;font-size:13px;color:var(--txt);font-weight:500;">'+escH(c.nom||'—')+'</div><div style="font-size:10px;color:var(--txt3);">'+escH(b.adresse||c.secteur||'')+'</div></div><span class="pill '+statCol+'" style="font-size:9px;">'+escH(b.statut||'')+'</span></div>'+
+      (infos.length?'<div style="font-size:10px;color:var(--txt2);margin-top:4px;">'+infos.join(' · ')+'</div>':'')+
+      (prixHtml?'<div style="font-size:11px;margin-top:3px;">'+prixHtml+'</div>':'')+
+      photosHtml+
+      (b.desc?'<div style="font-size:10px;color:var(--txt2);margin-top:6px;font-style:italic;background:var(--bg3);padding:6px 8px;border-radius:5px;">'+escH(b.desc)+'</div>':'')+
+      (b.raison?'<div style="font-size:10px;color:var(--red);margin-top:4px;">⚠ Raison non-mandat : '+escH(b.raison)+'</div>':'')+
+      (b.relance?'<div style="font-size:10px;color:var(--or);margin-top:4px;">🔔 Relance prévue : '+escH(b.relance)+'</div>':'')+
+      '<div style="display:flex;gap:5px;margin-top:8px;justify-content:flex-end;">'+(c.tel?'<a href="tel:'+escH(c.tel)+'" class="bs" style="font-size:9px;text-decoration:none;">📞 Appeler</a>':'')+'<button class="bs" onclick="openBienPanel('+c.id+')" style="font-size:9px;">✏️ Modifier</button></div>'+
+    '</div>';
+  }).join('');
+}
+
 function swanCom(ttc,type,bin){return(ttc/TVA)*(SWAN_RATES[type]||.10)*(bin?.5:1);}
 function calcProg(who){var ca=0;D[who].compromis.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);});var com=0;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(ca<=p.min)break;com+=(Math.min(ca,mx)-p.min)*p.t/100;}return{ca:ca,com:com};}
 function calcProgPer(c,caB){var part=c.ttc*(c.bin?.5:1),com=0,caS=caB,r=part;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(caS>=mx)continue;var d2=mx-Math.max(caS,p.min),tr=Math.min(r,d2);if(tr<=0)continue;com+=tr*p.t/100;r-=tr;caS+=tr;if(r<=0)break;}return com;}
@@ -926,7 +1108,7 @@ function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
 
-function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();}
+function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();}
 
 // --- RENDER NEG (compteurs RDV et Mandats séparés) ---
 function renderNeg(){
@@ -1118,7 +1300,7 @@ function renderContacts(){
     if(c.email)contacts+='<a href="mailto:'+escH(c.email)+'" style="font-size:10px;color:var(--pur);text-decoration:none;">✉️ '+escH(c.email)+'</a>';
     var tagsHtml='';
     if(c.tags&&c.tags.length){tagsHtml='<div style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;">#'+escH(t)+'</span>';}).join('')+'</div>';}
-    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv||c.rdv_date?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv||'')+(c.rdv_date?' '+new Date(c.rdv_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(c.rdv_heure?' à '+c.rdv_heure:''):'')+'</span>'+(c.rdv_date?' <a onclick="calendarMenu('+c.id+',\'rdv\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a>':'')+'</div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span> <a onclick="calendarMenu('+c.id+',\'relance\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a></div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:3px 8px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:3px 8px;">✏️ Éditer</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="padding:3px 8px;">×</button></div></div>';
+    return '<div class="ct-card" style="'+border+'"><div class="ct-card-head"><div class="ct-card-name">'+escH(c.nom||'Sans nom')+(relanceUrgente?' <span class="pill p-re" style="font-size:9px;">🔔 Relance !</span>':'')+'</div><div class="ct-card-pills"><span class="pill '+cc+'" style="font-size:9px;">'+escH(c.canal)+'</span><span class="pill '+statCol+'" style="font-size:9px;">'+escH(c.statut)+'</span>'+(c.type_man&&c.type_man!=='—'?'<span class="pill '+mc+'" style="font-size:9px;">'+escH(c.type_man)+'</span>':'')+'</div></div>'+(contacts?'<div style="margin-top:4px;">'+contacts+'</div>':'')+'<div class="ct-card-grid" style="margin-top:4px;"><div class="ct-card-field"><span class="ct-card-lbl">Cat.</span><span class="ct-card-val">'+escH(c.categorie)+'</span></div>'+(c.secteur?'<div class="ct-card-field"><span class="ct-card-lbl">Secteur</span><span class="ct-card-val">'+escH(c.secteur)+'</span></div>':'')+(c.rdv||c.rdv_date?'<div class="ct-card-field"><span class="ct-card-lbl">RDV</span><span class="ct-card-val">'+escH(c.rdv||'')+(c.rdv_date?' '+new Date(c.rdv_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+(c.rdv_heure?' à '+c.rdv_heure:''):'')+'</span>'+(c.rdv_date?' <a onclick="calendarMenu('+c.id+',\'rdv\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a>':'')+'</div>':'')+(c.relance_date?'<div class="ct-card-field"><span class="ct-card-lbl">Relance</span><span class="ct-card-val">'+escH(c.relance_date)+'</span> <a onclick="calendarMenu('+c.id+',\'relance\')" class="gcal-btn" style="cursor:pointer;">📅 Agenda</a></div>':'')+'</div>'+tagsHtml+(c.notes?'<div class="ct-card-notes">'+escH(c.notes)+'</div>':'')+'<div class="ct-card-del"><button class="bs" onclick="contactToComp('+realIdx+')" style="font-size:9px;padding:3px 8px;background:var(--greenl);border-color:rgba(74,156,93,.35);color:var(--green);">📋 Mandat</button><button class="bs" onclick="openBienPanel('+c.id+')" style="font-size:9px;padding:3px 8px;'+(c.bien&&(c.bien.desc||c.bien.photos&&c.bien.photos.length)?'background:var(--orl);border-color:var(--borderor);color:var(--or);':'')+'">🏠 '+(c.bien&&(c.bien.desc||c.bien.photos&&c.bien.photos.length)?'Bien':'Fiche')+'</button><button class="bs" onclick="editContact('+realIdx+')" style="font-size:9px;padding:3px 8px;">✏️ Éditer</button><button class="bd" onclick="delContact(\''+who+'\','+realIdx+')" style="padding:3px 8px;">×</button></div></div>';
   }
   // GROUPEMENT PAR JOUR
   var byDay={};
