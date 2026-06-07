@@ -392,8 +392,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <!-- LISTE DES CONTACTS EN CARTES -->
     <div id="contact-cards"></div>
   </div>
-  <div class="subtab-content" id="stc-semaine"><div class="wr" id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
-  <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
+  <div class="subtab-content" id="stc-semaine"><div style="background:var(--orl);border:1px solid var(--borderor);border-radius:9px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--txt2);line-height:1.5;"><strong style="color:var(--or);">📌 Méthode recommandée</strong><br>Ce tableau ne sert qu'à un <strong>comptage rapide</strong> du nombre de contacts/RDV/mandats par jour. Pour un <strong>vrai suivi</strong> (nom du client, téléphone, relances, fiche bien avec photos), utilise plutôt l'onglet <strong>Journal</strong> en cliquant sur « + Ajouter ». Le Journal permet de retrouver chaque contact, programmer des relances et créer des fiches biens après tes R1.</div><div class="wr" id="neg-week"></div><div class="kg k4" id="neg-week-kpis"></div></div>
+  <div class="subtab-content" id="stc-compromis"><div class="fg"><div class="fc"><div class="fct">Enregistrer un compromis</div><input class="ci" type="text" id="cp-nom" placeholder="Adresse / référence"><input class="ci" type="number" id="cp-ttc" placeholder="Honoraires TTC (€)"><select class="ci" id="cp-type"><option value="">Type mandat...</option><option>Exclusif</option><option>Semi-exclusif</option><option>Exclusivité morale</option><option>Simple</option></select><select class="ci" id="cp-es"><option value="entree">Entrée</option><option value="sortie">Sortie</option></select><div style="display:flex;align-items:center;gap:5px;margin-top:5px;"><input type="checkbox" id="cp-bin" style="width:auto;accent-color:var(--or);"><label for="cp-bin" style="font-size:10px;color:var(--txt3);">Binôme :</label><input type="text" id="cp-bnom" placeholder="Collègue" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:10px;color:var(--txt);outline:none;"></div><button class="bp" onclick="addComp()">Enregistrer</button></div><div class="fc" style="border-color:var(--borderor);"><div class="fct" style="color:var(--or);">Performance</div><div style="font-family:Georgia,serif;font-size:26px;color:var(--or);margin:5px 0 2px;" id="cp-fees">0 €</div><div style="font-size:9px;color:var(--txt3);margin-bottom:5px;" id="cp-obj-lbl">—</div><div class="bbar" style="height:4px;margin-bottom:7px;"><div class="bbarf" id="cp-pb" style="width:0%;background:var(--or)"></div></div><div class="cc"><div class="ccl">Ma commission</div><div class="ccv" id="cp-com">0 €</div></div><div id="cp-reste" style="margin-top:5px;font-size:10px;color:var(--txt3);"></div></div></div><div id="comp-dup-alert" style="margin-bottom:8px;"></div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:22px"><col style="width:auto"><col style="width:75px"><col style="width:95px"><col style="width:58px"><col style="width:55px"><col style="width:80px"><col style="width:22px"></colgroup><thead><tr><th>#</th><th>Référence</th><th>TTC</th><th>Type</th><th>E/S</th><th>Binôme</th><th>Commission</th><th></th></tr></thead><tbody id="comp-tbody"></tbody><tfoot id="comp-tfoot"></tfoot></table></div></div></div>
   <div class="subtab-content" id="stc-perf"><div class="kg k4" id="perf-kpis"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.8rem;" id="perf-meters"></div><div id="perf-alerts"></div></div>
   <div class="subtab-content" id="stc-mensuel"><div class="kg k4" id="mens-kpis"></div><div class="cw" style="margin-top:8px;"><div class="cwt">Évolution 12 derniers mois — Contacts, RDV vendeurs, Mandats</div><div style="position:relative;width:100%;height:200px;"><canvas id="mens-chart"></canvas></div></div><div id="mens-history"></div><details style="margin-top:10px;"><summary style="cursor:pointer;font-size:11px;color:var(--or);font-weight:500;padding:8px 12px;background:var(--bg2);border:1px solid var(--borderor);border-radius:8px;list-style:none;">✏️ Saisir manuellement les chiffres d'un mois passé (rattrapage historique)</summary><div id="mens-manual" style="margin-top:8px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;"></div></details><div id="mens-alerts" style="margin-top:8px;"></div></div>
   <div class="subtab-content" id="stc-reporting">
@@ -1159,7 +1159,7 @@ var viewWeekOffset=0;
 function getMonday(d){try{var dt=new Date(d);var day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.getFullYear(),dt.getMonth(),diff);}catch(e){return new Date();}}
 function fmtDate(d){try{var dt=new Date(d);if(isNaN(dt.getTime()))return new Date().toISOString().slice(0,10);return dt.toISOString().slice(0,10);}catch(e){return new Date().toISOString().slice(0,10);}}
 function getWeekRange(){var now=new Date();var mon=getMonday(now);mon.setDate(mon.getDate()+viewWeekOffset*7);var sun=new Date(mon);sun.setDate(sun.getDate()+6);return{start:fmtDate(mon),end:fmtDate(sun),mon:mon,sun:sun};}
-function getWeekContacts(){var who=curWho;if(!who)return[];var wr=getWeekRange();return D[who].contacts.filter(function(c){var d=c.contact_date||'';return d>=wr.start&&d<=wr.end;});}
+function getWeekContacts(){var who=curWho;if(!who)return[];var wr=getWeekRange();return D[who].contacts.filter(function(c){var d=c.contact_date||'';if(!d){return viewWeekOffset===0;}return d>=wr.start&&d<=wr.end;});}
 function changeWeek(dir){viewWeekOffset+=dir;renderContacts();}
 function goToCurrentWeek(){viewWeekOffset=0;renderContacts();}
 function renderDatePicker(selected){
@@ -1287,7 +1287,16 @@ function renderContacts(){
   }
   var jt=document.getElementById('journal-title');if(jt)jt.textContent='Contacts ('+filtered.length+(filtered.length!==weekFiltered.length?'/'+weekFiltered.length:'')+')';
   var box=document.getElementById('contact-cards');if(!box)return;
-  if(!filtered.length){box.innerHTML='<div class="ct-empty">'+(weekFiltered.length===0?'Aucun contact cette semaine — cliquez « + Ajouter »':'Aucun résultat avec ces filtres')+'</div>';return;}
+  if(!filtered.length){
+    var hasWeekData=(D[who].wd||[]).some(function(x){return x>0;})||(D[who].wr||[]).some(function(x){return x>0;});
+    var emptyMsg;
+    if(weekFiltered.length===0&&hasWeekData){
+      emptyMsg='<div style="text-align:center;padding:20px;"><div style="font-size:13px;color:var(--or);margin-bottom:6px;">📋 Aucun contact détaillé dans le Journal cette semaine</div><div style="font-size:11px;color:var(--txt2);line-height:1.5;max-width:420px;margin:0 auto;">Tu as saisi des chiffres dans l\'onglet <strong>Semaine</strong>, mais pas de contacts détaillés ici.<br><br>Le <strong>Journal</strong> te permet d\'enregistrer chaque contact avec son nom, téléphone, et de programmer des relances. C\'est aussi ici que tu crées les <strong>fiches biens</strong> (photos + description) après tes R1.<br><br>Clique « <strong>+ Ajouter</strong> » pour commencer.</div></div>';
+    } else {
+      emptyMsg='<div class="ct-empty">'+(weekFiltered.length===0?'Aucun contact cette semaine — cliquez « + Ajouter »':'Aucun résultat avec ces filtres')+'</div>';
+    }
+    box.innerHTML=emptyMsg;return;
+  }
   // Fonction interne : rendu d'une carte
   function renderCard(c){
     var realIdx=D[who].contacts.indexOf(c);
@@ -1387,6 +1396,20 @@ function renderComp(){
   var pers=(d.compromis||[]).map(function(c,i){var x=Object.assign({},c);x._fromPipeline=false;x._persIdx=i;return x;});
   var fromPipe=getDossiersForWho(who);
   var all=pers.concat(fromPipe);
+  // DÉTECTION DOUBLONS : un compromis perso qui correspond à un dossier Pipeline
+  var dupAlert=document.getElementById('comp-dup-alert');
+  if(dupAlert){
+    var doublons=[];
+    pers.forEach(function(p){
+      var pn=normalizeName(p.nom||'');
+      if(!pn)return;
+      var match=fromPipe.find(function(fp){return normalizeName(fp.nom||'')===pn;});
+      if(match)doublons.push(p.nom);
+    });
+    if(doublons.length){
+      dupAlert.innerHTML='<div class="al ar2"><div class="ald"></div><strong>⚠️ Double comptage possible :</strong> '+doublons.map(function(n){return escH(n);}).join(', ')+' apparai'+(doublons.length>1?'ssent':'t')+' à la fois dans ce tableau ET dans le Pipeline. Le CA est compté 2 fois. Supprime la version en double (garde de préférence celle du Pipeline).</div>';
+    } else dupAlert.innerHTML='';
+  }
   if(!all.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--txt3);">Aucun compromis</td></tr>';var tf=document.getElementById('comp-tfoot');if(tf)tf.innerHTML='';return;}
   var h='',totCom=0,caA=0;
   all.forEach(function(c,i){
@@ -1988,7 +2011,7 @@ function renderClients(){
       var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';
       return'<div style="background:var(--bg3);border-left:3px solid '+col+';padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:10px;"><strong>'+escH(d.ref)+'</strong> · '+escH(STAGE_LBL[d.stage]||'')+' · <span style="color:var(--or);">'+fmt(d.fee)+'</span><div style="font-size:9px;color:var(--txt3);">par '+escH(d.neg)+'</div></div>';
     }).join('');
-    var tagsHtml=c.tags.length?'<div style="margin-top:4px;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;margin-right:3px;">#'+escH(t)+'</span>';}).join('')+'</div>':'';
+    var tagsHtml=(c.tags&&c.tags.length)?'<div style="margin-top:4px;">'+c.tags.map(function(t){return'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:9px;margin-right:3px;">#'+escH(t)+'</span>';}).join('')+'</div>':'';
     return'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:8px;">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'+
         '<div><div style="font-family:Georgia,serif;font-size:14px;color:var(--txt);font-weight:500;">'+escH(c.nom)+'</div><div style="font-size:9px;color:var(--txt3);">Suivi par : '+escH(agentNames)+'</div></div>'+
