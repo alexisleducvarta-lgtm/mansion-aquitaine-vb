@@ -1260,7 +1260,7 @@ function renderHomeInner(box){
   h+='<button class="bp" style="margin:0;" onclick="var e=document.getElementById(\'nav-'+who+'\');if(e)goNeg(\''+who+'\',e);">⚡ Saisir mes contacts</button>';
   h+='<button class="bs" onclick="var e=document.getElementById(\'nav-pipeline\');if(e)goPipeline(e);">📊 Pipeline</button>';
   h+='</div>';
-  box.innerHTML=weekRecap+h;
+  box.innerHTML=h;
 }
 // ====== TOASTS + CONFETTI ======
 function toast(msg){
@@ -1785,7 +1785,7 @@ function renderContacts(){
     h+='<span>'+(isToday?'📅 ':'')+escH(dateLabel)+'</span><span style="font-size:10px;color:var(--txt3);">'+contacts.length+' contact'+(contacts.length>1?'s':'')+'</span></summary>';
     h+='<div style="margin-top:6px;">'+contacts.map(renderCard).join('')+'</div></details>';
   });
-  box.innerHTML=h;
+  box.innerHTML=weekRecap+h;
 }
 
 // WEEK
