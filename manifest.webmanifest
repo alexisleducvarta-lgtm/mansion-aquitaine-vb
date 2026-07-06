@@ -1,0 +1,23 @@
+{
+  "name": "Mansion Aquitaine — Vision Board",
+  "short_name": "Mansion",
+  "description": "Pilotage d'équipe Mansion Aquitaine",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F2EDE1",
+  "theme_color": "#6B2233",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%236B2233'/%3E%3Ctext x='96' y='124' font-family='Georgia,serif' font-size='84' fill='%23C3A35B' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%236B2233'/%3E%3Ctext x='256' y='330' font-family='Georgia,serif' font-size='224' fill='%23C3A35B' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
