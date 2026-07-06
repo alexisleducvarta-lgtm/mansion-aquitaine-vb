@@ -561,7 +561,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="openMeeting()" style="background:var(--bxl);border:1px solid var(--bxb);color:var(--bx);">📺 Mode Réunion</button><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div id="dir-planning" style="margin-bottom:.8rem;"></div><div id="dir-funnel" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="openWaImport()" style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);color:var(--green);">📥 Import WhatsApp</button><button class="bs" onclick="openMeeting()" style="background:var(--bxl);border:1px solid var(--bxb);color:var(--bx);">📺 Mode Réunion</button><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div id="dir-planning" style="margin-bottom:.8rem;"></div><div id="dir-funnel" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
 
 <!-- SLIDE PANEL pour nouveau dossier -->
@@ -1310,6 +1310,41 @@ function bilanPDF(){
   setTimeout(function(){w.print();},400);
 }
 // ====== MODE RÉUNION ======
+function openWaImport(){
+  if(currentUser!=='alexis')return;
+  var ov=document.createElement('div');ov.id='wa-ov';
+  ov.style.cssText='position:fixed;inset:0;background:var(--bg0);z-index:2500;overflow-y:auto;padding:24px;';
+  ov.innerHTML='<div style="max-width:860px;margin:auto;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-family:Cinzel,Georgia,serif;font-size:18px;color:var(--bx);">📥 Import registre WhatsApp</div><button class="bs" onclick="document.getElementById(\'wa-ov\').remove()">✕ Fermer</button></div><div style="font-size:11px;color:var(--txt3);margin:8px 0;">Colle l\'export de la discussion (⋮ → Exporter → Sans médias) puis Analyser. Rien n\'est créé sans ton clic.</div><textarea id="wa-txt" style="width:100%;min-height:160px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:11px;color:var(--txt);"></textarea><button class="bp" style="margin-top:8px;" onclick="waAnalyse()">🔍 Analyser</button><div id="wa-res" style="margin-top:12px;"></div></div>';
+  document.body.appendChild(ov);
+}
+var waEntries=[];
+function waAnalyse(){
+  var txt=(document.getElementById('wa-txt')||{}).value||'';
+  var re=/\[(\d{2})\/(\d{2})\/(\d{4})[^\]]*\]\s([^:]+):\s*(\d+)\s*[-–]\s*(.+)/g;
+  waEntries=[];var m;
+  while((m=re.exec(txt))){
+    waEntries.push({date:m[3]+'-'+m[2]+'-'+m[1],auteur:m[4].trim(),num:m[5],texte:m[6].trim().substring(0,120)});
+  }
+  var res=document.getElementById('wa-res');
+  if(!waEntries.length){res.innerHTML='<div class="ct-empty">Aucune entrée numérotée détectée</div>';return;}
+  var h='<div style="font-size:12px;color:var(--txt2);margin-bottom:8px;"><strong>'+waEntries.length+' mandats détectés</strong> dans le registre :</div>';
+  waEntries.forEach(function(e,i){
+    var tn=normalizeName(e.texte);
+    var match=dossiers.find(function(d){var dn=normalizeName((d.ref||'')+' '+(d.client||''));return dn&&tn&&(dn.indexOf(tn)>=0||tn.indexOf(dn)>=0||dn.split(' ').some(function(w){return w.length>=4&&tn.indexOf(w)>=0;}));});
+    h+='<div style="background:var(--bg2);border:1px solid '+(match?'var(--border)':'rgba(168,53,60,.4)')+';border-radius:9px;padding:8px 12px;margin-bottom:5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:11px;">'+
+      '<span style="color:var(--txt3);">#'+e.num+' · '+e.date+' · '+escH(e.auteur)+'</span>'+
+      '<span style="flex:1;color:var(--txt);">'+escH(e.texte)+'</span>'+
+      (match?'<span class="pill p-gr" style="font-size:9px;">✓ Pipeline : '+escH(match.ref)+'</span>':'<span class="pill p-re" style="font-size:9px;">⚠ Absent du Pipeline</span><button class="bs" style="font-size:10px;" onclick="waCreate('+i+')">➕ Créer</button>');
+    h+='</div>';
+  });
+  res.innerHTML=h;
+}
+function waCreate(i){
+  var e=waEntries[i];if(!e)return;
+  var negKey=ALL.find(function(w){return normalizeName(NAMES[w]).indexOf(normalizeName(e.auteur.split(' ')[0]))>=0;});
+  dossiers.push({id:Date.now(),ref:e.texte.substring(0,80),neg:negKey?NAMES[negKey]:'Alexis Leduc',bin:false,neg2:'',fee:0,dateComp:'',dateActe:'',stage:'mandat',notes:'Importé du registre WhatsApp #'+e.num,client:'',tel:'',email:'',notaire:'',adresse:'',createdAt:e.date,encaisse:false});
+  saveDoss();toast('✓ Dossier créé — pense à renseigner les honoraires');waAnalyse();
+}
 function openMeeting(){
   var ov=document.createElement('div');
   ov.id='meeting-ov';
@@ -2127,6 +2162,17 @@ function renderReporting(){
     if(!stats[canal])stats[canal]={contacts:0,rdv:0,mandats:0,ca:0};
     stats[canal].ca+=dos.ttc*(dos.bin?.5:1);
   });
+  // Mandats Pipeline rattachés à leur source (traçabilité par nom de client)
+  dossiers.forEach(function(dos){
+    var isN=dos.neg===NAMES[who],isN2=dos.bin&&dos.neg2===NAMES[who];
+    if(!isN&&!isN2)return;
+    var nomN=normalizeName(dos.client||dos.ref||'');
+    var mc2=contacts.find(function(c){return normalizeName(c.nom)===nomN;});
+    var canal2=mc2?(mc2.canal||'Autre'):'Autre';
+    if(!stats[canal2])stats[canal2]={contacts:0,rdv:0,mandats:0,ca:0};
+    stats[canal2].mandats+=dos.bin?0.5:1;
+  });
+  Object.keys(stats).forEach(function(k){stats[k].mandats=Math.round(stats[k].mandats*10)/10;});
   // KPIs globaux
   var totalCA=0,totalBoitage=0,totalPAP=0;
   Object.keys(stats).forEach(function(k){totalCA+=stats[k].ca;});
