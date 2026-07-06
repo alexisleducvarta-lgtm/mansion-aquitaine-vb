@@ -727,7 +727,13 @@ function getCurrentMonthStats(who){
   var d=D[who];
   if(!d)return{rdv_vendeurs:0,mandats:0,compromis_ttc:0,yearMonth:yearMonth};
   var rangeContacts=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=rangeStart&&cd<=rangeEnd;});
-  var rdv_vendeurs=rangeContacts.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+  // RDV vendeurs : comptés à la date où le RDV a LIEU (rdv_date), repli sur contact_date
+  var rdv_vendeurs=(d.contacts||[]).filter(function(c){
+    if(c.categorie!=='Vendeur')return false;
+    if(!(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé'))return false;
+    var ed=c.rdv_date||c.contact_date||'';
+    return ed>=rangeStart&&ed<=rangeEnd;
+  }).length;
   // Mandats : contacts Journal "Mandat signé" + dossiers Pipeline (tout dossier = mandat rentré)
   var mandatsJournal=rangeContacts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
   var mandatsPipeline=0;
@@ -1194,6 +1200,21 @@ var CHALLENGES={
   rdv:{from:'2026-06-15',to:'2026-08-15',min:40},
   annuel:{from:'2026-06-15',to:'2027-06-15',objDefault:180000,objPerso:{swan:200000,enrik:200000,nicolas:220000,thibault:220000}}
 };
+// Ajustements manuels (Alexis) : mansion/challengeAdjust/{who} = {mandats:N, rdv:N}
+var chAdjust={};
+if(db){db.ref('mansion/challengeAdjust').on('value',function(snap){chAdjust=snap.val()||{};var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
+function chAdj(who,key){return(chAdjust[who]&&chAdjust[who][key])||0;}
+function chEditAdjust(who,key,label){
+  if(currentUser!=='alexis')return;
+  var cur=chAdj(who,key);
+  var v=prompt('Ajustement manuel '+label+' pour '+NAMES[who]+'\n(nombre à AJOUTER au calcul automatique, négatif possible)\nActuel : '+(cur>=0?'+':'')+cur,cur);
+  if(v===null)return;
+  var n=parseFloat((v+'').replace(',','.'));
+  if(isNaN(n)){alert('Nombre invalide');return;}
+  if(db)db.ref('mansion/challengeAdjust/'+who+'/'+key).set(n);
+  chAdjust[who]=chAdjust[who]||{};chAdjust[who][key]=n;
+  renderChallenges();
+}
 function chMandats(who,from,to){
   var d=D[who];if(!d)return 0;
   var n=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=from&&cd<=to&&(c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—'));}).length;
@@ -1203,11 +1224,18 @@ function chMandats(who,from,to){
     if(!isNeg&&!isNeg2)return;
     if(dos.createdAt&&dos.createdAt>=from&&dos.createdAt<=to)p+=dos.bin?0.5:1;
   });
-  return n+p;
+  return n+p+chAdj(who,'mandats');
 }
 function chRdv(who,from,to){
   var d=D[who];if(!d)return 0;
-  return(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=from&&cd<=to&&c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+  // RDV compté à la date où il a LIEU (rdv_date), repli sur la date de contact
+  var n=(d.contacts||[]).filter(function(c){
+    if(c.categorie!=='Vendeur')return false;
+    if(!(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé'))return false;
+    var ed=c.rdv_date||c.contact_date||'';
+    return ed>=from&&ed<=to;
+  }).length;
+  return n+chAdj(who,'rdv');
 }
 function chActes(who,from,to){
   var total=0;
@@ -1224,19 +1252,24 @@ function chDaysLeft(to){
   var end=new Date(to+'T23:59:59'),now=new Date();
   return Math.max(0,Math.ceil((end-now)/86400000));
 }
-function chLeaderboard(rows,unit,min){
+function chLeaderboard(rows,unit,min,adjKey){
   // rows = [{who, val}] triés desc. Rendu d'un classement avec médailles et seuil.
+  var isAdmin=currentUser==='alexis';
   return rows.map(function(r,i){
     var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
     var ok=r.val>=min;
     var valStr=typeof r.val==='number'&&unit==='€'?fmt(r.val):(Math.round(r.val*10)/10)+(unit?' '+unit:'');
     var isMe=r.who===currentUser;
+    var adj=adjKey?chAdj(r.who,adjKey):0;
+    var adjNote=adj?'<span style="font-size:8px;color:var(--txt3);" title="Ajustement manuel">(dont ajust. '+(adj>0?'+':'')+adj+')</span>':'';
+    var editBtn=(isAdmin&&adjKey)?'<button onclick="chEditAdjust(\''+r.who+'\',\''+adjKey+'\',\''+unit+'\')" title="Ajuster manuellement" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 6px;font-size:10px;cursor:pointer;color:var(--txt3);">✏️</button>':'';
     return'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;margin-bottom:4px;background:'+(isMe?'var(--orl)':'var(--bg3)')+';'+(isMe?'border:1px solid var(--borderor);':'')+'">'+
       '<span style="font-size:14px;width:26px;text-align:center;">'+medal+'</span>'+
       '<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:'+COLORS[r.who]+'1c;color:'+COLORS[r.who]+';border:1.5px solid '+COLORS[r.who]+'55;">'+INITS[r.who]+'</div>'+
-      '<span style="flex:1;font-size:12px;color:var(--txt);font-weight:'+(isMe?'600':'400')+';">'+NAMES[r.who]+(isMe?' (moi)':'')+'</span>'+
+      '<span style="flex:1;font-size:12px;color:var(--txt);font-weight:'+(isMe?'600':'400')+';">'+NAMES[r.who]+(isMe?' (moi)':'')+' '+adjNote+'</span>'+
       '<span style="font-family:Cinzel,Georgia,serif;font-size:14px;color:'+(ok?'var(--green)':'var(--txt2)')+';">'+valStr+'</span>'+
       (min?'<span style="font-size:9px;color:'+(ok?'var(--green)':'var(--txt3)')+';">'+(ok?'✓ primable':'min. '+min)+'</span>':'')+
+      editBtn+
     '</div>';
   }).join('');
 }
@@ -1258,13 +1291,13 @@ function renderChallenges(){
   var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
   h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026',chDaysLeft(cm.to),
     '🥇 iPhone 17 Pro / Pro Max ou dernier Samsung Galaxy · 🥈 Bon d\'achat vestimentaire 600 € · <em>Minimum requis pour être primé : 10 mandats signés</em>',
-    chLeaderboard(rowsM,'mandat(s)',cm.min));
+    chLeaderboard(rowsM,'mandat(s)',cm.min,'mandats'));
   // 2. CHALLENGE RDV
   var cr=CHALLENGES.rdv;
   var rowsR=ALL.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
   h+=chCard('CHALLENGE RDV','Du 15 juin au 15 août 2026',chDaysLeft(cr.to),
     '🥇 Voyage de 5 jours en Europe · <em>Un seul gagnant · minimum requis : 40 RDV R1 vendeurs (soit 5/semaine) · seuls les RDV vendeurs saisis au Journal comptent</em>',
-    chLeaderboard(rowsR,'RDV',cr.min));
+    chLeaderboard(rowsR,'RDV',cr.min,'rdv'));
   // 3. RÉVÉLATION DU MOIS
   var now=new Date();
   var curYM=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
@@ -1726,7 +1759,12 @@ function getMonthStatsAll(who,yearMonth){
   // 1) Journal (contacts prospection — exclure les acquéreurs)
   var mc=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=ms_start&&cd<=ms_end;});
   var jContacts=mc.filter(function(c){return c.categorie!=='Acquéreur';}).length;
-  var jRdv=mc.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
+  var jRdv=(d.contacts||[]).filter(function(c){
+    if(c.categorie!=='Vendeur')return false;
+    if(!(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé'))return false;
+    var ed=c.rdv_date||c.contact_date||'';
+    return ed>=ms_start&&ed<=ms_end;
+  }).length;
   var jMan=mc.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
   // 2) weekArchive (saisies du tableau Semaine archivées)
   var aContacts=0,aRdv=0,aMan=0;
