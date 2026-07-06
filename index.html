@@ -763,8 +763,11 @@ function getCurrentMonthStats(who){
       mandatsPipeline+=dos.bin?0.5:1;
     }
     // Compromis TTC : seulement étapes compromis/acte
-    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=rangeStart&&dos.createdAt<=rangeEnd){
-      compromis_ttc+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+    if(dos.stage==='compromis'||dos.stage==='acte'){
+      var fd2=dos.dateComp||dos.dateActe||'';
+      var td2=fmtDate(new Date());
+      var in2=fd2?(fd2>=rangeStart&&fd2<=rangeEnd):(td2>=rangeStart&&td2<=rangeEnd);
+      if(in2)compromis_ttc+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
     }
   });
   var mandats=mandatsJournal+Math.round(mandatsPipeline);
@@ -1211,6 +1214,9 @@ function goFiles(btn){clearAll();btn.classList.add('active');setFooter('Fichiers
 function goHome(btn){clearAll();if(btn)btn.classList.add('active');setFooter('Ma journée','Tableau de bord');document.getElementById('pg-home').classList.add('active');renderHome();}
 function renderHome(){
   var box=document.getElementById('home-body');if(!box)return;
+  try{renderHomeInner(box);}catch(e){box.innerHTML='<div class="ct-empty">Erreur d\'affichage : '+e.message+'</div>';console.error('renderHome',e);}
+}
+function renderHomeInner(box){
   var who=(currentUser&&currentUser!=='alexis')?currentUser:(currentUser||'alexis');
   var d=D[who]||{contacts:[]};
   var today=fmtDate(new Date());
@@ -1888,9 +1894,10 @@ var aC=tC+wC,aR=tR+wR,aM=tM+wM;
 // Taux R1 vendeurs → mandat (indicateur métier clé)
 var vR1=d.contacts.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');}).length;
 var vM=d.contacts.filter(function(c){return c.categorie==='Vendeur'&&(c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—'));}).length;
+dossiers.forEach(function(x){if(x.neg===NAMES[who])vM++;else if(x.bin&&x.neg2===NAMES[who])vM+=0.5;});vM=Math.round(vM);
 var txR1M=vR1>0?Math.round(vM/vR1*100):0;
 var txCR=aC>0?Math.round(aR/aC*100):0,txRM=aR>0?Math.round(aM/aR*100):0,txF=Math.round(st.ca/OBJ_FEES*100);
-document.getElementById('perf-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">🎯 R1 vendeurs→Mandat</div><div class="kv sm" style="color:var(--green)">'+txR1M+'%</div><div class="ks">'+vM+' mandats / '+vR1+' R1</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(OBJ_FEES)+'</div></div>';
+document.getElementById('perf-kpis').innerHTML='<div style="grid-column:1/-1;font-size:10px;color:var(--txt3);background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">ℹ️ Taux de conversion sur TOUT l\'historique (Journal + Pipeline) — indépendants des objectifs signés et des challenges.</div><div class="kc or"><div class="kl">Contacts→RDV</div><div class="kv sm gold">'+txCR+'%</div><div class="ks">'+aR+'/'+aC+'</div></div><div class="kc gr"><div class="kl">🎯 R1 vendeurs→Mandat</div><div class="kv sm" style="color:var(--green)">'+txR1M+'%</div><div class="ks">'+vM+' mandats / '+vR1+' R1</div></div><div class="kc bl"><div class="kl">Contacts sem.</div><div class="kv sm" style="color:var(--blue)">'+wC+'/60</div></div><div class="kc pu"><div class="kl">Honos/Obj.</div><div class="kv sm" style="color:var(--pur)">'+txF+'%</div><div class="ks">'+fmt(st.ca)+'/'+fmt(OBJ_FEES)+'</div></div>';
 document.getElementById('perf-meters').innerHTML='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Contacts→RDV</div><canvas id="m-cr" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Cinzel,Georgia,serif;color:var(--or);">'+txCR+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">RDV→Mandat</div><canvas id="m-rm" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Cinzel,Georgia,serif;color:var(--green);">'+txRM+'%</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.8rem;text-align:center;"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;margin-bottom:5px;">Obj. honoraires</div><canvas id="m-f" width="60" height="60" style="display:block;margin:6px auto;"></canvas><div style="font-size:16px;font-family:Cinzel,Georgia,serif;color:var(--blue);">'+txF+'%</div></div>';
 setTimeout(function(){drawMeter('m-cr',txCR,'#c9a84c');drawMeter('m-rm',txRM,'#4a9c5d');drawMeter('m-f',txF,'#4a82c0');},80);
 var pa=document.getElementById('perf-alerts');if(pa){var al='';if(txCR<20&&aC>5)al+='<div class="al ar2"><div class="ald"></div>Taux contacts→RDV faible.</div>';if(txF>=100)al+='<div class="al ag2"><div class="ald"></div>Objectif honoraires atteint !</div>';else if(txF<50)al+='<div class="al aw"><div class="ald"></div>Objectif honoraires à '+txF+'%.</div>';pa.innerHTML=al||'<div class="al ag2"><div class="ald"></div>Indicateurs OK.</div>';}}
@@ -1936,8 +1943,11 @@ function getMonthStatsAll(who,yearMonth){
     var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
     if(!isNeg&&!isNeg2)return;
     if(dos.createdAt&&dos.createdAt>=ms_start&&dos.createdAt<=ms_end)pMan+=dos.bin?0.5:1;
-    if((dos.stage==='compromis'||dos.stage==='acte')&&dos.createdAt&&dos.createdAt>=ms_start&&dos.createdAt<=ms_end){
-      fees+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
+    if(dos.stage==='compromis'||dos.stage==='acte'){
+      var fd=dos.dateComp||dos.dateActe||'';
+      var nowD=new Date();var curYMx=nowD.getFullYear()+'-'+String(nowD.getMonth()+1).padStart(2,'0');
+      var inM=fd?(fd>=ms_start&&fd<=ms_end):(yearMonth===curYMx);
+      if(inM)fees+=dos.bin?(dos.fee||0)/2:(dos.fee||0);
     }
   });
   return{
@@ -2222,7 +2232,7 @@ function renderProsp(){var tC=0,tR=0,tM=0;ALL.forEach(function(w){var d=D[w];tC+
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
-var pipeMonthOffset=null; // null = tous, 0 = mois courant, -1 = mois dernier...
+var pipeMonthOffset=0; // arrivée sur le mois en cours (bouton Tous disponible)
 var pipeMobileStage='mandat'; // étape affichée sur mobile
 function setPipeMobileStage(s){pipeMobileStage=s;renderPipeline();}
 function changePipeMonth(dir){if(pipeMonthOffset===null)pipeMonthOffset=0;pipeMonthOffset+=dir;renderPipeline();}
