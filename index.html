@@ -349,6 +349,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="mobile-overlay" id="mobile-overlay" onclick="toggleMobileMenu()"></div>
 <div class="shell">
 <div class="sb" id="sidebar">
+  <div style="padding:2px 10px 6px;"><button class="gs-trigger" onclick="openGSearch()"><span>🔍</span><span>Rechercher partout</span><kbd>/</kbd></button></div>
   <div class="sb-logo">
       <div class="lm"><div class="li"><svg viewBox="0 0 80 70" width="17" height="17" xmlns="http://www.w3.org/2000/svg"><path d="M20 46 Q40 39 60 46" fill="#c9a84c"/><rect x="22" y="20" width="36" height="26" fill="#7a2228"/><rect x="14" y="26" width="12" height="20" fill="#7a2228"/><rect x="54" y="26" width="12" height="20" fill="#7a2228"/><path d="M18 26 L40 12 L62 26" fill="#5a1a1e"/><rect x="27" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="36" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/><rect x="45" y="27" width="6" height="7" rx="1" fill="white" opacity="0.4"/></svg></div><div class="bn" style="display:none;">Mansion<br>Aquitaine</div></div>
       <button class="btn-theme" onclick="toggleTheme()">🌓 Nuit/Jour</button>
@@ -3000,6 +3001,54 @@ function logoutUser(){
   try{localStorage.removeItem('mansion_user');}catch(e){}
   location.reload();
 }
+/* ===== RECHERCHE GLOBALE ===== */
+var gsOpen=false;
+function gsEsc(s){return String(s==null?'':s).replace(/[.*+?^${}()|[\]\\]/g,'\\function applyUserView(){');}
+function gsHi(text,q){var t=escH(String(text==null?'':text));if(!q)return t;try{var re=new RegExp('('+gsEsc(q)+')','ig');return t.replace(re,'<mark class="gs-mark">$1</mark>');}catch(e){return t;}}
+function openGSearch(){if(!currentUser)return;var o=document.getElementById('gsearch-overlay');if(!o)return;gsOpen=true;o.style.display='flex';var i=document.getElementById('gsearch-input');if(i){i.value='';setTimeout(function(){i.focus();},30);}renderGSearch();}
+function closeGSearch(){gsOpen=false;var o=document.getElementById('gsearch-overlay');if(o)o.style.display='none';}
+function gsAccessDoss(){if(currentUser==='alexis')return dossiers.slice();var me=NAMES[currentUser];return dossiers.filter(function(d){return d.neg===me||(d.bin&&d.neg2===me);});}
+function gsWhos(){return currentUser==='alexis'?ALL.slice():[currentUser];}
+function renderGSearch(){
+  var q=((document.getElementById('gsearch-input')||{}).value||'').toLowerCase().trim();
+  var box=document.getElementById('gsearch-results');if(!box)return;
+  if(q.length<2){box.innerHTML='<div class="gs-hint">Tape au moins 2 caractères — cherche dans tes contacts, dossiers, clients et fichiers.</div>';return;}
+  var CAP=8,h='';
+  var cRes=[];gsWhos().forEach(function(w){((D[w]&&D[w].contacts)||[]).forEach(function(c){var hay=[c.nom,c.tel,c.email,c.secteur,c.notes,c.statut,c.categorie,c.canal,(c.tags||[]).join(' '),c.type_man].join(' ').toLowerCase();if(hay.indexOf(q)>=0)cRes.push({w:w,c:c});});});
+  var access=gsAccessDoss();
+  var dRes=access.filter(function(d){var hay=[d.ref,d.client,d.tel,d.email,d.notaire,d.adresse,d.notes,d.neg,d.neg2].join(' ').toLowerCase();return hay.indexOf(q)>=0;});
+  var fRes=[];access.forEach(function(d){(d.files||[]).forEach(function(f){if((f.name||'').toLowerCase().indexOf(q)>=0)fRes.push({f:f,d:d});});});
+  if(currentUser==='alexis'){(pendingFiles||[]).forEach(function(f){var hay=((f.name||f.nom||'')+' '+(f.ocr||f.ocrText||'')).toLowerCase();if(hay.indexOf(q)>=0)fRes.push({f:f,pending:true});});}
+  var total=cRes.length+dRes.length+fRes.length;
+  if(!total){box.innerHTML='<div class="gs-hint">Aucun résultat pour « '+escH(q)+' ».</div>';return;}
+  if(cRes.length){
+    h+='<div class="gs-grp">👤 Contacts / clients <span class="gs-cnt">'+cRes.length+'</span></div>';
+    cRes.slice(0,CAP).forEach(function(r){var c=r.c,col=COLORS[r.w]||'var(--or)';var sub=[c.statut,c.secteur,c.tel].filter(Boolean).join(' · ');
+      h+='<div class="gs-row" onclick="gsGoContact(\''+r.w+'\',\''+jsq(c.nom||'')+'\')"><span class="gs-dot" style="background:'+col+';"></span><div class="gs-main"><div class="gs-t">'+gsHi(c.nom||'(sans nom)',q)+'</div><div class="gs-s">'+gsHi(sub,q)+(currentUser==='alexis'?' <span style="color:'+col+';">· '+escH(NAMES[r.w])+'</span>':'')+'</div></div><span class="gs-go">↵</span></div>';});
+    if(cRes.length>CAP)h+='<div class="gs-more">+ '+(cRes.length-CAP)+' autres contacts…</div>';
+  }
+  if(dRes.length){
+    h+='<div class="gs-grp">📊 Dossiers Pipeline <span class="gs-cnt">'+dRes.length+'</span></div>';
+    dRes.slice(0,CAP).forEach(function(d){var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';var sub=[STAGE_LBL[d.stage],d.client,fmt(d.fee)].filter(Boolean).join(' · ');
+      h+='<div class="gs-row" onclick="gsGoDossier('+d.id+')"><span class="gs-dot" style="background:'+col+';"></span><div class="gs-main"><div class="gs-t">'+gsHi(d.ref||'(sans réf)',q)+'</div><div class="gs-s">'+gsHi(sub,q)+' <span style="color:'+col+';">· '+escH(d.neg)+'</span></div></div><span class="gs-go">↵</span></div>';});
+    if(dRes.length>CAP)h+='<div class="gs-more">+ '+(dRes.length-CAP)+' autres dossiers…</div>';
+  }
+  if(fRes.length){
+    h+='<div class="gs-grp">📎 Fichiers <span class="gs-cnt">'+fRes.length+'</span></div>';
+    fRes.slice(0,CAP).forEach(function(r){var f=r.f;var sub=r.pending?'En attente de classement':(r.d?('Dossier : '+(r.d.ref||'')):'');
+      h+='<div class="gs-row" onclick="gsGoFile(\''+jsq(f.url||'')+'\')"><span class="gs-dot" style="background:var(--or);"></span><div class="gs-main"><div class="gs-t">'+(f.categoryIcon||'📄')+' '+gsHi(f.name||f.nom||'fichier',q)+'</div><div class="gs-s">'+escH(sub)+'</div></div><span class="gs-go">↗</span></div>';});
+    if(fRes.length>CAP)h+='<div class="gs-more">+ '+(fRes.length-CAP)+' autres fichiers…</div>';
+  }
+  box.innerHTML=h;
+}
+function gsGoContact(w,nom){closeGSearch();var el=document.getElementById('nav-'+w)||document.getElementById('nav-home');try{goNeg(w,el);}catch(e){}var s=document.getElementById('ct-search');if(s)s.value=nom;try{renderContacts();}catch(e){}}
+function gsGoDossier(id){closeGSearch();var el=document.getElementById('nav-pipeline');try{goPipeline(el);}catch(e){}try{pipeMonthOffset=null;}catch(e){}var d=dossiers.find(function(x){return x.id===id;});var s=document.getElementById('pipe-search');if(s&&d)s.value=d.ref||'';try{renderPipeline();}catch(e){}}
+function gsGoFile(url){if(url)window.open(url,'_blank');closeGSearch();}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&gsOpen){closeGSearch();return;}
+  if(e.key==='/'&&!gsOpen){var t=e.target,tag=((t&&t.tagName)||'').toLowerCase();if(tag==='input'||tag==='textarea'||(t&&t.isContentEditable))return;if(!currentUser)return;e.preventDefault();openGSearch();}
+});
+
 function applyUserView(){
   var isAdmin=currentUser==='alexis';
   // Cloisonnement sidebar : un négo ne voit que son espace
@@ -3063,6 +3112,7 @@ function renderPlusSheet(){
   var box=document.getElementById('plus-items');if(!box)return;
   var isAdmin=currentUser==='alexis';
   var h='';
+  h+='<button class="plus-btn" onclick="closePlusSheet();openGSearch();">🔍 Rechercher partout</button>';
   h+='<button class="plus-btn" onclick="closePlusSheet();var e=document.getElementById(\'nav-files\');if(e)goFiles(e);">📁 Fichiers</button>';
   h+='<button class="plus-btn" onclick="closePlusSheet();var e=document.getElementById(\'nav-challenges\');if(e)goChallenges(e);">🏆 Challenges</button>';
   if(isAdmin){
@@ -3283,5 +3333,35 @@ initLogin();
 // PWA : service worker (fichier sw.js à déployer à côté de index.html)
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}}
 </script>
+<!-- RECHERCHE GLOBALE -->
+<style>
+#gsearch-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(20,14,10,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);flex-direction:column;align-items:center;padding:8vh 12px 12px;}
+.gs-panel{width:100%;max-width:620px;background:var(--bg1);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column;max-height:82vh;}
+.gs-top{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.gs-top input{flex:1;border:none;background:transparent;font-size:16px;color:var(--txt);font-family:inherit;outline:none;}
+.gs-x{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--txt3);cursor:pointer;font-size:11px;padding:4px 8px;font-family:inherit;}
+#gsearch-results{overflow-y:auto;padding:6px;}
+.gs-hint{padding:22px 16px;text-align:center;color:var(--txt3);font-size:12px;}
+.gs-grp{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding:10px 10px 4px;display:flex;align-items:center;gap:6px;}
+.gs-cnt{background:var(--bg3);color:var(--txt3);border-radius:9px;padding:0 6px;font-size:9px;}
+.gs-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;}
+.gs-row:hover{background:var(--bg2);}
+.gs-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.gs-main{flex:1;min-width:0;}
+.gs-t{font-size:13px;color:var(--txt);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gs-s{font-size:11px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}
+.gs-go{color:var(--txt3);font-size:12px;flex:0 0 auto;}
+.gs-more{font-size:11px;color:var(--or);padding:4px 12px 8px;cursor:default;}
+.gs-mark{background:rgba(201,168,76,.35);color:inherit;border-radius:2px;padding:0 1px;}
+.gs-trigger{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--txt3);cursor:pointer;font-family:inherit;font-size:12px;}
+.gs-trigger kbd{margin-left:auto;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--txt3);}
+</style>
+<div id="gsearch-overlay" onclick="if(event.target===this)closeGSearch();">
+  <div class="gs-panel">
+    <div class="gs-top"><span style="font-size:16px;">🔍</span><input id="gsearch-input" type="text" placeholder="Rechercher un contact, dossier, client, fichier…" oninput="renderGSearch()"><button class="gs-x" onclick="closeGSearch()">Échap</button></div>
+    <div id="gsearch-results"></div>
+  </div>
+</div>
+
 </body>
 </html>
