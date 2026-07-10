@@ -2289,13 +2289,22 @@ function getPipeMonthRange(){
   var end=new Date(m.getFullYear(),m.getMonth()+1,0);
   return{start:fmtDate(m),end:fmtDate(end),label:m.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})};
 }
+// Date qui décide dans quel MOIS s'affiche un dossier dans le Pipeline :
+//  - Acte      → date d'acte, sinon date compromis, sinon création
+//  - Compromis → date compromis, sinon création
+//  - Offre/Mandat → date de création (pas de date dédiée)
+function pipeMonthDate(d){
+  if(d.stage==='acte')      return d.dateActe||d.dateComp||d.createdAt||'';
+  if(d.stage==='compromis') return d.dateComp||d.createdAt||'';
+  return d.createdAt||'';
+}
 function getFilteredDossiers(){
   var mr=getPipeMonthRange();
   var fNeg=(document.getElementById('pipe-filter-neg')||{}).value||'';
   var search=((document.getElementById('pipe-search')||{}).value||'').toLowerCase().trim();
   return dossiers.filter(function(d){
-    // Filtre mois
-    if(mr){var cd=d.createdAt||'';if(cd<mr.start||cd>mr.end)return false;}
+    // Filtre mois (date de référence selon l'étape, cf. pipeMonthDate)
+    if(mr){var cd=pipeMonthDate(d);if(cd<mr.start||cd>mr.end)return false;}
     // Filtre négo (principal ou co-négo)
     if(fNeg){if(d.neg!==fNeg&&!(d.bin&&d.neg2===fNeg))return false;}
     // Recherche
