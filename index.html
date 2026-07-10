@@ -2402,42 +2402,13 @@ function editDoss(id){
   var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Modifier le dossier';
   var btn=document.getElementById('md-submit-btn');if(btn)btn.textContent='Mettre à jour';
 }
-function renderPipeline(){
-  var filtered=getFilteredDossiers();
-  var mr=getPipeMonthRange();
-  var ml=document.getElementById('pipe-month-label');
-  if(ml)ml.textContent=mr?mr.label:'Tous les mois';
-  var mc=document.getElementById('pipe-month-count');
-  if(mc)mc.textContent=filtered.length+' dossier'+(filtered.length>1?'s':'')+(mr?' en '+mr.label:'');
-  var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};
-  filtered.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});
-  // Onglets d'étape (mobile uniquement, via CSS)
-  var mt=document.getElementById('pipe-mobile-tabs');
-  if(mt){
-    mt.innerHTML=['mandat','offre','compromis','acte'].map(function(s){
-      var on=s===pipeMobileStage;
-      return'<button onclick="setPipeMobileStage(\''+s+'\')" style="flex:0 0 auto;padding:7px 13px;border-radius:18px;font-size:11px;font-family:inherit;cursor:pointer;border:1.5px solid '+(on?STAGE_COL[s]:'var(--border)')+';background:'+(on?STAGE_COL[s]+'18':'var(--bg2)')+';color:'+(on?STAGE_COL[s]:'var(--txt3)')+';font-weight:'+(on?'600':'400')+';">'+STAGE_LBL[s].split(' ')[0]+' <span style="font-size:10px;">('+nb[s]+')</span></button>';
-    }).join('');
-  }
-  document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';
-  // ALERTES PIÈCES MANQUANTES
-  var alertBox=document.getElementById('pipe-alerts');
-  if(alertBox){
-    var withMissing=filtered.filter(function(d){var c=checkDossDocs(d);return(d.stage==='compromis'||d.stage==='acte')&&c.missing.length>0;});
-    if(withMissing.length){
-      var ah='<div class="al ar2"><div class="ald"></div><strong>⚠️ '+withMissing.length+' dossier'+(withMissing.length>1?'s':'')+' avec pièces manquantes :</strong> ';
-      ah+=withMissing.slice(0,5).map(function(d){var c=checkDossDocs(d);return escH(d.ref)+' ('+c.missing.map(function(m){return m.icon;}).join('')+')';}).join(' · ');
-      if(withMissing.length>5)ah+=' et '+(withMissing.length-5)+' autres';
-      ah+='</div>';
-      alertBox.innerHTML=ah;
-    } else alertBox.innerHTML='';
-  }
-  var board=document.getElementById('kanban-board');if(!board)return;
-  board.innerHTML=STAGES.map(function(stage){
-    var items=filtered.filter(function(d){return d.stage===stage;}).sort(function(a,b){return(b.createdAt||'').localeCompare(a.createdAt||'');});
-    var totalItems=items.length;
-    if(!window.pipeShowAll)items=items.slice(0,10);
-    var cards=items.map(function(d){
+// --- Groupage Pipeline par negociateur (colonnes longues) ---
+var pipeExpanded={},pipeExpandAll={};
+function jsq(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function pipeGroupOpen(stage,n){var k=stage+'|'+n;return pipeExpanded[k]!==undefined?pipeExpanded[k]:!!pipeExpandAll[stage];}
+function togglePipeGroup(stage,n){var k=stage+'|'+n;pipeExpanded[k]=!pipeGroupOpen(stage,n);renderPipeline();}
+function togglePipeAll(stage,expand){pipeExpandAll[stage]=expand;Object.keys(pipeExpanded).forEach(function(k){if(k.indexOf(stage+'|')===0)delete pipeExpanded[k];});renderPipeline();}
+function pipeCardHTML(d,stage){
       var next=STAGES[STAGES.indexOf(stage)+1];
       var col=COLORS[ALL.find(function(w){return NAMES[w]===d.neg;})||'swan']||'var(--or)';
       var coords='';
@@ -2473,9 +2444,85 @@ function renderPipeline(){
         alertHtml='<div style="margin-top:4px;background:rgba(192,68,74,.15);border:1px solid rgba(192,68,74,.3);border-radius:5px;padding:3px 6px;font-size:9px;color:var(--red);">⚠️ '+check.missing.length+' pièce'+(check.missing.length>1?'s':'')+' manquante'+(check.missing.length>1?'s':'')+'</div>';
       }
       var prev=STAGES[STAGES.indexOf(stage)-1];
-      return'<div class="kb-card"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+(d.bin&&d.neg2?' <span style="color:var(--pur);">+ '+escH(d.neg2)+'</span>':'')+(d.bin?' <span class="pill p-pu" style="font-size:9px;">Binôme 50/50</span>':'')+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:5px;">'+(prev?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:3px 6px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:3px 6px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button type="button" class="bs" onclick="editDoss('+d.id+');return false;" style="font-size:10px;padding:3px 8px;margin-left:auto;background:rgba(201,168,76,.15);border-color:var(--borderor);color:var(--or);">✏️ Modifier</button><button type="button" class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+      // STATUT SIGNATURE (Compromis/Acte) : vert = date signature ≤ aujourd'hui, orange sinon
+      var statusHtml='',cardStyle='';
+      if(stage==='compromis'||stage==='acte'){
+        var sd=(stage==='compromis'?d.dateComp:d.dateActe)||'';
+        var today=fmtDate(new Date());
+        var signed=!!sd&&sd<=today, future=!!sd&&sd>today;
+        var sc=signed?'var(--green)':'#d98a3d';
+        cardStyle='border:1.5px solid '+sc+';border-left:4px solid '+sc+';';
+        var jm=sd?new Date(sd+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}):'';
+        var lbl=signed?('✓ Signé '+jm):(future?('⏳ Prévu '+jm):'⏳ En attente');
+        var sbg=signed?'rgba(74,156,93,.14)':'rgba(217,138,61,.16)';
+        statusHtml='<div style="display:inline-block;margin:5px 0 2px;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;background:'+sbg+';color:'+sc+';border:1px solid '+sc+';">'+lbl+'</div>';
+      }
+      return'<div class="kb-card" style="'+cardStyle+'"><div class="kb-card-name">'+escH(d.ref)+'</div><div class="kb-card-info" style="color:'+col+';">'+escH(d.neg)+(d.bin&&d.neg2?' <span style="color:var(--pur);">+ '+escH(d.neg2)+'</span>':'')+(d.bin?' <span class="pill p-pu" style="font-size:9px;">Binôme 50/50</span>':'')+'</div><div class="kb-card-fee">'+fmt(d.fee)+'</div>'+statusHtml+coords+dateInfo+alertHtml+checklistHtml+filesHtml+'<div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:5px;">'+(prev?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+prev+'\')" style="font-size:9px;padding:3px 6px;" title="Retour à '+STAGE_LBL[prev]+'">← '+STAGE_LBL[prev].split(' ')[0]+'</button>':'')+(next?'<button type="button" class="bs" onclick="moveDoss('+d.id+',\''+next+'\')" style="font-size:9px;padding:3px 6px;">→ '+STAGE_LBL[next].split(' ')[0]+'</button>':'<span class="pill p-gr" style="font-size:9px;">Finalisé</span>')+'<button type="button" class="bs" onclick="editDoss('+d.id+');return false;" style="font-size:10px;padding:3px 8px;margin-left:auto;background:rgba(201,168,76,.15);border-color:var(--borderor);color:var(--or);">✏️ Modifier</button><button type="button" class="bd" onclick="delDoss('+d.id+')">×</button></div></div>';
+}
+function pipeGroupedBody(stage,all){
+  var groups={};
+  all.forEach(function(d){var n=d.neg||'—';if(!groups[n])groups[n]={items:[],fee:0};groups[n].items.push(d);groups[n].fee+=(d.fee||0);});
+  var names=Object.keys(groups).sort(function(a,b){var da=groups[b].items.length-groups[a].items.length;if(da!==0)return da;return groups[b].fee-groups[a].fee;});
+  return names.map(function(n){
+    var g=groups[n];var open=pipeGroupOpen(stage,n);
+    var who=ALL.find(function(w){return NAMES[w]===n;});var col=COLORS[who]||'var(--or)';
+    var head='<div onclick="togglePipeGroup(\''+stage+'\',\''+jsq(n)+'\')" style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:7px 9px;margin-bottom:5px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid '+col+';border-radius:7px;">'
+      +'<span style="width:9px;height:9px;border-radius:50%;background:'+col+';flex:0 0 auto;"></span>'
+      +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(n)+'</span>'
+      +'<span class="kb-badge" style="background:'+col+'22;color:'+col+';font-size:10px;white-space:nowrap;">'+g.items.length+' · '+fmt(g.fee)+'</span>'
+      +'<span style="font-size:11px;color:var(--txt3);flex:0 0 auto;">'+(open?'▾':'▸')+'</span></div>';
+    var cards=open?g.items.map(function(d){return pipeCardHTML(d,stage);}).join(''):'';
+    return'<div style="margin-bottom:'+(open?'8px':'0')+';">'+head+cards+'</div>';
+  }).join('');
+}
+function renderPipeline(){
+  var filtered=getFilteredDossiers();
+  var mr=getPipeMonthRange();
+  var ml=document.getElementById('pipe-month-label');
+  if(ml)ml.textContent=mr?mr.label:'Tous les mois';
+  var mc=document.getElementById('pipe-month-count');
+  if(mc)mc.textContent=filtered.length+' dossier'+(filtered.length>1?'s':'')+(mr?' en '+mr.label:'');
+  var nb={mandat:0,offre:0,compromis:0,acte:0},fees={mandat:0,offre:0,compromis:0,acte:0};
+  filtered.forEach(function(d){nb[d.stage]=(nb[d.stage]||0)+1;fees[d.stage]=(fees[d.stage]||0)+d.fee;});
+  // Onglets d'étape (mobile uniquement, via CSS)
+  var mt=document.getElementById('pipe-mobile-tabs');
+  if(mt){
+    mt.innerHTML=['mandat','offre','compromis','acte'].map(function(s){
+      var on=s===pipeMobileStage;
+      return'<button onclick="setPipeMobileStage(\''+s+'\')" style="flex:0 0 auto;padding:7px 13px;border-radius:18px;font-size:11px;font-family:inherit;cursor:pointer;border:1.5px solid '+(on?STAGE_COL[s]:'var(--border)')+';background:'+(on?STAGE_COL[s]+'18':'var(--bg2)')+';color:'+(on?STAGE_COL[s]:'var(--txt3)')+';font-weight:'+(on?'600':'400')+';">'+STAGE_LBL[s].split(' ')[0]+' <span style="font-size:10px;">('+nb[s]+')</span></button>';
     }).join('');
-    return'<div class="kb-col'+(stage===pipeMobileStage?' mob-on':'')+'"><div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+items.length+'</span></div>'+cards+(totalItems>items.length?'<button class="bs" style="width:100%;margin-bottom:5px;" onclick="window.pipeShowAll=true;renderPipeline()">⬇ Voir les '+(totalItems-items.length)+' plus anciens</button>':'')+'<button class="kb-add" onclick="openModal()">+ Ajouter</button></div>';
+  }
+  document.getElementById('pipe-kpis').innerHTML='<div class="kc bl"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--blue)">'+nb.mandat+'</div><div class="ks">'+fmt(fees.mandat)+'</div></div><div class="kc pu"><div class="kl">Offres</div><div class="kv sm" style="color:var(--pur)">'+nb.offre+'</div><div class="ks">'+fmt(fees.offre)+'</div></div><div class="kc or"><div class="kl">Compromis</div><div class="kv sm gold">'+nb.compromis+'</div><div class="ks">'+fmt(fees.compromis)+'</div></div><div class="kc gr"><div class="kl">Actes</div><div class="kv sm" style="color:var(--green)">'+nb.acte+'</div><div class="ks">'+fmt(fees.acte)+'</div></div>';
+  // ALERTES PIÈCES MANQUANTES
+  var alertBox=document.getElementById('pipe-alerts');
+  if(alertBox){
+    var withMissing=filtered.filter(function(d){var c=checkDossDocs(d);return(d.stage==='compromis'||d.stage==='acte')&&c.missing.length>0;});
+    if(withMissing.length){
+      var ah='<div class="al ar2"><div class="ald"></div><strong>⚠️ '+withMissing.length+' dossier'+(withMissing.length>1?'s':'')+' avec pièces manquantes :</strong> ';
+      ah+=withMissing.slice(0,5).map(function(d){var c=checkDossDocs(d);return escH(d.ref)+' ('+c.missing.map(function(m){return m.icon;}).join('')+')';}).join(' · ');
+      if(withMissing.length>5)ah+=' et '+(withMissing.length-5)+' autres';
+      ah+='</div>';
+      alertBox.innerHTML=ah;
+    } else alertBox.innerHTML='';
+  }
+  var board=document.getElementById('kanban-board');if(!board)return;
+  var searchActive=((document.getElementById('pipe-search')||{}).value||'').trim()!=='';
+  var negFilter=(document.getElementById('pipe-filter-neg')||{}).value||'';
+  board.innerHTML=STAGES.map(function(stage){
+    var all=filtered.filter(function(d){return d.stage===stage;}).sort(function(a,b){return(b.createdAt||'').localeCompare(a.createdAt||'');});
+    var totalItems=all.length;
+    var head='<div class="kb-head" style="color:'+STAGE_COL[stage]+';">'+STAGE_LBL[stage]+'<span class="kb-badge" style="background:'+STAGE_COL[stage]+'22;color:'+STAGE_COL[stage]+';">'+totalItems+'</span></div>';
+    var addBtn='<button class="kb-add" onclick="openModal()">+ Ajouter</button>';
+    var body;
+    if(totalItems>8 && !searchActive && !negFilter){
+      var tools='<div style="display:flex;gap:5px;margin-bottom:6px;"><button class="bs" style="flex:1;font-size:9px;padding:4px;" onclick="togglePipeAll(\''+stage+'\',true)">▾ Tout déplier</button><button class="bs" style="flex:1;font-size:9px;padding:4px;" onclick="togglePipeAll(\''+stage+'\',false)">▸ Tout replier</button></div>';
+      body=tools+pipeGroupedBody(stage,all);
+    } else {
+      var items=window.pipeShowAll?all:all.slice(0,10);
+      body=items.map(function(d){return pipeCardHTML(d,stage);}).join('');
+      if(totalItems>items.length)body+='<button class="bs" style="width:100%;margin-bottom:5px;" onclick="window.pipeShowAll=true;renderPipeline()">⬇ Voir les '+(totalItems-items.length)+' plus anciens</button>';
+    }
+    return'<div class="kb-col'+(stage===pipeMobileStage?' mob-on':'')+'">'+head+body+addBtn+'</div>';
   }).join('');
 }
 function moveDoss(id,s){var d=dossiers.find(function(x){return x.id===id;});if(d){d.stage=s;if(s==='acte'&&!d.stageActeAt)d.stageActeAt=fmtDate(new Date());if(s==='acte')confetti();saveDoss();renderPipeline();}}
