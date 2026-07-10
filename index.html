@@ -1215,13 +1215,40 @@ function goFiles(btn){clearAll();btn.classList.add('active');setFooter('Fichiers
 function goHome(btn){clearAll();if(btn)btn.classList.add('active');setFooter('Ma journée','Tableau de bord');document.getElementById('pg-home').classList.add('active');renderHome();}
 /* ===== RELANCES EN RETARD — panneau déroulant + actions groupées ===== */
 var relOpen=false, relChecked={};
-function toggleRelPanel(){relOpen=!relOpen;relChecked={};renderHome();}
+function relRerender(){var hp=document.getElementById('pg-home');if(hp&&hp.classList.contains('active')){try{renderHome();}catch(e){}return;}var np=document.getElementById('pg-neg');if(np&&np.classList.contains('active')){try{renderContacts();}catch(e){}return;}try{renderHome();}catch(e){}}
+function toggleRelPanel(){relOpen=!relOpen;relChecked={};relRerender();}
 function relCheck(id,on){var k=String(id);if(on)relChecked[k]=true;else delete relChecked[k];var el=document.getElementById('rel-selcount');if(el)el.textContent=Object.keys(relChecked).length;}
 function relCheckAll(on){relChecked={};document.querySelectorAll('.rel-cb').forEach(function(cb){cb.checked=!!on;if(on)relChecked[cb.value]=true;});var el=document.getElementById('rel-selcount');if(el)el.textContent=Object.keys(relChecked).length;}
-function relApply(who,fn){var ids=Object.keys(relChecked);if(!ids.length){alert('Coche au moins une relance.');return;}var d=D[who];if(!d||!d.contacts)return;d.contacts.forEach(function(c){if(relChecked[String(c.id)])fn(c);});relChecked={};save(who);renderHome();}
+function relApply(who,fn){var ids=Object.keys(relChecked);if(!ids.length){alert('Coche au moins une relance.');return;}var d=D[who];if(!d||!d.contacts)return;d.contacts.forEach(function(c){if(relChecked[String(c.id)])fn(c);});relChecked={};save(who);relRerender();}
 function relDone(who){relApply(who,function(c){c.relance_date='';});}
 function relReporter(who,days){var nd=fmtDate(new Date(Date.now()+days*86400000));relApply(who,function(c){c.relance_date=nd;});}
 function relStatut(who,val){if(!val)return;relApply(who,function(c){c.statut=val;if(val==='Pas intéressé'||val==='Mandat signé')c.relance_date='';});}
+function relPanelHTML(who,rl,today){
+  rl=rl.slice().sort(function(a,b){return(a.relance_date||'').localeCompare(b.relance_date||'');});
+  var h='<div style="background:var(--bg2);border:1px solid var(--redl);border-radius:12px;padding:12px 14px;margin:10px 0;" onclick="event.stopPropagation();">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="font-size:11px;color:var(--red);font-weight:600;">🔔 Relances en retard ('+rl.length+')</div>'+(rl.length?'<button class="bs" style="font-size:10px;" onclick="relCheckAll(true)">Tout cocher</button>':'')+'</div>';
+  if(!rl.length){h+='<div style="font-size:12px;color:var(--txt3);">Aucune relance en retard 🎉</div>';}
+  else{
+    rl.forEach(function(c){
+      var late=Math.round((new Date(today)-new Date(c.relance_date))/86400000);
+      var dstr=new Date(c.relance_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+      var sub=[c.tel,c.secteur,'échue le '+dstr+(late>0?(' · +'+late+'j'):'')].filter(Boolean).join(' · ');
+      h+='<label style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;"><input type="checkbox" class="rel-cb" value="'+c.id+'" onchange="relCheck('+c.id+',this.checked)" style="width:16px;height:16px;flex:0 0 auto;"><span style="flex:1;min-width:0;"><span style="font-size:13px;color:var(--txt);font-weight:600;">'+escH(c.nom||'Sans nom')+'</span><span style="display:block;font-size:11px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(sub)+'</span></span><span style="font-size:10px;color:var(--red);flex:0 0 auto;">'+escH(c.statut||'')+'</span></label>';
+    });
+    h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">';
+    h+='<div style="font-size:10px;color:var(--txt3);margin-bottom:6px;"><strong id="rel-selcount">0</strong> sélectionnée(s) · <span onclick="relCheckAll(false)" style="color:var(--or);cursor:pointer;">tout décocher</span></div>';
+    h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">';
+    h+='<button class="bs" onclick="relDone(\''+who+'\')" style="font-size:11px;">✅ Marquer relancé</button>';
+    h+='<span style="font-size:10px;color:var(--txt3);">Reporter :</span>';
+    h+='<button class="bs" onclick="relReporter(\''+who+'\',1)" style="font-size:11px;">Demain</button>';
+    h+='<button class="bs" onclick="relReporter(\''+who+'\',3)" style="font-size:11px;">+3j</button>';
+    h+='<button class="bs" onclick="relReporter(\''+who+'\',7)" style="font-size:11px;">+7j</button>';
+    h+='<select class="ci" style="margin:0;padding:4px 6px;font-size:11px;width:auto;" onchange="relStatut(\''+who+'\',this.value);this.value=\'\';"><option value="">Statut…</option>'+STATUTS.map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join('')+'</select>';
+    h+='</div></div>';
+  }
+  h+='</div>';
+  return h;
+}
 
 function renderHome(){
   var box=document.getElementById('home-body');if(!box)return;
@@ -1253,32 +1280,7 @@ function renderHomeInner(box){
   h+='<div class="kc pu"><div class="kl">🎯 R1 à débriefer</div><div class="kv sm" style="color:var(--pur)">'+deb.length+'</div></div>';
   h+='<div class="kc or"><div class="kl">Contacts prospection auj.</div><div class="kv gold">'+todayCt+'/'+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--or);"></div></div></div>';
   h+='</div>';
-  if(relOpen){
-    var rl=relances.slice().sort(function(a,b){return(a.relance_date||'').localeCompare(b.relance_date||'');});
-    h+='<div style="background:var(--bg2);border:1px solid var(--redl);border-radius:12px;padding:12px 14px;margin:10px 0;">';
-    h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="font-size:11px;color:var(--red);font-weight:600;">🔔 Relances en retard ('+rl.length+')</div>'+(rl.length?'<button class="bs" style="font-size:10px;" onclick="relCheckAll(true)">Tout cocher</button>':'')+'</div>';
-    if(!rl.length){
-      h+='<div style="font-size:12px;color:var(--txt3);">Aucune relance en retard 🎉</div>';
-    } else {
-      rl.forEach(function(c){
-        var late=Math.round((new Date(today)-new Date(c.relance_date))/86400000);
-        var dstr=new Date(c.relance_date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
-        var sub=[c.tel,c.secteur,'échue le '+dstr+(late>0?(' · +'+late+'j'):'')].filter(Boolean).join(' · ');
-        h+='<label style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;"><input type="checkbox" class="rel-cb" value="'+c.id+'" onchange="relCheck('+c.id+',this.checked)" style="width:16px;height:16px;flex:0 0 auto;"><span style="flex:1;min-width:0;"><span style="font-size:13px;color:var(--txt);font-weight:600;">'+escH(c.nom||'Sans nom')+'</span><span style="display:block;font-size:11px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(sub)+'</span></span><span style="font-size:10px;color:var(--red);flex:0 0 auto;">'+escH(c.statut||'')+'</span></label>';
-      });
-      h+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">';
-      h+='<div style="font-size:10px;color:var(--txt3);margin-bottom:6px;"><strong id="rel-selcount">0</strong> sélectionnée(s) · <span onclick="relCheckAll(false)" style="color:var(--or);cursor:pointer;">tout décocher</span></div>';
-      h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">';
-      h+='<button class="bs" onclick="relDone(\''+who+'\')" style="font-size:11px;">✅ Marquer relancé</button>';
-      h+='<span style="font-size:10px;color:var(--txt3);">Reporter :</span>';
-      h+='<button class="bs" onclick="relReporter(\''+who+'\',1)" style="font-size:11px;">Demain</button>';
-      h+='<button class="bs" onclick="relReporter(\''+who+'\',3)" style="font-size:11px;">+3j</button>';
-      h+='<button class="bs" onclick="relReporter(\''+who+'\',7)" style="font-size:11px;">+7j</button>';
-      h+='<select class="ci" style="margin:0;padding:4px 6px;font-size:11px;width:auto;" onchange="relStatut(\''+who+'\',this.value);this.value=\'\';"><option value="">Statut…</option>'+STATUTS.map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join('')+'</select>';
-      h+='</div></div>';
-    }
-    h+='</div>';
-  }
+  if(relOpen){ h+=relPanelHTML(who, relances, today); }
 
   if(rdvToday.length){
     h+='<div style="background:var(--bg2);border:1px solid var(--borderor);border-radius:12px;padding:12px 14px;margin:10px 0;"><div style="font-size:11px;color:var(--or);font-weight:600;margin-bottom:8px;">📆 Tes RDV du jour</div>';
@@ -1745,10 +1747,11 @@ function renderContacts(){
   var rel=document.getElementById('journal-relances');
   if(rel){
     if(relances.length){
-      var rh='<div class="al ar2"><div class="ald"></div><strong>'+relances.length+' relance'+(relances.length>1?'s':'')+' à faire :</strong> ';
+      var rh='<div class="al ar2" style="cursor:pointer;" onclick="toggleRelPanel()"><div class="ald"></div><strong>'+relances.length+' relance'+(relances.length>1?'s':'')+' à faire '+(relOpen?'▾':'▸')+' :</strong> ';
       rh+=relances.slice(0,3).map(function(c){return escH(c.nom);}).join(', ');
       if(relances.length>3)rh+=' et '+(relances.length-3)+' autres';
       rh+='</div>';
+      if(relOpen)rh+=relPanelHTML(curWho,relances,today);
       rel.innerHTML=rh;
     } else rel.innerHTML='';
   }
