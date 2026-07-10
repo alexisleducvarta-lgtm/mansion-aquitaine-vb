@@ -2502,15 +2502,16 @@ function pipeCardHTML(d,stage){
 }
 function pipeGroupedBody(stage,all){
   var groups={};
-  all.forEach(function(d){var n=d.neg||'—';if(!groups[n])groups[n]={items:[],fee:0};groups[n].items.push(d);groups[n].fee+=(d.fee||0);});
-  var names=Object.keys(groups).sort(function(a,b){var da=groups[b].items.length-groups[a].items.length;if(da!==0)return da;return groups[b].fee-groups[a].fee;});
+  function pgAdd(n,d,w){if(!n)return;if(!groups[n])groups[n]={items:[],fee:0,count:0};groups[n].items.push(d);groups[n].fee+=w*(d.fee||0);groups[n].count+=w;}
+  all.forEach(function(d){if(d.bin&&d.neg2&&d.neg2!==d.neg){pgAdd(d.neg,d,0.5);pgAdd(d.neg2,d,0.5);}else{pgAdd(d.neg||'—',d,1);}});
+  var names=Object.keys(groups).sort(function(a,b){var da=groups[b].count-groups[a].count;if(da!==0)return da;return groups[b].fee-groups[a].fee;});
   return names.map(function(n){
     var g=groups[n];var open=pipeGroupOpen(stage,n);
     var who=ALL.find(function(w){return NAMES[w]===n;});var col=COLORS[who]||'var(--or)';
     var head='<div onclick="togglePipeGroup(\''+stage+'\',\''+jsq(n)+'\')" style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:7px 9px;margin-bottom:5px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid '+col+';border-radius:7px;">'
       +'<span style="width:9px;height:9px;border-radius:50%;background:'+col+';flex:0 0 auto;"></span>'
       +'<span style="flex:1;font-size:12px;font-weight:600;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(n)+'</span>'
-      +'<span class="kb-badge" style="background:'+col+'22;color:'+col+';font-size:10px;white-space:nowrap;">'+g.items.length+' · '+fmt(g.fee)+'</span>'
+      +'<span class="kb-badge" style="background:'+col+'22;color:'+col+';font-size:10px;white-space:nowrap;">'+(g.count%1===0?g.count:g.count.toFixed(1).replace('.',','))+' · '+fmt(g.fee)+'</span>'
       +'<span style="font-size:11px;color:var(--txt3);flex:0 0 auto;">'+(open?'▾':'▸')+'</span></div>';
     var cards=open?g.items.map(function(d){return pipeCardHTML(d,stage);}).join(''):'';
     return'<div style="margin-bottom:'+(open?'8px':'0')+';">'+head+cards+'</div>';
