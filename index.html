@@ -576,17 +576,6 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   </div>
   <div id="treso-verdict" style="margin-bottom:.8rem;"></div>
   <div id="treso-params" style="display:none;margin-bottom:.8rem;"></div>
-  <div class="tbox" style="padding:14px;margin-bottom:.8rem;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div style="font-size:11px;color:var(--or);font-weight:600;text-transform:uppercase;letter-spacing:1px;">💬 Conseiller — dépenses &amp; investissements</div>
-      <button class="bs" style="font-size:10px;" onclick="tresoChatClear()">Effacer</button>
-    </div>
-    <div id="chat-log" style="max-height:320px;overflow-y:auto;margin-bottom:9px;"></div>
-    <div style="display:flex;gap:7px;">
-      <input class="ci" style="margin:0;flex:1;" id="chat-input" placeholder="Ex : puis-je prendre un 2e véhicule à 470 €/mois pour Swan ?" onkeydown="if(event.key==='Enter')tresoChatSend()">
-      <button class="bp" style="margin:0;padding:9px 16px;font-size:12px;" id="chat-send" onclick="tresoChatSend()">Envoyer</button>
-    </div>
-    <div id="chat-warn" style="font-size:10px;color:var(--txt3);margin-top:6px;"></div>
   </div>
   <div id="treso-body"></div>
 </div>
@@ -1233,7 +1222,7 @@ function closeMobileMenu(){
   if(sb)sb.classList.remove('mobile-open');
   if(ov)ov.classList.remove('open');
 }
-function clearAll(){document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});closeMobileMenu();}
+function clearAll(){try{tfShowBtn(false);}catch(e){}document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.pg').forEach(function(x){x.classList.remove('active');});closeMobileMenu();}
 function setFooter(n,r){setEl('cur-name',n);setEl('cur-role',r);}
 function goNeg(who,btn){clearAll();btn.classList.add('active');curWho=who;var c=COLORS[who];var av=document.getElementById('cur-av');if(av){av.textContent=INITS[who];av.style.background=c+'22';av.style.color=c;av.style.borderColor=c+'44';}setFooter(NAMES[who],ROLES[who]);document.getElementById('pg-neg').classList.add('active');curSub='journal';document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stab-journal').classList.add('active');document.getElementById('stc-journal').classList.add('active');renderNeg();}
 function goProsp(btn){clearAll();btn.classList.add('active');setFooter('Mansion Aquitaine','Prospection');document.getElementById('pg-prosp').classList.add('active');renderProsp();}
@@ -3182,7 +3171,7 @@ function tresoLoad(){
 }
 function tresoSave(){ if(!db)return; try{ db.ref('mansion/tresorerie').set(TRESO); }catch(e){ console.error('treso save',e); } }
 
-function goTreso(btn){clearAll();btn.classList.add('active');setFooter('Trésorerie','Accès restreint');document.getElementById('pg-treso').classList.add('active');renderTreso();renderChat();}
+function goTreso(btn){clearAll();btn.classList.add('active');setFooter('Trésorerie','Accès restreint');document.getElementById('pg-treso').classList.add('active');renderTreso();renderChat();tfShowBtn(true);}
 function tresoToggleParams(){tresoParamsOpen=!tresoParamsOpen;renderTreso();}
 
 // Commission versée à UN négo sur un dossier (réutilise les barèmes existants)
@@ -3202,8 +3191,11 @@ function tresoComDoss(d){
   return c;
 }
 function moisKey(dt){return dt.substring(0,7);}
-function addDays(iso,n){var d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return fmtDate(d);}
-function addMonths(iso,n){var d=new Date(iso+'T12:00:00');var day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return fmtDate(d);}
+// ⚠️ fmtDate() global utilise toISOString() = UTC → une date créée à minuit local bascule au jour d'avant.
+// Ici on formate en heure LOCALE, sinon le prévisionnel démarre au mois précédent.
+function tresoFmt(d){var y=d.getFullYear(),m=d.getMonth()+1,j=d.getDate();return y+'-'+(m<10?'0':'')+m+'-'+(j<10?'0':'')+j;}
+function addDays(iso,n){var d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return tresoFmt(d);}
+function addMonths(iso,n){var d=new Date(iso+'T12:00:00');var day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return tresoFmt(d);}
 function moisLabel(k){var p=k.split('-');return TZ_MOIS[parseInt(p[1],10)-1]+' '+p[0];}
 
 // Une charge s'applique-t-elle au mois k ?
@@ -3227,7 +3219,7 @@ function renderTreso(){
   var vb=document.getElementById('treso-verdict'),pb=document.getElementById('treso-params'),bb=document.getElementById('treso-body');
   if(!bb)return;
   try{
-    var today=fmtDate(new Date());
+    var today=tresoFmt(new Date());
     var startK=today.substring(0,7);
     var H=TRESO.horizon||6, tvaR=(TRESO.tvaRate||20)/100, isR=(TRESO.isRate||25)/100;
 
@@ -3269,7 +3261,7 @@ function renderTreso(){
     var d0=new Date(); 
     for(var i=0;i<H;i++){
       var dt=new Date(d0.getFullYear(),d0.getMonth()+i,1);
-      var k=fmtDate(dt).substring(0,7);
+      var k=tresoFmt(dt).substring(0,7);
       var e=enc[k]||{ttc:0,com:0,items:[]};
       var chDet=[],chTot=0,tvaDed=0;
       (TRESO.charges||[]).forEach(function(c){
@@ -3321,16 +3313,8 @@ function renderTreso(){
     }
     vb.innerHTML=vh;
 
-    // --- SIMULATEUR DE DÉPENSE ---
-    var sh='<div class="tbox" style="padding:14px;margin-top:.8rem;">';
-    sh+='<div style="font-size:11px;color:var(--or);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🧮 Puis-je faire cette dépense ?</div>';
-    sh+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">';
-    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Montant TTC (€)</label><input class="ci" style="margin:0;" type="number" id="sim-montant" placeholder="ex: 4500" onkeydown="if(event.key===\'Enter\')tresoSim()"></div>';
-    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Quand ?</label><select class="ci" style="margin:0;" id="sim-mois">'+rows.map(function(r,i){return'<option value="'+i+'">'+moisLabel(r.k)+'</option>';}).join('')+'</select></div>';
-    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Récurrence</label><select class="ci" style="margin:0;" id="sim-freq"><option value="once">Une seule fois</option><option value="monthly">Tous les mois</option></select></div>';
-    sh+='<button class="bp" style="margin:0;padding:9px 18px;font-size:12px;" onclick="tresoSim()">Vérifier</button>';
-    sh+='</div><div id="sim-result" style="margin-top:10px;"></div></div>';
-    vb.innerHTML=vh+sh;
+    vb.innerHTML=vh;
+    renderSimOptions(rows);
 
     // --- PARAMÈTRES ---
     if(tresoParamsOpen){
@@ -3407,14 +3391,25 @@ function renderTreso(){
     // --- DÉTAIL DES ENCAISSEMENTS ---
     var anyItems=rows.some(function(r){return r.items.length;});
     if(anyItems){
-      h+='<div class="stitle">Encaissements attendus</div><div class="tbox" style="padding:12px;">';
+      h+='<div class="stitle">Encaissements attendus — dossier par dossier</div><div class="tbox" style="padding:12px;">';
       rows.forEach(function(r){
         if(!r.items.length)return;
-        h+='<div style="font-size:11px;color:var(--or);font-weight:600;margin:8px 0 4px;">'+moisLabel(r.k)+'</div>';
-        r.items.forEach(function(it){
-          var lbl=it.stage==='acte'?'✓ Acte':'⏳ Compromis';
-          if(it.projete)lbl+=' · 📅 date projetée';
-          h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="flex:1;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(it.ref||'?')+' <span style="color:var(--txt3);font-size:10px;">· '+escH(it.neg||'')+' · '+lbl+' '+new Date(it.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</span></span><span style="color:var(--or);">'+fmt(it.ttc)+'</span><span style="color:var(--txt3);font-size:11px;">−'+fmt(it.com)+'</span><span style="color:var(--green);font-weight:600;">'+fmt(it.ttc-it.com)+'</span></div>';
+        var net=r.ttc-r.com;
+        h+='<div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px;padding-bottom:5px;border-bottom:2px solid var(--or);">'
+          +'<span style="font-size:12px;color:var(--or);font-weight:700;text-transform:uppercase;letter-spacing:1px;">'+moisLabel(r.k)+'</span>'
+          +'<span style="font-size:11px;color:var(--txt3);">'+r.items.length+' dossier(s) · <strong style="color:var(--or);">'+fmt(r.ttc)+'</strong> encaissés → <strong style="color:var(--green);">'+fmt(net)+'</strong> nets</span></div>';
+        h+='<div style="display:flex;gap:8px;font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;padding:0 0 4px;"><span style="flex:1;">Dossier</span><span style="width:80px;text-align:right;">Honoraires</span><span style="width:80px;text-align:right;">Commission</span><span style="width:80px;text-align:right;">Net SAS</span></div>';
+        r.items.slice().sort(function(a,b){return(a.date||'').localeCompare(b.date||'');}).forEach(function(it){
+          var dstr=new Date(it.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+          var tag=it.stage==='acte'
+            ?'<span style="color:var(--green);">✓ Acte '+dstr+'</span>'
+            :(it.projete?'<span style="color:var(--blue);">📅 estimé '+dstr+'</span>':'<span style="color:#d98a3d;">⏳ prévu '+dstr+'</span>');
+          h+='<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">'
+            +'<span style="flex:1;min-width:0;"><span style="color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">'+escH(it.ref||'?')+'</span>'
+            +'<span style="font-size:10px;color:var(--txt3);">'+escH(it.neg||'')+' · '+tag+'</span></span>'
+            +'<span style="width:80px;text-align:right;color:var(--or);">'+fmt(it.ttc)+'</span>'
+            +'<span style="width:80px;text-align:right;color:var(--txt3);">−'+fmt(it.com)+'</span>'
+            +'<span style="width:80px;text-align:right;color:var(--green);font-weight:600;">'+fmt(it.ttc-it.com)+'</span></div>';
         });
       });
       h+='</div>';
@@ -3434,6 +3429,28 @@ function renderTreso(){
     console.error('renderTreso',e);
   }
 }
+/* ---- PANNEAU FLOTTANT (simulateur + conseiller) ---- */
+var tfOpen=false,tfCur='sim';
+function tfShowBtn(on){var b=document.getElementById('tf-btn');if(b)b.style.display=on?'flex':'none';if(!on)tfClose();}
+function tfToggle(){tfOpen=!tfOpen;var p=document.getElementById('tf-panel');if(p)p.classList.toggle('open',tfOpen);if(tfOpen&&tfCur==='chat')renderChat();}
+function tfClose(){tfOpen=false;var p=document.getElementById('tf-panel');if(p)p.classList.remove('open');}
+function tfTab(t){
+  tfCur=t;
+  ['sim','chat'].forEach(function(x){
+    var tab=document.getElementById('tf-tab-'+x),bd=document.getElementById('tf-'+x);
+    if(tab)tab.classList.toggle('on',x===t);
+    if(bd)bd.style.display=(x===t)?'block':'none';
+  });
+  if(t==='chat')renderChat();
+}
+// Remplit le sélecteur de mois du simulateur à chaque recalcul
+function renderSimOptions(rows){
+  var sel=document.getElementById('sim-mois');if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML=rows.map(function(r,i){return'<option value="'+i+'">'+moisLabel(r.k)+'</option>';}).join('');
+  if(cur&&rows[parseInt(cur,10)])sel.value=cur;
+}
+
 var TRESO_ROWS=[];
 function tresoSim(){
   var box=document.getElementById('sim-result');if(!box)return;
@@ -3516,15 +3533,27 @@ function tresoChatSend(){
   fetch('/.netlify/functions/claude',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({messages:chatMsgs,context:tresoChatContext()})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.error)throw new Error(d.error);
+  }).then(function(r){
+    return r.text().then(function(t){
+      if(r.status===404||!t){var e=new Error('NOT_DEPLOYED');e.code='NOT_DEPLOYED';throw e;}
+      var d;
+      try{d=JSON.parse(t);}catch(_){var e2=new Error('NOT_DEPLOYED');e2.code='NOT_DEPLOYED';throw e2;}
+      if(!r.ok||d.error)throw new Error(d.error||('Erreur '+r.status));
+      return d;
+    });
+  }).then(function(d){
     chatMsgs.push({role:'assistant',content:d.text||'(réponse vide)'});
     renderChat();
   }).catch(function(e){
     chatMsgs.pop();
     renderChat();
     var w2=document.getElementById('chat-warn');
-    if(w2)w2.innerHTML='<span style="color:var(--red);">Chat indisponible : '+escH(e.message)+'</span> — la fonction Netlify <code>netlify/functions/claude.js</code> doit être déployée et la variable <code>ANTHROPIC_API_KEY</code> renseignée dans Netlify. Le simulateur ci-dessus fonctionne sans ça.';
+    if(!w2)return;
+    if(e.code==='NOT_DEPLOYED'){
+      w2.innerHTML='<span style="color:#d98a3d;">⚙️ Conseiller pas encore activé.</span> Il faut déposer <code>netlify/functions/claude.js</code> dans le dépôt GitHub et ajouter la variable <code>ANTHROPIC_API_KEY</code> dans Netlify. <strong>Le simulateur, lui, marche déjà.</strong>';
+    }else{
+      w2.innerHTML='<span style="color:var(--red);">Erreur : '+escH(e.message)+'</span>';
+    }
   }).then(function(){
     chatBusy=false;
     var b=document.getElementById('chat-send');if(b){b.textContent='Envoyer';b.disabled=false;}
@@ -3897,6 +3926,51 @@ if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js').c
   <div class="gs-panel">
     <div class="gs-top"><span style="font-size:16px;">🔍</span><input id="gsearch-input" type="text" placeholder="Rechercher un contact, dossier, client, fichier…" oninput="renderGSearch()"><button class="gs-x" onclick="closeGSearch()">Échap</button></div>
     <div id="gsearch-results"></div>
+  </div>
+</div>
+
+
+<!-- PANNEAU FLOTTANT TRÉSORERIE (simulateur + conseiller) -->
+<style>
+#tf-btn{position:fixed;right:20px;bottom:20px;z-index:1800;width:54px;height:54px;border-radius:50%;background:var(--or);color:#1a1208;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.35);font-size:22px;display:none;align-items:center;justify-content:center;transition:transform .15s;}
+#tf-btn:hover{transform:scale(1.07);}
+#tf-panel{position:fixed;right:20px;bottom:84px;z-index:1801;width:380px;max-width:calc(100vw - 32px);max-height:70vh;background:var(--bg1);border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden;}
+#tf-panel.open{display:flex;}
+.tf-head{display:flex;align-items:center;gap:6px;padding:9px 10px;border-bottom:1px solid var(--border);}
+.tf-tab{flex:1;padding:7px 8px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--txt3);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
+.tf-tab.on{background:var(--bg2);border-color:var(--border);color:var(--or);}
+.tf-x{background:transparent;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:0 5px;}
+.tf-body{padding:12px;overflow-y:auto;}
+@media(max-width:640px){#tf-panel{right:8px;left:8px;width:auto;bottom:76px;max-height:76vh;}#tf-btn{right:14px;bottom:14px;}}
+</style>
+<button id="tf-btn" onclick="tfToggle()" title="Simulateur & conseiller">🧮</button>
+<div id="tf-panel">
+  <div class="tf-head">
+    <button class="tf-tab on" id="tf-tab-sim" onclick="tfTab('sim')">🧮 Puis-je dépenser ?</button>
+    <button class="tf-tab" id="tf-tab-chat" onclick="tfTab('chat')">💬 Conseiller</button>
+    <button class="tf-x" onclick="tfToggle()">✕</button>
+  </div>
+  <div class="tf-body" id="tf-sim">
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:9px;line-height:1.5;">Teste une dépense avant de la faire. Le calcul tient compte de tes encaissements, charges, provisions TVA/IS et de ton matelas.</div>
+    <label style="font-size:10px;color:var(--txt3);">Montant TTC (€)</label>
+    <input class="ci" type="number" id="sim-montant" placeholder="ex : 3780" onkeydown="if(event.key==='Enter')tresoSim()">
+    <label style="font-size:10px;color:var(--txt3);">Quand ?</label>
+    <select class="ci" id="sim-mois"></select>
+    <label style="font-size:10px;color:var(--txt3);">Récurrence</label>
+    <select class="ci" id="sim-freq"><option value="once">Une seule fois</option><option value="monthly">Tous les mois</option></select>
+    <button class="bp" style="width:100%;margin:6px 0 0;padding:10px;font-size:12px;" onclick="tresoSim()">Vérifier</button>
+    <div id="sim-result" style="margin-top:10px;"></div>
+  </div>
+  <div class="tf-body" id="tf-chat" style="display:none;">
+    <div id="chat-log" style="max-height:280px;overflow-y:auto;margin-bottom:9px;"></div>
+    <div style="display:flex;gap:6px;">
+      <input class="ci" style="margin:0;flex:1;" id="chat-input" placeholder="Puis-je prendre un 2e véhicule ?" onkeydown="if(event.key==='Enter')tresoChatSend()">
+      <button class="bp" style="margin:0;padding:9px 13px;font-size:12px;" id="chat-send" onclick="tresoChatSend()">↑</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;">
+      <div id="chat-warn" style="font-size:10px;color:var(--txt3);flex:1;"></div>
+      <button class="bs" style="font-size:9px;padding:2px 6px;" onclick="tresoChatClear()">Effacer</button>
+    </div>
   </div>
 </div>
 
