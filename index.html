@@ -576,6 +576,18 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   </div>
   <div id="treso-verdict" style="margin-bottom:.8rem;"></div>
   <div id="treso-params" style="display:none;margin-bottom:.8rem;"></div>
+  <div class="tbox" style="padding:14px;margin-bottom:.8rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:11px;color:var(--or);font-weight:600;text-transform:uppercase;letter-spacing:1px;">💬 Conseiller — dépenses &amp; investissements</div>
+      <button class="bs" style="font-size:10px;" onclick="tresoChatClear()">Effacer</button>
+    </div>
+    <div id="chat-log" style="max-height:320px;overflow-y:auto;margin-bottom:9px;"></div>
+    <div style="display:flex;gap:7px;">
+      <input class="ci" style="margin:0;flex:1;" id="chat-input" placeholder="Ex : puis-je prendre un 2e véhicule à 470 €/mois pour Swan ?" onkeydown="if(event.key==='Enter')tresoChatSend()">
+      <button class="bp" style="margin:0;padding:9px 16px;font-size:12px;" id="chat-send" onclick="tresoChatSend()">Envoyer</button>
+    </div>
+    <div id="chat-warn" style="font-size:10px;color:var(--txt3);margin-top:6px;"></div>
+  </div>
   <div id="treso-body"></div>
 </div>
 
@@ -815,7 +827,7 @@ function renderObjBlock(who){
 }
 var SWAN_RATES={Exclusif:.12,'Semi-exclusif':.12,'Exclusivité morale':.12,Simple:.10};
 var PALIERS=[{min:0,max:35000,t:40},{min:35000,max:65000,t:45},{min:65000,max:100000,t:50},{min:100000,max:135000,t:55},{min:135000,max:null,t:60}];
-var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:80};
+var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:60};
 var PROG=['pauline','nolan'];
 var SAL=['swan','enrik']; // Salariés avec barème Swan (10/12%)
 var ALL=['swan','enrik','pauline','nolan','thibault','nicolas','laurent','alexis'];
@@ -3141,7 +3153,17 @@ var TRESO_DEF={
     {id:16,label:'Fournitures (2 agences)',montant:300,freq:'mensuel',tva:true},
     {id:17,label:'Leasing Tesla',montant:165,freq:'mensuel',tva:true},
     {id:18,label:'Assurance Tesla',montant:80,freq:'mensuel',tva:false},
-    {id:19,label:'Tesla — recharge Supercharger (2 000 km/mois)',montant:120,freq:'mensuel',tva:true}
+    {id:19,label:'Tesla — recharge Supercharger (2 000 km/mois)',montant:120,freq:'mensuel',tva:true},
+    {id:20,label:'Téléphone Swan',montant:55,freq:'mensuel',tva:true},
+    {id:21,label:'Location PC + téléphone (Alexis)',montant:110,freq:'mensuel',tva:true},
+    {id:22,label:'Prime carburant Enrik (remplacée par le VE)',montant:150,freq:'mensuel',tva:false,fin:'2026-07'},
+    {id:23,label:'Mazarine — apprentie BTS 18 ans (net après aide)',montant:500,freq:'mensuel',tva:false,debut:'2026-09'},
+    {id:24,label:'Challenge Mandats (bon 600€ + iPhone 17 Pro en loc)',montant:650,freq:'mensuel',tva:false},
+    {id:25,label:'Challenge RDV (voyage — provision/mois)',montant:750,freq:'mensuel',tva:false},
+    {id:26,label:'KIA EV2 Enrik — ACOMPTE LIZY (one-shot)',montant:3780,freq:'ponctuel',tva:true,debut:'2026-07'},
+    {id:27,label:'KIA EV2 Enrik — loyer LIZY',montant:52.98,freq:'mensuel',tva:true,debut:'2026-08'},
+    {id:28,label:'KIA EV2 Enrik — assurance (NON incluse au contrat)',montant:70,freq:'mensuel',tva:false,debut:'2026-08'},
+    {id:29,label:'KIA EV2 Enrik — recharge électrique',montant:30,freq:'mensuel',tva:true,debut:'2026-08'}
   ]
 };
 var TRESO=JSON.parse(JSON.stringify(TRESO_DEF));
@@ -3160,7 +3182,7 @@ function tresoLoad(){
 }
 function tresoSave(){ if(!db)return; try{ db.ref('mansion/tresorerie').set(TRESO); }catch(e){ console.error('treso save',e); } }
 
-function goTreso(btn){clearAll();btn.classList.add('active');setFooter('Trésorerie','Accès restreint');document.getElementById('pg-treso').classList.add('active');renderTreso();}
+function goTreso(btn){clearAll();btn.classList.add('active');setFooter('Trésorerie','Accès restreint');document.getElementById('pg-treso').classList.add('active');renderTreso();renderChat();}
 function tresoToggleParams(){tresoParamsOpen=!tresoParamsOpen;renderTreso();}
 
 // Commission versée à UN négo sur un dossier (réutilise les barèmes existants)
@@ -3181,6 +3203,7 @@ function tresoComDoss(d){
 }
 function moisKey(dt){return dt.substring(0,7);}
 function addDays(iso,n){var d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return fmtDate(d);}
+function addMonths(iso,n){var d=new Date(iso+'T12:00:00');var day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);var last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return fmtDate(d);}
 function moisLabel(k){var p=k.split('-');return TZ_MOIS[parseInt(p[1],10)-1]+' '+p[0];}
 
 // Une charge s'applique-t-elle au mois k ?
@@ -3210,23 +3233,33 @@ function renderTreso(){
 
     // --- Encaissements : dossiers compromis (date d'acte projetée) + actes ---
     // Un encaissement déjà tombé (≤ aujourd'hui) est réputé DÉJÀ dans le solde bancaire → pas recompté.
-    // Sa TVA collectée, elle, reste due tant qu'elle n'est pas reversée → dette TVA.
-    var enc={},nonDates=[],tvaBacklog=0,backlogItems=[];
+    // Compromis sans date d'acte → PROJECTION AUTO : date de compromis + 3 mois et 15 jours.
+    var enc={},nonDates=[],projetes=[],tvaBacklog=0,backlogItems=[];
     (dossiers||[]).forEach(function(d){
       if(d.stage!=='compromis'&&d.stage!=='acte')return;
-      var da=d.dateActe||'';
-      if(!da){ nonDates.push(d); return; }
+      var da=d.dateActe||'',projete=false;
+      if(!da){
+        if(d.stage==='compromis'){
+          var base=d.dateComp||d.createdAt||'';
+          if(!base){ nonDates.push(d); return; }
+          da=addDays(addMonths(base.substring(0,10),3),15); projete=true;
+        }else{
+          da=d.dateComp||d.createdAt||'';
+          if(!da){ nonDates.push(d); return; }
+          da=da.substring(0,10); projete=true;
+        }
+      }
       var encD=addDays(da,TRESO.delaiJours||5);
       var com=tresoComDoss(d), ttc=d.fee||0;
+      if(projete)projetes.push({ref:d.ref,date:da});
       if(encD<=today){
-        // déjà encaissé : uniquement la TVA reste à provisionner
         if(d.stage==='acte'){ tvaBacklog+=ttc-(ttc/(1+tvaR)); backlogItems.push({ref:d.ref,ttc:ttc,date:da}); }
         return;
       }
       var k=moisKey(encD);
       if(!enc[k])enc[k]={ttc:0,com:0,items:[]};
       enc[k].ttc+=ttc; enc[k].com+=com;
-      enc[k].items.push({ref:d.ref,neg:d.neg,ttc:ttc,com:com,stage:d.stage,date:da});
+      enc[k].items.push({ref:d.ref,neg:d.neg,ttc:ttc,com:com,stage:d.stage,date:da,projete:projete});
     });
     // Dette TVA de départ : auto (actes signés non reversés) ou saisie manuelle
     var tvaDette=(TRESO.tvaDette===null||TRESO.tvaDette===undefined||TRESO.tvaDette==='')?tvaBacklog:(parseFloat(TRESO.tvaDette)||0);
@@ -3259,6 +3292,7 @@ function renderTreso(){
       rows.push(r);
       if(i===0)moisCourant=r;
     }
+    TRESO_ROWS=rows;
 
     // --- VERDICT ---
     var vh='';
@@ -3279,10 +3313,24 @@ function renderTreso(){
     if(tvaDette>0){
       vh+='<div class="al" style="margin-top:8px;background:rgba(192,68,74,.10);border:1px solid var(--red);"><div class="ald" style="background:var(--red);"></div><strong style="color:var(--red);">TVA non reversée : '+fmt(tvaDette)+'</strong> <span style="color:var(--txt3);">— collectée sur '+backlogItems.length+' acte(s) déjà signé(s). Cet argent est sur ton compte mais <strong>il ne t\'appartient pas</strong>. Il est déjà déduit du montant dépensable ci-dessus.</span></div>';
     }
+    if(projetes.length){
+      vh+='<div class="al" style="margin-top:8px;background:rgba(74,130,192,.10);border:1px solid var(--blue);"><div class="ald" style="background:var(--blue);"></div><strong style="color:var(--blue);">'+projetes.length+' dossier(s) à date d\'acte PROJETÉE</strong> <span style="color:var(--txt3);">— estimation automatique : date de compromis + 3 mois et 15 jours. Ils sont comptés dans le prévisionnel. Saisis la vraie date dès que tu l\'as, le calcul s\'affinera.</span></div>';
+    }
     if(nonDates.length){
       vh+='<div class="al" style="margin-top:8px;background:rgba(217,138,61,.12);border:1px solid #d98a3d;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">'+nonDates.length+' dossier(s) sans date d\'acte</strong> <span style="color:var(--txt3);">— non comptés dans le prévisionnel : '+nonDates.slice(0,4).map(function(d){return escH(d.ref||'?');}).join(', ')+(nonDates.length>4?'…':'')+'. Renseigne la date d\'acte (même projetée) pour les intégrer.</span></div>';
     }
     vb.innerHTML=vh;
+
+    // --- SIMULATEUR DE DÉPENSE ---
+    var sh='<div class="tbox" style="padding:14px;margin-top:.8rem;">';
+    sh+='<div style="font-size:11px;color:var(--or);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🧮 Puis-je faire cette dépense ?</div>';
+    sh+='<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">';
+    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Montant TTC (€)</label><input class="ci" style="margin:0;" type="number" id="sim-montant" placeholder="ex: 4500" onkeydown="if(event.key===\'Enter\')tresoSim()"></div>';
+    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Quand ?</label><select class="ci" style="margin:0;" id="sim-mois">'+rows.map(function(r,i){return'<option value="'+i+'">'+moisLabel(r.k)+'</option>';}).join('')+'</select></div>';
+    sh+='<div style="flex:1;min-width:120px;"><label style="font-size:10px;color:var(--txt3);">Récurrence</label><select class="ci" style="margin:0;" id="sim-freq"><option value="once">Une seule fois</option><option value="monthly">Tous les mois</option></select></div>';
+    sh+='<button class="bp" style="margin:0;padding:9px 18px;font-size:12px;" onclick="tresoSim()">Vérifier</button>';
+    sh+='</div><div id="sim-result" style="margin-top:10px;"></div></div>';
+    vb.innerHTML=vh+sh;
 
     // --- PARAMÈTRES ---
     if(tresoParamsOpen){
@@ -3299,7 +3347,23 @@ function renderTreso(){
       ph+='<div><label style="font-size:10px;color:var(--txt3);">Dette TVA (vide = auto : '+fmt(tvaBacklog)+')</label><input class="ci" type="number" id="tp-tvadette" value="'+((TRESO.tvaDette===null||TRESO.tvaDette===undefined)?'':TRESO.tvaDette)+'" placeholder="auto"></div>';
       ph+='</div>';
       ph+='<button class="bp" style="margin:0 0 16px;padding:8px 16px;font-size:12px;" onclick="tresoSaveParams()">💾 Enregistrer les paramètres</button>';
-      ph+='<div class="stitle">Charges récurrentes</div>';
+      ph+='<div style="background:rgba(192,68,74,.08);border:1px solid var(--border);border-radius:10px;padding:11px 12px;margin-bottom:16px;">';
+      ph+='<div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px;">💸 Dépense DÉJÀ PAYÉE (sort du solde immédiatement)</div>';
+      ph+='<div style="font-size:10px;color:var(--txt3);margin-bottom:7px;">Pour un achat déjà débité : acompte véhicule, matériel, frais exceptionnel… Ça déduit directement de ton solde bancaire.</div>';
+      ph+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;">';
+      ph+='<div style="flex:2;min-width:130px;"><input class="ci" style="margin:0;" id="tp-dep-lbl" placeholder="Ex : Acompte KIA EV2 (LIZY)"></div>';
+      ph+='<div style="flex:1;min-width:90px;"><input class="ci" style="margin:0;" type="number" id="tp-dep-amt" placeholder="3780"></div>';
+      ph+='<button class="bs" style="color:var(--red);" onclick="tresoDepensePayee()">− Déduire du solde</button>';
+      ph+='</div>';
+      if((TRESO.depenses||[]).length){
+        ph+='<div style="margin-top:9px;font-size:10px;color:var(--txt3);">Historique :</div>';
+        (TRESO.depenses||[]).slice().reverse().forEach(function(dp,ri){
+          var realIdx=(TRESO.depenses.length-1)-ri;
+          ph+='<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt3);padding:3px 0;"><span style="flex:1;">'+escH(dp.label)+' <span style="color:var(--txt3);opacity:.7;">· '+escH(dp.date)+'</span></span><span style="color:var(--red);">−'+fmt(dp.montant)+'</span><button class="bs" style="padding:1px 5px;font-size:10px;" onclick="tresoAnnulerDepense('+realIdx+')" title="Annuler : recrédite le solde">↩</button></div>';
+        });
+      }
+      ph+='</div>';
+      ph+='<div class="stitle" style="display:flex;align-items:center;justify-content:space-between;"><span>Charges récurrentes</span><button class="bs" style="font-size:10px;" onclick="tresoResetCharges()">🔄 Recharger la liste à jour</button></div>';
       ph+='<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Libellé</th><th style="width:90px;">Montant €</th><th style="width:100px;">Fréquence</th><th style="width:80px;">Début</th><th style="width:80px;">Fin</th><th style="width:50px;">TVA réc.</th><th style="width:30px;"></th></tr></thead><tbody>';
       var totMens=0;
       (TRESO.charges||[]).forEach(function(c,idx){
@@ -3349,17 +3413,147 @@ function renderTreso(){
         h+='<div style="font-size:11px;color:var(--or);font-weight:600;margin:8px 0 4px;">'+moisLabel(r.k)+'</div>';
         r.items.forEach(function(it){
           var lbl=it.stage==='acte'?'✓ Acte':'⏳ Compromis';
+          if(it.projete)lbl+=' · 📅 date projetée';
           h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="flex:1;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(it.ref||'?')+' <span style="color:var(--txt3);font-size:10px;">· '+escH(it.neg||'')+' · '+lbl+' '+new Date(it.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</span></span><span style="color:var(--or);">'+fmt(it.ttc)+'</span><span style="color:var(--txt3);font-size:11px;">−'+fmt(it.com)+'</span><span style="color:var(--green);font-weight:600;">'+fmt(it.ttc-it.com)+'</span></div>';
         });
       });
       h+='</div>';
     }
-    h+='<div style="font-size:10px;color:var(--txt3);margin-top:10px;line-height:1.6;">Les commissions sont calculées avec les barèmes de l\'app (Swan/Enrik 10-12%, paliers progressifs, taux fixes). Un compromis est encaissé à sa <strong>date d\'acte projetée</strong> + '+(TRESO.delaiJours||5)+' j. Les provisions TVA/IS sont cumulatives : c\'est de l\'argent sur le compte qui ne t\'appartient pas.</div>';
+    h+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-top:10px;font-size:11px;color:var(--txt3);line-height:1.75;">';
+    h+='<strong style="color:var(--or);">Comment lire ce tableau</strong><br>';
+    h+='<strong style="color:var(--txt);">Encaissé TTC</strong> : ce qui tombe sur le compte (honoraires des actes du mois).<br>';
+    h+='<strong style="color:var(--txt);">Commissions</strong> : ce que tu reverses aux négos (barèmes de l\'app — salariés + charges patronales, indépendants, toi).<br>';
+    h+='<strong style="color:var(--txt);">Solde fin</strong> : ton compte en banque à la fin du mois. <em>Attention : ce n\'est PAS ce que tu peux dépenser.</em><br>';
+    h+='<strong style="color:#d98a3d;">Provisions TVA+IS</strong> : de l\'argent sur ton compte qui appartient à l\'État. Cumulatif.<br>';
+    h+='<strong style="color:var(--green);">Dispo réel</strong> : <strong>LA colonne à regarder</strong> = Solde fin − Provisions − Matelas. C\'est ce que tu peux dépenser sans risque.<br>';
+    h+='<span style="opacity:.8;">Un compromis est encaissé à sa date d\'acte + '+(TRESO.delaiJours||5)+' j. Sans date saisie, elle est projetée à <strong>compromis + 3 mois et 15 j</strong>.</span>';
+    h+='</div>';
     bb.innerHTML=h;
   }catch(e){
     bb.innerHTML='<div class="al ar2"><div class="ald"></div>Erreur Trésorerie : '+escH(e.message)+'</div>';
     console.error('renderTreso',e);
   }
+}
+var TRESO_ROWS=[];
+function tresoSim(){
+  var box=document.getElementById('sim-result');if(!box)return;
+  var m=parseFloat((document.getElementById('sim-montant')||{}).value)||0;
+  var idx=parseInt((document.getElementById('sim-mois')||{}).value,10)||0;
+  var freq=(document.getElementById('sim-freq')||{}).value||'once';
+  if(m<=0){box.innerHTML='<div style="font-size:12px;color:var(--txt3);">Saisis un montant.</div>';return;}
+  if(!TRESO_ROWS.length)return;
+  // Recalcule le dispo de chaque mois en retirant la dépense
+  var worst=null,after=[];
+  TRESO_ROWS.forEach(function(r,i){
+    var cumul=0;
+    if(freq==='monthly'){ if(i>=idx)cumul=m*(i-idx+1); }
+    else { if(i>=idx)cumul=m; }
+    var d=r.dispo-cumul;
+    after.push({k:r.k,dispo:d});
+    if(worst===null||d<worst.dispo)worst={k:r.k,dispo:d};
+  });
+  var moisCible=after[idx];
+  var ok=worst.dispo>=0;
+  var col=ok?'var(--green)':'var(--red)';
+  var bg=ok?'rgba(74,156,93,.10)':'rgba(192,68,74,.10)';
+  var h='<div style="background:'+bg+';border:1.5px solid '+col+';border-radius:10px;padding:12px 14px;">';
+  if(ok){
+    h+='<div style="font-size:15px;color:'+col+';font-weight:700;margin-bottom:5px;">✅ Oui, tu peux dépenser '+fmt(m)+(freq==='monthly'?' / mois':'')+'</div>';
+    h+='<div style="font-size:12px;color:var(--txt3);line-height:1.6;">Après la dépense, il te resterait <strong style="color:var(--txt);">'+fmt(moisCible.dispo)+'</strong> de disponible en '+moisLabel(moisCible.k)+'.<br>Point le plus tendu sur l\'horizon : <strong style="color:var(--txt);">'+fmt(worst.dispo)+'</strong> en '+moisLabel(worst.k)+' — tu restes au-dessus de ton matelas de '+fmt(TRESO.matelas)+'.</div>';
+  }else{
+    h+='<div style="font-size:15px;color:'+col+';font-weight:700;margin-bottom:5px;">🚫 Non — ça te met en danger</div>';
+    h+='<div style="font-size:12px;color:var(--txt3);line-height:1.6;">Cette dépense te ferait passer <strong style="color:var(--red);">'+fmt(Math.abs(worst.dispo))+' sous ton matelas</strong> en '+moisLabel(worst.k)+'.<br>';
+    var marge=m-Math.abs(worst.dispo);
+    if(marge>0)h+='Montant maximum supportable : <strong style="color:var(--txt);">'+fmt(marge)+'</strong>'+(freq==='monthly'?' / mois':'')+'.';
+    else h+='Tu ne peux rien dépenser de plus pour l\'instant.';
+    h+='</div>';
+  }
+  h+='</div>';
+  box.innerHTML=h;
+}
+/* ---- CHAT CONSEILLER (via fonction Netlify sécurisée) ---- */
+var chatMsgs=[],chatBusy=false;
+function tresoChatClear(){chatMsgs=[];renderChat();}
+function renderChat(){
+  var l=document.getElementById('chat-log');if(!l)return;
+  if(!chatMsgs.length){
+    l.innerHTML='<div style="font-size:11px;color:var(--txt3);padding:10px 2px;line-height:1.6;">Pose ta question — j\'ai accès en direct à ton solde, tes charges, tes encaissements prévus et tes provisions TVA/IS.<br><span style="color:var(--or);cursor:pointer;" onclick="document.getElementById(\'chat-input\').value=\'Puis-je me permettre un 2e véhicule électrique à 470 €/mois pour Swan ?\';tresoChatSend();">→ Puis-je prendre un 2e véhicule pour Swan ?</span></div>';
+    return;
+  }
+  l.innerHTML=chatMsgs.map(function(m){
+    var me=m.role==='user';
+    return '<div style="display:flex;justify-content:'+(me?'flex-end':'flex-start')+';margin-bottom:7px;">'
+      +'<div style="max-width:85%;padding:8px 11px;border-radius:11px;font-size:12px;line-height:1.55;white-space:pre-wrap;'
+      +(me?'background:var(--orb);color:var(--txt);border:1px solid var(--borderor);':'background:var(--bg2);color:var(--txt);border:1px solid var(--border);')
+      +'">'+escH(m.content)+'</div></div>';
+  }).join('');
+  l.scrollTop=l.scrollHeight;
+}
+function tresoChatContext(){
+  var mc=TRESO_ROWS[0]||{};
+  return {
+    solde_bancaire:Math.round(parseFloat(TRESO.solde)||0),
+    matelas_securite:Math.round(TRESO.matelas||0),
+    dispo_reel_ce_mois:Math.round(mc.dispo||0),
+    provisions_tva_is_dues:Math.round(mc.provCum||0),
+    charges_du_mois:Math.round(mc.charges||0),
+    encaissements_prevus_ce_mois:Math.round(mc.ttc||0),
+    commissions_a_verser_ce_mois:Math.round(mc.com||0),
+    previsionnel:TRESO_ROWS.map(function(r){return{mois:r.k,encaisse:Math.round(r.ttc),charges:Math.round(r.charges),solde_fin:Math.round(r.solde),dispo_reel:Math.round(r.dispo)};}),
+    charges_recurrentes:(TRESO.charges||[]).map(function(c){return{poste:c.label,montant:c.montant,frequence:c.freq,debut:c.debut||'',fin:c.fin||''};})
+  };
+}
+function tresoChatSend(){
+  if(chatBusy)return;
+  var inp=document.getElementById('chat-input');if(!inp)return;
+  var q=(inp.value||'').trim();if(!q)return;
+  inp.value='';
+  chatMsgs.push({role:'user',content:q});
+  chatBusy=true;
+  var btn=document.getElementById('chat-send');if(btn){btn.textContent='…';btn.disabled=true;}
+  renderChat();
+  var w=document.getElementById('chat-warn');if(w)w.textContent='';
+  fetch('/.netlify/functions/claude',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:chatMsgs,context:tresoChatContext()})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error)throw new Error(d.error);
+    chatMsgs.push({role:'assistant',content:d.text||'(réponse vide)'});
+    renderChat();
+  }).catch(function(e){
+    chatMsgs.pop();
+    renderChat();
+    var w2=document.getElementById('chat-warn');
+    if(w2)w2.innerHTML='<span style="color:var(--red);">Chat indisponible : '+escH(e.message)+'</span> — la fonction Netlify <code>netlify/functions/claude.js</code> doit être déployée et la variable <code>ANTHROPIC_API_KEY</code> renseignée dans Netlify. Le simulateur ci-dessus fonctionne sans ça.';
+  }).then(function(){
+    chatBusy=false;
+    var b=document.getElementById('chat-send');if(b){b.textContent='Envoyer';b.disabled=false;}
+  });
+}
+function tresoDepensePayee(){
+  var lbl=(document.getElementById('tp-dep-lbl')||{}).value||'';
+  var amt=parseFloat((document.getElementById('tp-dep-amt')||{}).value)||0;
+  if(amt<=0){alert('Saisis un montant.');return;}
+  if(!lbl)lbl='Dépense exceptionnelle';
+  if(!confirm('Déduire '+fmt(amt)+' de ton solde ?\n\n« '+lbl+' »\n\nSolde : '+fmt(TRESO.solde)+' → '+fmt((parseFloat(TRESO.solde)||0)-amt)))return;
+  TRESO.solde=(parseFloat(TRESO.solde)||0)-amt;
+  if(!TRESO.depenses)TRESO.depenses=[];
+  TRESO.depenses.push({label:lbl,montant:amt,date:fmtDate(new Date())});
+  tresoSave();renderTreso();
+  if(typeof toast==='function')toast('Solde mis à jour : '+fmt(TRESO.solde));
+}
+function tresoAnnulerDepense(i){
+  var dp=(TRESO.depenses||[])[i];if(!dp)return;
+  if(!confirm('Annuler « '+dp.label+' » et recréditer '+fmt(dp.montant)+' au solde ?'))return;
+  TRESO.solde=(parseFloat(TRESO.solde)||0)+(parseFloat(dp.montant)||0);
+  TRESO.depenses.splice(i,1);
+  tresoSave();renderTreso();
+}
+function tresoResetCharges(){
+  if(!confirm('Recharger la liste de charges à jour ?\n\nCela remplace tes charges actuelles par la liste complète (salaires, agences, KIA, Mazarine, challenges…).\nTes montants personnalisés seront écrasés.'))return;
+  TRESO.charges=JSON.parse(JSON.stringify(TRESO_DEF.charges));
+  tresoSave();renderTreso();
+  if(typeof toast==='function')toast('Charges rechargées');
 }
 function tresoSaveParams(){
   TRESO.solde=parseFloat(document.getElementById('tp-solde').value)||0;
