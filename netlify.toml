@@ -1,0 +1,12 @@
+# Configuration Netlify — Mansion Vision Board
+# La détection "smart" de secrets est désactivée : elle prend la clé Firebase
+# publique (AIza..., ligne ~686 d'index.html) pour un secret qui fuite.
+# Cette clé est un identifiant public par conception (sécurité = règles Firebase).
+# Le scan des VRAIS secrets (valeur exacte d'ANTHROPIC_API_KEY) reste actif.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
