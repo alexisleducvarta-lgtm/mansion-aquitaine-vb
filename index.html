@@ -369,6 +369,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div class="ng">
     <div class="ni ni-alex" id="nav-alexis" onclick="goNeg('alexis',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>Alexis Leduc</div>
     <div class="ni ni-dir" id="nav-dir" onclick="goDir(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Vue Direction</div>
+    <div class="ni ni-dir" id="nav-treso" onclick="goTreso(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 10l2-5h14l2 5M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M12 13v4M10 15h4"/></svg>Trésorerie</div>
   </div>
   <div class="ng" style="margin-top:3px;"><div class="ngl">Vision Board</div>
     <div class="ni active" id="nav-prosp" onclick="goProsp(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Prospection</div>
@@ -563,6 +564,19 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
   <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="openWaImport()" style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);color:var(--green);">📥 Import WhatsApp</button><button class="bs" onclick="openMeeting()" style="background:var(--bxl);border:1px solid var(--bxb);color:var(--bx);">📺 Mode Réunion</button><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div id="dir-planning" style="margin-bottom:.8rem;"></div><div id="dir-funnel" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+</div>
+
+<!-- PAGE TRÉSORERIE (Alexis uniquement) -->
+<div class="pg" id="pg-treso" style="position:relative;min-height:500px;">
+  <div class="ph">
+    <div><div class="pt">Trésorerie</div><div class="pss">Prévisionnel · charges, encaissements, provisions</div></div>
+    <div style="display:flex;gap:6px;">
+      <button class="bs" onclick="tresoToggleParams()">⚙️ Paramètres &amp; charges</button>
+    </div>
+  </div>
+  <div id="treso-verdict" style="margin-bottom:.8rem;"></div>
+  <div id="treso-params" style="display:none;margin-bottom:.8rem;"></div>
+  <div id="treso-body"></div>
 </div>
 
 <!-- SLIDE PANEL pour nouveau dossier -->
@@ -801,7 +815,7 @@ function renderObjBlock(who){
 }
 var SWAN_RATES={Exclusif:.12,'Semi-exclusif':.12,'Exclusivité morale':.12,Simple:.10};
 var PALIERS=[{min:0,max:35000,t:40},{min:35000,max:65000,t:45},{min:65000,max:100000,t:50},{min:100000,max:135000,t:55},{min:135000,max:null,t:60}];
-var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:50};
+var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:80};
 var PROG=['pauline','nolan'];
 var SAL=['swan','enrik']; // Salariés avec barème Swan (10/12%)
 var ALL=['swan','enrik','pauline','nolan','thibault','nicolas','laurent','alexis'];
@@ -920,7 +934,9 @@ db.ref('mansion/dossiers').on('value', function(snap){
   else dossiers = [];
   var activePg = document.querySelector('.pg.active');
   if(activePg && activePg.id==='pg-pipeline') renderPipeline();
+  if(activePg && activePg.id==='pg-treso') renderTreso();
 });
+try{ tresoLoad(); }catch(e){ console.error('tresoLoad',e); }
 }
 
 function fmt(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v||0);}
@@ -3054,7 +3070,7 @@ function logoutUser(){
 }
 /* ===== RECHERCHE GLOBALE ===== */
 var gsOpen=false;
-function gsEsc(s){return String(s==null?'':s).replace(/[.*+?^${}()|[\]\\]/g,'\\function applyUserView(){');}
+function gsEsc(s){return String(s==null?'':s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 function gsHi(text,q){var t=escH(String(text==null?'':text));if(!q)return t;try{var re=new RegExp('('+gsEsc(q)+')','ig');return t.replace(re,'<mark class="gs-mark">$1</mark>');}catch(e){return t;}}
 function openGSearch(){if(!currentUser)return;var o=document.getElementById('gsearch-overlay');if(!o)return;gsOpen=true;o.style.display='flex';var i=document.getElementById('gsearch-input');if(i){i.value='';setTimeout(function(){i.focus();},30);}renderGSearch();}
 function closeGSearch(){gsOpen=false;var o=document.getElementById('gsearch-overlay');if(o)o.style.display='none';}
@@ -3100,6 +3116,281 @@ document.addEventListener('keydown',function(e){
   if(e.key==='/'&&!gsOpen){var t=e.target,tag=((t&&t.tagName)||'').toLowerCase();if(tag==='input'||tag==='textarea'||(t&&t.isContentEditable))return;if(!currentUser)return;e.preventDefault();openGSearch();}
 });
 
+/* ================= TRÉSORERIE ================= */
+var TZ_MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+var tresoParamsOpen=false;
+var TRESO_DEF={
+  solde:20500, soldeDate:'', matelas:7000, tvaRate:20, isRate:25, delaiJours:5, horizon:6,
+  patronal:45, tvaDette:null,
+  charges:[
+    {id:1,label:'Swan — salaire + URSSAF',montant:2000,freq:'mensuel',tva:false},
+    {id:2,label:'Enrik — salaire + URSSAF',montant:2000,freq:'mensuel',tva:false},
+    {id:3,label:'Agence St-André — loyer',montant:750,freq:'mensuel',tva:false},
+    {id:4,label:'Agence St-André — internet',montant:60,freq:'mensuel',tva:true},
+    {id:5,label:'Agence St-André — électricité',montant:60,freq:'mensuel',tva:true},
+    {id:6,label:'Agence St-André — assurance local',montant:30,freq:'mensuel',tva:false},
+    {id:7,label:'Agence Langon — loyer',montant:520,freq:'mensuel',tva:false},
+    {id:8,label:'Agence Langon — internet',montant:60,freq:'mensuel',tva:true},
+    {id:9,label:'Agence Langon — électricité',montant:40,freq:'mensuel',tva:true},
+    {id:10,label:'Agence Langon — assurance local',montant:30,freq:'mensuel',tva:false},
+    {id:11,label:'Expert-comptable',montant:450,freq:'mensuel',tva:true},
+    {id:12,label:'Bien Ici (forfait remisé 50%)',montant:197.40,freq:'mensuel',tva:true,fin:'2026-12'},
+    {id:13,label:'Bien Ici (plein tarif après remise)',montant:394.80,freq:'mensuel',tva:true,debut:'2027-01'},
+    {id:14,label:'FlatBay — abonnement + modules',montant:322.82,freq:'mensuel',tva:true},
+    {id:15,label:'Prêt trésorerie 20k',montant:599,freq:'mensuel',tva:false},
+    {id:16,label:'Fournitures (2 agences)',montant:300,freq:'mensuel',tva:true},
+    {id:17,label:'Leasing Tesla',montant:165,freq:'mensuel',tva:true},
+    {id:18,label:'Assurance Tesla',montant:80,freq:'mensuel',tva:false},
+    {id:19,label:'Tesla — recharge Supercharger (2 000 km/mois)',montant:120,freq:'mensuel',tva:true}
+  ]
+};
+var TRESO=JSON.parse(JSON.stringify(TRESO_DEF));
+
+function tresoLoad(){
+  if(!db)return;
+  db.ref('mansion/tresorerie').on('value',function(s){
+    var v=s.val();
+    if(v){
+      TRESO=Object.assign(JSON.parse(JSON.stringify(TRESO_DEF)),v);
+      if(v.charges)TRESO.charges=Array.isArray(v.charges)?v.charges:Object.keys(v.charges).map(function(k){return v.charges[k];});
+    }
+    var pg=document.getElementById('pg-treso');
+    if(pg&&pg.classList.contains('active'))renderTreso();
+  });
+}
+function tresoSave(){ if(!db)return; try{ db.ref('mansion/tresorerie').set(TRESO); }catch(e){ console.error('treso save',e); } }
+
+function goTreso(btn){clearAll();btn.classList.add('active');setFooter('Trésorerie','Accès restreint');document.getElementById('pg-treso').classList.add('active');renderTreso();}
+function tresoToggleParams(){tresoParamsOpen=!tresoParamsOpen;renderTreso();}
+
+// Commission versée à UN négo sur un dossier (réutilise les barèmes existants)
+function tresoComOne(who,ttc,type,bin){
+  if(!who)return 0;
+  if(SAL.indexOf(who)>=0)return swanCom(ttc,type,bin)*(1+((TRESO.patronal||0)/100)); // commission salariée + charges patronales
+  if(PROG.indexOf(who)>=0){var pal=activePal(getStats(who).ca);return fixeCom(ttc,bin,pal.t);}
+  return fixeCom(ttc,bin,TAUX_FIXE[who]||50);
+}
+function whoOfName(n){return ALL.find(function(w){return NAMES[w]===n;});}
+// Commission totale versée sur un dossier (négo + binôme)
+function tresoComDoss(d){
+  var ttc=d.fee||0,type=d.type_mandat||'Simple';
+  var w1=whoOfName(d.neg),w2=d.bin?whoOfName(d.neg2):null;
+  var c=tresoComOne(w1,ttc,type,!!d.bin);
+  if(w2)c+=tresoComOne(w2,ttc,type,true);
+  return c;
+}
+function moisKey(dt){return dt.substring(0,7);}
+function addDays(iso,n){var d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return fmtDate(d);}
+function moisLabel(k){var p=k.split('-');return TZ_MOIS[parseInt(p[1],10)-1]+' '+p[0];}
+
+// Une charge s'applique-t-elle au mois k ?
+function chargeDue(c,k){
+  if(c.debut&&k<c.debut)return false;
+  if(c.fin&&k>c.fin)return false;
+  var f=c.freq||'mensuel';
+  if(f==='mensuel')return true;
+  if(f==='ponctuel')return c.debut===k;
+  var base=c.debut||k;
+  var bm=parseInt(base.split('-')[1],10),km=parseInt(k.split('-')[1],10);
+  var by=parseInt(base.split('-')[0],10),ky=parseInt(k.split('-')[0],10);
+  var diff=(ky-by)*12+(km-bm);
+  if(diff<0)return false;
+  if(f==='trimestriel')return diff%3===0;
+  if(f==='annuel')return diff%12===0;
+  return true;
+}
+
+function renderTreso(){
+  var vb=document.getElementById('treso-verdict'),pb=document.getElementById('treso-params'),bb=document.getElementById('treso-body');
+  if(!bb)return;
+  try{
+    var today=fmtDate(new Date());
+    var startK=today.substring(0,7);
+    var H=TRESO.horizon||6, tvaR=(TRESO.tvaRate||20)/100, isR=(TRESO.isRate||25)/100;
+
+    // --- Encaissements : dossiers compromis (date d'acte projetée) + actes ---
+    // Un encaissement déjà tombé (≤ aujourd'hui) est réputé DÉJÀ dans le solde bancaire → pas recompté.
+    // Sa TVA collectée, elle, reste due tant qu'elle n'est pas reversée → dette TVA.
+    var enc={},nonDates=[],tvaBacklog=0,backlogItems=[];
+    (dossiers||[]).forEach(function(d){
+      if(d.stage!=='compromis'&&d.stage!=='acte')return;
+      var da=d.dateActe||'';
+      if(!da){ nonDates.push(d); return; }
+      var encD=addDays(da,TRESO.delaiJours||5);
+      var com=tresoComDoss(d), ttc=d.fee||0;
+      if(encD<=today){
+        // déjà encaissé : uniquement la TVA reste à provisionner
+        if(d.stage==='acte'){ tvaBacklog+=ttc-(ttc/(1+tvaR)); backlogItems.push({ref:d.ref,ttc:ttc,date:da}); }
+        return;
+      }
+      var k=moisKey(encD);
+      if(!enc[k])enc[k]={ttc:0,com:0,items:[]};
+      enc[k].ttc+=ttc; enc[k].com+=com;
+      enc[k].items.push({ref:d.ref,neg:d.neg,ttc:ttc,com:com,stage:d.stage,date:da});
+    });
+    // Dette TVA de départ : auto (actes signés non reversés) ou saisie manuelle
+    var tvaDette=(TRESO.tvaDette===null||TRESO.tvaDette===undefined||TRESO.tvaDette==='')?tvaBacklog:(parseFloat(TRESO.tvaDette)||0);
+
+    // --- Projection mois par mois ---
+    var solde=parseFloat(TRESO.solde)||0, provCum=tvaDette, rows=[], moisCourant=null;
+    var d0=new Date(); 
+    for(var i=0;i<H;i++){
+      var dt=new Date(d0.getFullYear(),d0.getMonth()+i,1);
+      var k=fmtDate(dt).substring(0,7);
+      var e=enc[k]||{ttc:0,com:0,items:[]};
+      var chDet=[],chTot=0,tvaDed=0;
+      (TRESO.charges||[]).forEach(function(c){
+        if(!chargeDue(c,k))return;
+        var m=parseFloat(c.montant)||0;
+        chTot+=m; chDet.push(c);
+        if(c.tva)tvaDed+=m-(m/(1+tvaR));
+      });
+      var tvaColl=e.ttc-(e.ttc/(1+tvaR));
+      var tvaNette=Math.max(0,tvaColl-tvaDed);
+      var margeBrute=e.ttc-e.com;
+      var cash=margeBrute-chTot;
+      var soldeDeb=solde; solde=soldeDeb+cash;
+      // IS sur résultat HT approx
+      var resultat=(e.ttc/(1+tvaR))-e.com-(chTot-tvaDed);
+      var isProv=Math.max(0,resultat*isR);
+      provCum+=tvaNette+isProv;
+      var dispo=solde-provCum-(parseFloat(TRESO.matelas)||0);
+      var r={k:k,ttc:e.ttc,com:e.com,marge:margeBrute,charges:chTot,cash:cash,soldeDeb:soldeDeb,solde:solde,tva:tvaNette,is:isProv,provCum:provCum,dispo:dispo,items:e.items,chDet:chDet};
+      rows.push(r);
+      if(i===0)moisCourant=r;
+    }
+
+    // --- VERDICT ---
+    var vh='';
+    if(!TRESO.solde){
+      vh='<div class="al ar2" style="cursor:pointer;" onclick="tresoToggleParams()"><div class="ald"></div><strong>⚠️ Saisis ton solde bancaire</strong> — sans lui, impossible de calculer ce que tu peux dépenser. Clique ici.</div>';
+    }else{
+      var dispo=moisCourant.dispo;
+      var ok=dispo>0;
+      var col=ok?'var(--green)':'var(--red)';
+      var bg=ok?'rgba(74,156,93,.10)':'rgba(192,68,74,.10)';
+      vh='<div style="background:'+bg+';border:1.5px solid '+col+';border-radius:14px;padding:16px 18px;">';
+      vh+='<div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Ce que tu peux dépenser ce mois-ci ('+moisLabel(moisCourant.k)+')</div>';
+      vh+='<div style="font-family:Cinzel,Georgia,serif;font-size:34px;color:'+col+';line-height:1.1;">'+(ok?fmt(dispo):fmt(0))+'</div>';
+      if(!ok)vh+='<div style="font-size:12px;color:var(--red);margin-top:5px;font-weight:600;">🚨 Tu es à découvert de '+fmt(Math.abs(dispo))+' sous ton matelas. Ne dépense rien.</div>';
+      vh+='<div style="font-size:11px;color:var(--txt3);margin-top:8px;line-height:1.6;">Solde projeté fin de mois <strong style="color:var(--txt);">'+fmt(moisCourant.solde)+'</strong> − provisions TVA/IS <strong style="color:var(--txt);">'+fmt(moisCourant.provCum)+'</strong> − matelas <strong style="color:var(--txt);">'+fmt(TRESO.matelas)+'</strong></div>';
+      vh+='</div>';
+    }
+    if(tvaDette>0){
+      vh+='<div class="al" style="margin-top:8px;background:rgba(192,68,74,.10);border:1px solid var(--red);"><div class="ald" style="background:var(--red);"></div><strong style="color:var(--red);">TVA non reversée : '+fmt(tvaDette)+'</strong> <span style="color:var(--txt3);">— collectée sur '+backlogItems.length+' acte(s) déjà signé(s). Cet argent est sur ton compte mais <strong>il ne t\'appartient pas</strong>. Il est déjà déduit du montant dépensable ci-dessus.</span></div>';
+    }
+    if(nonDates.length){
+      vh+='<div class="al" style="margin-top:8px;background:rgba(217,138,61,.12);border:1px solid #d98a3d;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">'+nonDates.length+' dossier(s) sans date d\'acte</strong> <span style="color:var(--txt3);">— non comptés dans le prévisionnel : '+nonDates.slice(0,4).map(function(d){return escH(d.ref||'?');}).join(', ')+(nonDates.length>4?'…':'')+'. Renseigne la date d\'acte (même projetée) pour les intégrer.</span></div>';
+    }
+    vb.innerHTML=vh;
+
+    // --- PARAMÈTRES ---
+    if(tresoParamsOpen){
+      var ph='<div class="tbox" style="padding:14px;">';
+      ph+='<div class="stitle" style="margin-top:0;">Paramètres</div>';
+      ph+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px;">';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Solde bancaire actuel (€)</label><input class="ci" type="number" id="tp-solde" value="'+(TRESO.solde||'')+'" placeholder="ex: 18500"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Matelas de sécurité (€)</label><input class="ci" type="number" id="tp-matelas" value="'+(TRESO.matelas||0)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">TVA (%)</label><input class="ci" type="number" id="tp-tva" value="'+(TRESO.tvaRate||20)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Provision IS (%)</label><input class="ci" type="number" id="tp-is" value="'+(TRESO.isRate||25)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Délai notaire (jours)</label><input class="ci" type="number" id="tp-delai" value="'+(TRESO.delaiJours||5)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Horizon (mois)</label><input class="ci" type="number" id="tp-horizon" value="'+(TRESO.horizon||6)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Charges patronales sur com. salariés (%)</label><input class="ci" type="number" id="tp-patronal" value="'+(TRESO.patronal||0)+'"></div>';
+      ph+='<div><label style="font-size:10px;color:var(--txt3);">Dette TVA (vide = auto : '+fmt(tvaBacklog)+')</label><input class="ci" type="number" id="tp-tvadette" value="'+((TRESO.tvaDette===null||TRESO.tvaDette===undefined)?'':TRESO.tvaDette)+'" placeholder="auto"></div>';
+      ph+='</div>';
+      ph+='<button class="bp" style="margin:0 0 16px;padding:8px 16px;font-size:12px;" onclick="tresoSaveParams()">💾 Enregistrer les paramètres</button>';
+      ph+='<div class="stitle">Charges récurrentes</div>';
+      ph+='<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Libellé</th><th style="width:90px;">Montant €</th><th style="width:100px;">Fréquence</th><th style="width:80px;">Début</th><th style="width:80px;">Fin</th><th style="width:50px;">TVA réc.</th><th style="width:30px;"></th></tr></thead><tbody>';
+      var totMens=0;
+      (TRESO.charges||[]).forEach(function(c,idx){
+        if((c.freq||'mensuel')==='mensuel'&&chargeDue(c,startK))totMens+=parseFloat(c.montant)||0;
+        ph+='<tr>';
+        ph+='<td><input class="ci" style="margin:0;padding:4px 6px;font-size:11px;" value="'+escH(c.label||'')+'" onchange="tresoEditCharge('+idx+',\'label\',this.value)"></td>';
+        ph+='<td><input class="ci" style="margin:0;padding:4px 6px;font-size:11px;" type="number" step="0.01" value="'+(c.montant||0)+'" onchange="tresoEditCharge('+idx+',\'montant\',this.value)"></td>';
+        ph+='<td><select class="ci" style="margin:0;padding:4px 6px;font-size:11px;" onchange="tresoEditCharge('+idx+',\'freq\',this.value)">'+['mensuel','trimestriel','annuel','ponctuel'].map(function(f){return'<option value="'+f+'"'+((c.freq||'mensuel')===f?' selected':'')+'>'+f+'</option>';}).join('')+'</select></td>';
+        ph+='<td><input class="ci" style="margin:0;padding:4px 6px;font-size:11px;" type="month" value="'+(c.debut||'')+'" onchange="tresoEditCharge('+idx+',\'debut\',this.value)"></td>';
+        ph+='<td><input class="ci" style="margin:0;padding:4px 6px;font-size:11px;" type="month" value="'+(c.fin||'')+'" onchange="tresoEditCharge('+idx+',\'fin\',this.value)"></td>';
+        ph+='<td style="text-align:center;"><input type="checkbox" '+(c.tva?'checked':'')+' onchange="tresoEditCharge('+idx+',\'tva\',this.checked)"></td>';
+        ph+='<td><button class="bs" style="padding:2px 6px;font-size:11px;color:var(--red);" onclick="tresoDelCharge('+idx+')">×</button></td>';
+        ph+='</tr>';
+      });
+      ph+='</tbody><tfoot><tr><td><strong>Total mensuel récurrent</strong></td><td colspan="6" style="color:var(--red);font-weight:600;">'+fmt(totMens)+'</td></tr></tfoot></table></div>';
+      ph+='<button class="bs" style="margin-top:8px;" onclick="tresoAddCharge()">+ Ajouter une charge</button>';
+      ph+='</div>';
+      pb.innerHTML=ph; pb.style.display='block';
+    }else{ pb.style.display='none'; }
+
+    // --- TABLEAU PRÉVISIONNEL ---
+    var h='<div class="tbox"><div class="thead"><span class="ttl">Prévisionnel '+H+' mois</span></div><div style="overflow-x:auto;"><table class="tbl">';
+    h+='<thead><tr><th>Mois</th><th>Encaissé TTC</th><th>Commissions</th><th>Marge</th><th>Charges</th><th>Cash-flow</th><th>Solde fin</th><th>Provisions TVA+IS</th><th>Dispo réel</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      var cc=r.cash>=0?'var(--green)':'var(--red)';
+      var dc=r.dispo>=0?'var(--green)':'var(--red)';
+      h+='<tr>';
+      h+='<td style="color:var(--txt);font-weight:600;">'+moisLabel(r.k)+'</td>';
+      h+='<td style="color:var(--or);">'+fmt(r.ttc)+'</td>';
+      h+='<td style="color:var(--txt3);">−'+fmt(r.com)+'</td>';
+      h+='<td>'+fmt(r.marge)+'</td>';
+      h+='<td style="color:var(--red);">−'+fmt(r.charges)+'</td>';
+      h+='<td style="color:'+cc+';font-weight:600;">'+fmt(r.cash)+'</td>';
+      h+='<td style="color:var(--txt);font-weight:600;">'+fmt(r.solde)+'</td>';
+      h+='<td style="color:#d98a3d;">'+fmt(r.provCum)+'</td>';
+      h+='<td style="color:'+dc+';font-weight:700;">'+fmt(r.dispo)+'</td>';
+      h+='</tr>';
+    });
+    h+='</tbody></table></div></div>';
+
+    // --- DÉTAIL DES ENCAISSEMENTS ---
+    var anyItems=rows.some(function(r){return r.items.length;});
+    if(anyItems){
+      h+='<div class="stitle">Encaissements attendus</div><div class="tbox" style="padding:12px;">';
+      rows.forEach(function(r){
+        if(!r.items.length)return;
+        h+='<div style="font-size:11px;color:var(--or);font-weight:600;margin:8px 0 4px;">'+moisLabel(r.k)+'</div>';
+        r.items.forEach(function(it){
+          var lbl=it.stage==='acte'?'✓ Acte':'⏳ Compromis';
+          h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="flex:1;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(it.ref||'?')+' <span style="color:var(--txt3);font-size:10px;">· '+escH(it.neg||'')+' · '+lbl+' '+new Date(it.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+'</span></span><span style="color:var(--or);">'+fmt(it.ttc)+'</span><span style="color:var(--txt3);font-size:11px;">−'+fmt(it.com)+'</span><span style="color:var(--green);font-weight:600;">'+fmt(it.ttc-it.com)+'</span></div>';
+        });
+      });
+      h+='</div>';
+    }
+    h+='<div style="font-size:10px;color:var(--txt3);margin-top:10px;line-height:1.6;">Les commissions sont calculées avec les barèmes de l\'app (Swan/Enrik 10-12%, paliers progressifs, taux fixes). Un compromis est encaissé à sa <strong>date d\'acte projetée</strong> + '+(TRESO.delaiJours||5)+' j. Les provisions TVA/IS sont cumulatives : c\'est de l\'argent sur le compte qui ne t\'appartient pas.</div>';
+    bb.innerHTML=h;
+  }catch(e){
+    bb.innerHTML='<div class="al ar2"><div class="ald"></div>Erreur Trésorerie : '+escH(e.message)+'</div>';
+    console.error('renderTreso',e);
+  }
+}
+function tresoSaveParams(){
+  TRESO.solde=parseFloat(document.getElementById('tp-solde').value)||0;
+  TRESO.matelas=parseFloat(document.getElementById('tp-matelas').value)||0;
+  TRESO.tvaRate=parseFloat(document.getElementById('tp-tva').value)||20;
+  TRESO.isRate=parseFloat(document.getElementById('tp-is').value)||25;
+  TRESO.delaiJours=parseInt(document.getElementById('tp-delai').value,10)||5;
+  TRESO.horizon=Math.max(1,Math.min(24,parseInt(document.getElementById('tp-horizon').value,10)||6));
+  TRESO.patronal=parseFloat(document.getElementById('tp-patronal').value)||0;
+  var td=document.getElementById('tp-tvadette').value;
+  TRESO.tvaDette=(td===''||td===null)?null:(parseFloat(td)||0);
+  tresoSave();renderTreso();
+  if(typeof toast==='function')toast('Paramètres enregistrés');
+}
+function tresoEditCharge(idx,f,v){
+  if(!TRESO.charges[idx])return;
+  if(f==='montant')v=parseFloat(v)||0;
+  TRESO.charges[idx][f]=v;
+  tresoSave();
+  if(f==='montant'||f==='freq'||f==='debut'||f==='fin'||f==='tva')renderTreso();
+}
+function tresoAddCharge(){
+  var ids=(TRESO.charges||[]).map(function(c){return c.id||0;});
+  TRESO.charges.push({id:(ids.length?Math.max.apply(null,ids):0)+1,label:'Nouvelle charge',montant:0,freq:'mensuel',tva:true});
+  tresoSave();renderTreso();
+}
+function tresoDelCharge(idx){
+  if(!confirm('Supprimer « '+(TRESO.charges[idx].label||'')+' » ?'))return;
+  TRESO.charges.splice(idx,1);tresoSave();renderTreso();
+}
+
 function applyUserView(){
   var isAdmin=currentUser==='alexis';
   // Cloisonnement sidebar : un négo ne voit que son espace
@@ -3109,6 +3400,7 @@ function applyUserView(){
   });
   var dirEl=document.getElementById('nav-dir');if(dirEl)dirEl.style.display=isAdmin?'':'none';
   var prospEl=document.getElementById('nav-prosp');if(prospEl)prospEl.style.display=isAdmin?'':'none';
+  var trEl=document.getElementById('nav-treso');if(trEl)trEl.style.display=isAdmin?'':'none';
   // Masquer les libellés de groupe vides pour les négos
   if(!isAdmin){
     document.querySelectorAll('.ngl').forEach(function(l){
