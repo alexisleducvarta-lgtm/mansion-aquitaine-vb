@@ -449,7 +449,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
       <button class="bp" style="margin:0;padding:8px 16px;font-size:12px;white-space:nowrap;" onclick="quickAddContact()">+ Ajouter</button>
     </div>
     <div class="tbox">
-      <div class="thead"><span class="ttl" id="journal-title">Contacts</span><button class="bs" id="btn-add-contact" onclick="toggleContactForm()">📝 Saisie détaillée</button></div>
+      <div class="thead"><span class="ttl" id="journal-title">Contacts</span><div style="display:flex;gap:6px;"><button class="bs" onclick="newMandatFromNeg()" title="Crée un dossier directement dans le Pipeline">🏆 Nouveau mandat</button><button class="bs" id="btn-add-contact" onclick="toggleContactForm()">📝 Saisie détaillée</button></div></div>
       <!-- FORMULAIRE ACCORDÉON -->
       <div id="contact-form" style="display:none;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg2);">
         <input type="hidden" id="cf-edit-idx" value="-1">
@@ -2355,6 +2355,16 @@ function getFilteredDossiers(){
     }
     return true;
   });
+}
+function newMandatFromNeg(){
+  var who=curWho||currentUser;
+  var el=document.getElementById('nav-pipeline');
+  if(el){try{goPipeline(el);}catch(e){}}
+  try{openModal();}catch(e){}
+  var ng=document.getElementById('md-neg');if(ng&&NAMES[who])ng.value=NAMES[who];
+  var st=document.getElementById('md-stage');if(st)st.value='mandat';
+  var ttl=document.getElementById('slide-panel-title');if(ttl)ttl.textContent='Nouveau mandat — '+(NAMES[who]||'');
+  var rf=document.getElementById('md-ref');if(rf)setTimeout(function(){rf.focus();},60);
 }
 function openModal(){resetPanel();openPanel();}
 function openPanel(){document.getElementById('slide-overlay').classList.add('open');document.getElementById('slide-panel').classList.add('open');}
