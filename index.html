@@ -599,6 +599,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <input class="ci" type="number" id="md-fee" placeholder="9500">
     <div class="fct" style="margin-top:8px;">Étape</div>
     <select class="ci" id="md-stage"><option value="mandat">Mandat signé</option><option value="offre">Offre acceptée</option><option value="compromis">Compromis signé</option><option value="acte">Acte authentique</option></select>
+    <div class="fct" style="margin-top:8px;">Date signature mandat</div>
+    <input class="ci" type="date" id="md-dmandat">
     <div class="fct" style="margin-top:8px;">Date compromis</div>
     <input class="ci" type="date" id="md-dcomp">
     <div class="fct" style="margin-top:8px;">Date acte prévu</div>
@@ -775,7 +777,8 @@ function getCurrentMonthStats(who){
     var isNeg2=dos.bin&&dos.neg2===NAMES[who];
     if(!isNeg&&!isNeg2)return;
     // Un dossier Pipeline créé sur la période = un mandat rentré (toutes étapes)
-    if(dos.createdAt&&dos.createdAt>=rangeStart&&dos.createdAt<=rangeEnd){
+    var dMand=(dos.dateMandat||dos.createdAt||'').substring(0,10);
+    if(dMand&&dMand>=rangeStart&&dMand<=rangeEnd){
       mandatsPipeline+=dos.bin?0.5:1;
     }
     // Compromis TTC : seulement étapes compromis/acte
@@ -2035,7 +2038,8 @@ function getMonthStatsAll(who,yearMonth){
   dossiers.forEach(function(dos){
     var isNeg=dos.neg===NAMES[who];var isNeg2=dos.bin&&dos.neg2===NAMES[who];
     if(!isNeg&&!isNeg2)return;
-    if(dos.createdAt&&dos.createdAt>=ms_start&&dos.createdAt<=ms_end)pMan+=dos.bin?0.5:1;
+    var dMd=(dos.dateMandat||dos.createdAt||'').substring(0,10);
+    if(dMd&&dMd>=ms_start&&dMd<=ms_end)pMan+=dos.bin?0.5:1;
     if(dos.stage==='compromis'||dos.stage==='acte'){
       var fd=dos.dateComp||dos.dateActe||'';
       var nowD=new Date();var curYMx=nowD.getFullYear()+'-'+String(nowD.getMonth()+1).padStart(2,'0');
@@ -2381,6 +2385,7 @@ function getPipeMonthRange(){
 function pipeMonthDate(d){
   if(d.stage==='acte')      return d.dateActe||d.dateComp||d.createdAt||'';
   if(d.stage==='compromis') return d.dateComp||d.createdAt||'';
+  if(d.stage==='mandat')    return d.dateMandat||d.createdAt||'';
   return d.createdAt||'';
 }
 function getFilteredDossiers(){
@@ -2433,6 +2438,7 @@ function savePanel(){
     bin:document.getElementById('md-bin').checked,
     neg2:document.getElementById('md-bin').checked?(document.getElementById('md-neg2').value||'').trim():'',
     fee:parseFloat(document.getElementById('md-fee').value)||0,
+    dateMandat:document.getElementById('md-dmandat').value,
     dateComp:document.getElementById('md-dcomp').value,
     dateActe:document.getElementById('md-dacte').value,
     stage:document.getElementById('md-stage').value,
@@ -2464,7 +2470,8 @@ function savePanel(){
   saveDoss();closePanel();resetPanel();renderPipeline();
 }
 function resetPanel(){
-  ['md-ref','md-fee','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['md-ref','md-fee','md-dmandat','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var dm=document.getElementById('md-dmandat');if(dm){var n=new Date();dm.value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
   var eid=document.getElementById('md-edit-id');if(eid)eid.value='';
   var bb=document.getElementById('md-bin');if(bb)bb.checked=false;
   var nn=document.getElementById('md-neg2');if(nn)nn.value='';
@@ -2486,6 +2493,7 @@ function editDoss(id){
   if(document.getElementById('md-neg2'))document.getElementById('md-neg2').value=d.neg2||'';
   document.getElementById('md-fee').value=d.fee||'';
   document.getElementById('md-stage').value=d.stage||'mandat';
+  var dmEl=document.getElementById('md-dmandat');if(dmEl)dmEl.value=d.dateMandat||(d.createdAt||'').substring(0,10)||'';
   document.getElementById('md-dcomp').value=d.dateComp||'';
   document.getElementById('md-dacte').value=d.dateActe||'';
   document.getElementById('md-client').value=d.client||'';
@@ -2541,6 +2549,10 @@ function pipeCardHTML(d,stage){
       var prev=STAGES[STAGES.indexOf(stage)-1];
       // STATUT SIGNATURE (Compromis/Acte) : vert = date signature ≤ aujourd'hui, orange sinon
       var statusHtml='',cardStyle='';
+      if(stage==='mandat'&&d.dateMandat){
+        var jmM=new Date(d.dateMandat+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+        statusHtml='<div style="display:inline-block;margin:5px 0 2px;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;background:rgba(201,168,76,.14);color:var(--or);border:1px solid var(--borderor);">✍️ Signé '+jmM+'</div>';
+      }
       if(stage==='compromis'||stage==='acte'){
         var sd=(stage==='compromis'?d.dateComp:d.dateActe)||'';
         var today=fmtDate(new Date());
