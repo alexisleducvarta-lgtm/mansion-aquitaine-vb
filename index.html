@@ -385,7 +385,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="main">
 
 <div class="pg active" id="pg-prosp">
-  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v12.07-B (challenge = registre WA)</span></div></div>
+  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v12.07-C (import WA fichier)</span></div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
   </div>
   <div class="kg k4" id="prosp-kpis"></div>
@@ -1374,17 +1374,26 @@ function openWaImport(){
   if(currentUser!=='alexis')return;
   var ov=document.createElement('div');ov.id='wa-ov';
   ov.style.cssText='position:fixed;inset:0;background:var(--bg0);z-index:2500;overflow-y:auto;padding:24px;';
-  ov.innerHTML='<div style="max-width:860px;margin:auto;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-family:Cinzel,Georgia,serif;font-size:18px;color:var(--bx);">📥 Import registre WhatsApp</div><button class="bs" onclick="document.getElementById(\'wa-ov\').remove()">✕ Fermer</button></div><div style="font-size:11px;color:var(--txt3);margin:8px 0;">Colle l\'export de la discussion (⋮ → Exporter → Sans médias) puis Analyser. Rien n\'est créé sans ton clic.</div><textarea id="wa-txt" style="width:100%;min-height:160px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:11px;color:var(--txt);"></textarea><button class="bp" style="margin-top:8px;" onclick="waAnalyse()">🔍 Analyser</button><div id="wa-res" style="margin-top:12px;"></div></div>';
+  ov.innerHTML='<div style="max-width:860px;margin:auto;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-family:Cinzel,Georgia,serif;font-size:18px;color:var(--bx);">📥 Import registre WhatsApp</div><button class="bs" onclick="document.getElementById(\'wa-ov\').remove()">✕ Fermer</button></div><div style="font-size:11px;color:var(--txt3);margin:8px 0;">Colle l\'export de la discussion (⋮ → Exporter → Sans médias) puis Analyser. Rien n\'est créé sans ton clic.</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><label class="bs" style="cursor:pointer;">📄 Charger le fichier .txt<input type="file" id="wa-file" accept=".txt,text/plain" style="display:none;" onchange="waLoadFile(this)"></label><span style="font-size:10px;color:var(--txt3);">ou colle le texte ci-dessous</span></div><textarea id="wa-txt" style="width:100%;min-height:160px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:11px;color:var(--txt);"></textarea><button class="bp" style="margin-top:8px;" onclick="waAnalyse()">🔍 Analyser</button><div id="wa-res" style="margin-top:12px;"></div></div>';
   document.body.appendChild(ov);
 }
 var waEntries=[];
 function waAnalyse(){
   var txt=(document.getElementById('wa-txt')||{}).value||'';
-  var re=/\[(\d{2})\/(\d{2})\/(\d{4})[^\]]*\]\s([^:]+):\s*(\d+)\s*[-–]\s*(.+)/g;
-  waEntries=[];var m;
-  while((m=re.exec(txt))){
-    waEntries.push({date:m[3]+'-'+m[2]+'-'+m[1],auteur:m[4].trim(),num:m[5],texte:m[6].trim().substring(0,120)});
-  }
+  waEntries=[];
+  var yr=function(y){y=String(y);return y.length===2?('20'+y):y;};
+  var pad2=function(x){x=String(x);return x.length===1?('0'+x):x;};
+  // iOS : [16/06/2026 09:41:22] Swan: 42 - appart Langon
+  // Android : 16/06/2026, 09:41 - Swan: 42 - appart Langon  (ou 16/06/26)
+  var reIOS=/^\[(\d{1,2})\/(\d{1,2})\/(\d{2,4})[^\]]*\]\s*([^:]+):\s*(\d+)\s*[-–—]\s*(.+)$/;
+  var reAND=/^(\d{1,2})\/(\d{1,2})\/(\d{2,4}),?\s+\d{1,2}[:hH]\d{2}(?::\d{2})?\s*[-–—]\s*([^:]+):\s*(\d+)\s*[-–—]\s*(.+)$/;
+  txt.split(/\r?\n/).forEach(function(line){
+    line=line.replace(/[\u200e\u200f\u202a-\u202e]/g,'').trim();
+    if(!line)return;
+    var m=line.match(reIOS)||line.match(reAND);
+    if(!m)return;
+    waEntries.push({date:yr(m[3])+'-'+pad2(m[2])+'-'+pad2(m[1]),auteur:m[4].trim(),num:m[5],texte:m[6].trim().substring(0,120)});
+  });
   var res=document.getElementById('wa-res');
   if(!waEntries.length){res.innerHTML='<div class="ct-empty">Aucune entrée numérotée détectée</div>';return;}
   var h='<div style="font-size:12px;color:var(--txt2);margin-bottom:8px;"><strong>'+waEntries.length+' mandats détectés</strong> dans le registre :</div>';
@@ -1399,6 +1408,12 @@ function waAnalyse(){
     h+='</div>';
   });
   res.innerHTML=h;
+}
+function waLoadFile(inp){
+  var f=inp.files&&inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){document.getElementById('wa-txt').value=r.result||'';waAnalyse();};
+  r.readAsText(f,'UTF-8');
 }
 function waSaveRegistre(){
   if(!waEntries.length){alert('Analyse d\'abord la conversation (bouton 🔍).');return;}
@@ -1575,11 +1590,11 @@ function renderChallenges(){
   }
   // 1. CHALLENGE MANDATS
   var cm=CHALLENGES.mandats;
-  if(!WA_REG.length){
+  if(!WA_REG.length&&currentUser==='alexis'){
     h+='<div class="al" style="background:rgba(217,138,61,.12);border:1px solid #d98a3d;margin-bottom:10px;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">Registre WhatsApp non importé</strong> <span style="color:var(--txt3);">— le Challenge Mandats compte UNIQUEMENT la conversation WhatsApp. Vue Direction → 📥 Import WhatsApp → Analyser → « Enregistrer comme registre officiel ».</span></div>';
   }
   var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
-  h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026 · Source : registre WhatsApp ('+WA_REG.length+' entrées)',chDaysLeft(cm.to),
+  h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026'+(currentUser==='alexis'?' · Source : registre WhatsApp ('+WA_REG.length+' entrées)':''),chDaysLeft(cm.to),
     '🥇 iPhone 17 Pro / Pro Max ou dernier Samsung Galaxy · 🥈 Bon d\'achat vestimentaire 600 € · <em>Minimum requis pour être primé : 10 mandats signés</em>',
     chLeaderboard(rowsM,'mandat(s)',cm.min,'mandats'));
   // 2. CHALLENGE RDV
@@ -2414,7 +2429,7 @@ function prospWeekMax(who){
   for(var i=0;i<7;i++){out.c[i]=Math.max(wd[i]||0,j.c[i]||0);out.r[i]=Math.max(wr[i]||0,j.r[i]||0);out.m[i]=Math.max(wm[i]||0,j.m[i]||0);}
   return out;
 }
-function renderProsp(){try{console.log('Vision Board v12.07-B (challenge = registre WA)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderProsp(){try{console.log('Vision Board v12.07-C (import WA fichier)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
