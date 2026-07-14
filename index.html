@@ -1446,13 +1446,40 @@ function chAdj(who,key){return(chAdjust[who]&&chAdjust[who][key])||0;}
 function chEditAdjust(who,key,label){
   if(currentUser!=='alexis')return;
   var cur=chAdj(who,key);
-  var v=prompt('Ajustement manuel '+label+' pour '+NAMES[who]+'\n(nombre à AJOUTER au calcul automatique, négatif possible)\nActuel : '+(cur>=0?'+':'')+cur,cur);
+  // Calcul automatique = total affiché − ajustement actuel
+  var auto=null;
+  try{
+    if(key==='mandats'){var cm=CHALLENGES.mandats;auto=chMandats(who,cm.from,cm.to)-cur;}
+    else if(key==='rdv'){var cr=CHALLENGES.rdv;auto=chRdv(who,cr.from,cr.to)-cur;}
+    else if(key==='actes'){var ca=CHALLENGES.annuel;auto=chActes(who,ca.from,ca.to)-cur;}
+  }catch(e){}
+  var totalNow=(auto!==null)?(auto+cur):null;
+  var msg='Correction — '+NAMES[who]+'\n\n'
+    +'Calcul automatique : '+(auto!==null?Math.round(auto*10)/10:'?')+'\n'
+    +'Ajustement actuel : '+(cur>=0?'+':'')+cur+'\n'
+    +'Total affiché : '+(totalNow!==null?Math.round(totalNow*10)/10:'?')+'\n\n'
+    +'👉 Saisis le TOTAL souhaité (l\'app calcule l\'écart toute seule).\n'
+    +'Laisse VIDE pour supprimer l\'ajustement (retour au calcul auto).';
+  var v=prompt(msg,totalNow!==null?Math.round(totalNow*10)/10:'');
   if(v===null)return;
-  var n=parseFloat((v+'').replace(',','.'));
-  if(isNaN(n)){alert('Nombre invalide');return;}
-  if(db)db.ref('mansion/challengeAdjust/'+who+'/'+key).set(n);
-  chAdjust[who]=chAdjust[who]||{};chAdjust[who][key]=n;
+  var vs=(v+'').trim(),n;
+  if(vs===''){n=0;}
+  else{
+    var tot=parseFloat(vs.replace(',','.'));
+    if(isNaN(tot)){alert('Nombre invalide');return;}
+    n=(auto!==null)?(tot-auto):tot;
+    n=Math.round(n*10)/10;
+  }
+  if(db){if(n===0)db.ref('mansion/challengeAdjust/'+who+'/'+key).remove();else db.ref('mansion/challengeAdjust/'+who+'/'+key).set(n);}
+  chAdjust[who]=chAdjust[who]||{};if(n===0)delete chAdjust[who][key];else chAdjust[who][key]=n;
   renderChallenges();
+}
+function chResetAdjust(){
+  if(currentUser!=='alexis')return;
+  if(!confirm('Réinitialiser TOUS les ajustements manuels des challenges ?\n\nMandats + RDV + Défi de l\'année reviennent au calcul automatique pur.\n(Les mandats, RDV et actes réels ne sont PAS touchés.)'))return;
+  if(db)db.ref('mansion/challengeAdjust').remove();
+  chAdjust={};renderChallenges();
+  if(typeof toast==='function')toast('Ajustements réinitialisés');
 }
 function chMandats(who,from,to){
   var d=D[who];if(!d)return 0;
@@ -1525,6 +1552,10 @@ function chCard(title,period,daysLeft,prizes,body){
 function renderChallenges(){
   var box=document.getElementById('challenges-body');if(!box)return;
   var h='';
+  if(currentUser==='alexis'){
+    var hasAdj=Object.keys(chAdjust||{}).some(function(w){return chAdjust[w]&&Object.keys(chAdjust[w]).length;});
+    if(hasAdj)h+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="bs" style="font-size:10px;color:var(--red);" onclick="chResetAdjust()">♻️ Réinitialiser tous les ajustements manuels</button></div>';
+  }
   // 1. CHALLENGE MANDATS
   var cm=CHALLENGES.mandats;
   var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
