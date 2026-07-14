@@ -385,7 +385,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="main">
 
 <div class="pg active" id="pg-prosp">
-  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v11.07-C (prospection 7j)</span></div></div>
+  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v12.07-B (challenge = registre WA)</span></div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
   </div>
   <div class="kg k4" id="prosp-kpis"></div>
@@ -1388,6 +1388,7 @@ function waAnalyse(){
   var res=document.getElementById('wa-res');
   if(!waEntries.length){res.innerHTML='<div class="ct-empty">Aucune entrée numérotée détectée</div>';return;}
   var h='<div style="font-size:12px;color:var(--txt2);margin-bottom:8px;"><strong>'+waEntries.length+' mandats détectés</strong> dans le registre :</div>';
+  h+='<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;"><button class="bp" style="margin:0;padding:8px 14px;font-size:12px;" onclick="waSaveRegistre()">💾 Enregistrer comme registre OFFICIEL du challenge</button><span style="font-size:10px;color:var(--txt3);">Le Challenge Mandats compte UNIQUEMENT ces entrées (remplace l\'enregistrement précédent).</span></div>';
   waEntries.forEach(function(e,i){
     var tn=normalizeName(e.texte);
     var match=dossiers.find(function(d){var dn=normalizeName((d.ref||'')+' '+(d.client||''));return dn&&tn&&(dn.indexOf(tn)>=0||tn.indexOf(dn)>=0||dn.split(' ').some(function(w){return w.length>=4&&tn.indexOf(w)>=0;}));});
@@ -1398,6 +1399,24 @@ function waAnalyse(){
     h+='</div>';
   });
   res.innerHTML=h;
+}
+function waSaveRegistre(){
+  if(!waEntries.length){alert('Analyse d\'abord la conversation (bouton 🔍).');return;}
+  var reg=[],inconnus=[];
+  waEntries.forEach(function(e){
+    var negKey=ALL.find(function(w){return normalizeName(NAMES[w]).indexOf(normalizeName(e.auteur.split(' ')[0]))>=0;});
+    if(!negKey)inconnus.push(e.auteur+' (#'+e.num+')');
+    reg.push({num:e.num,date:e.date,who:negKey||'',auteur:e.auteur,texte:e.texte});
+  });
+  // Dédoublonnage par numéro (la dernière occurrence gagne), tri chronologique
+  var byNum={};reg.forEach(function(r){byNum[r.num]=r;});
+  var final=Object.keys(byNum).map(function(k){return byNum[k];}).sort(function(a,b){return(a.date||'').localeCompare(b.date||'');});
+  var msg='Enregistrer '+final.length+' mandats comme registre officiel du challenge ?';
+  if(inconnus.length)msg+='\n\n⚠ '+inconnus.length+' entrée(s) dont l\'auteur n\'est pas reconnu (NON comptées au challenge) :\n'+inconnus.slice(0,8).join('\n')+(inconnus.length>8?'\n…':'');
+  if(!confirm(msg))return;
+  if(db)db.ref('mansion/waRegistre').set(final);
+  WA_REG=final;
+  toast('✓ Registre officiel enregistré ('+final.length+' mandats)');
 }
 function waCreate(i){
   var e=waEntries[i];if(!e)return;
@@ -1442,6 +1461,9 @@ var CHALLENGES={
 // Ajustements manuels (Alexis) : mansion/challengeAdjust/{who} = {mandats:N, rdv:N}
 var chAdjust={};
 if(db){db.ref('mansion/challengeAdjust').on('value',function(snap){chAdjust=snap.val()||{};var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
+// Registre WhatsApp officiel (source UNIQUE du Challenge Mandats)
+var WA_REG=[];
+if(db){db.ref('mansion/waRegistre').on('value',function(snap){var v=snap.val();WA_REG=v?(Array.isArray(v)?v:Object.values(v)):[];var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
 function chAdj(who,key){return(chAdjust[who]&&chAdjust[who][key])||0;}
 function chEditAdjust(who,key,label){
   if(currentUser!=='alexis')return;
@@ -1482,15 +1504,10 @@ function chResetAdjust(){
   if(typeof toast==='function')toast('Ajustements réinitialisés');
 }
 function chMandats(who,from,to){
-  var d=D[who];if(!d)return 0;
-  var n=(d.contacts||[]).filter(function(c){var cd=c.contact_date||'';return cd>=from&&cd<=to&&(c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—'));}).length;
-  var p=0;
-  dossiers.forEach(function(dos){
-    var isNeg=dos.neg===NAMES[who],isNeg2=dos.bin&&dos.neg2===NAMES[who];
-    if(!isNeg&&!isNeg2)return;
-    if(dos.createdAt&&dos.createdAt>=from&&dos.createdAt<=to)p+=dos.bin?0.5:1;
-  });
-  return n+p+chAdj(who,'mandats');
+  // SOURCE UNIQUE : le registre WhatsApp (mansion/waRegistre), importé par Alexis.
+  // Un mandat = une entrée numérotée annoncée dans la conversation, attribuée à son auteur.
+  var n=WA_REG.filter(function(r){return r.who===who&&(r.date||'')>=from&&(r.date||'')<=to;}).length;
+  return n+chAdj(who,'mandats');
 }
 function chRdv(who,from,to){
   var d=D[who];if(!d)return 0;
@@ -1558,8 +1575,11 @@ function renderChallenges(){
   }
   // 1. CHALLENGE MANDATS
   var cm=CHALLENGES.mandats;
+  if(!WA_REG.length){
+    h+='<div class="al" style="background:rgba(217,138,61,.12);border:1px solid #d98a3d;margin-bottom:10px;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">Registre WhatsApp non importé</strong> <span style="color:var(--txt3);">— le Challenge Mandats compte UNIQUEMENT la conversation WhatsApp. Vue Direction → 📥 Import WhatsApp → Analyser → « Enregistrer comme registre officiel ».</span></div>';
+  }
   var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
-  h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026',chDaysLeft(cm.to),
+  h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026 · Source : registre WhatsApp ('+WA_REG.length+' entrées)',chDaysLeft(cm.to),
     '🥇 iPhone 17 Pro / Pro Max ou dernier Samsung Galaxy · 🥈 Bon d\'achat vestimentaire 600 € · <em>Minimum requis pour être primé : 10 mandats signés</em>',
     chLeaderboard(rowsM,'mandat(s)',cm.min,'mandats'));
   // 2. CHALLENGE RDV
@@ -2394,7 +2414,7 @@ function prospWeekMax(who){
   for(var i=0;i<7;i++){out.c[i]=Math.max(wd[i]||0,j.c[i]||0);out.r[i]=Math.max(wr[i]||0,j.r[i]||0);out.m[i]=Math.max(wm[i]||0,j.m[i]||0);}
   return out;
 }
-function renderProsp(){try{console.log('Vision Board v11.07-C (prospection 7j)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderProsp(){try{console.log('Vision Board v12.07-B (challenge = registre WA)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
