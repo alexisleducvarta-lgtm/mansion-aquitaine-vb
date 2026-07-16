@@ -385,7 +385,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="main">
 
 <div class="pg active" id="pg-prosp">
-  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v16.07-C (lots terrain figés)</span></div></div>
+  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v16.07-D (challenges terminés repliés)</span></div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
   </div>
   <div class="kg k4" id="prosp-kpis"></div>
@@ -1707,9 +1707,21 @@ function chRemoveWin(i){
   PALMARES=arr;renderChallenges();
 }
 function chStarsInline_neg(who){return chStarsInline(who);}
+function chIsDone(to){return tresoFmt(new Date())>to;}
+// Ligne compacte d'un challenge terminé, avec son gagnant (depuis le classement fourni)
+function chDoneRow(title,period,rows,unit){
+  var win=rows&&rows.length?rows[0]:null;
+  var winTxt=win?('<strong style="color:var(--or);">'+NAMES[win.who]+'</strong> · '+(Math.round((win.val||0)*10)/10)+(unit?' '+unit:'')):'—';
+  return'<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;margin-bottom:5px;background:var(--bg3);border:1px solid var(--border);">'+
+    '<span style="font-size:15px;">🏁</span>'+
+    '<div style="flex:1;min-width:0;"><div style="font-family:Cinzel,Georgia,serif;font-size:12px;color:var(--txt2);letter-spacing:1px;">'+title+'</div><div style="font-size:9px;color:var(--txt3);">'+period+'</div></div>'+
+    '<div style="font-size:12px;color:var(--txt);text-align:right;">🥇 '+winTxt+'</div>'+
+  '</div>';
+}
 function renderChallenges(){
   var box=document.getElementById('challenges-body');if(!box)return;
   var h='';
+  var hDone='';  // section « Challenges terminés »
   if(currentUser==='alexis'){
     var hasAdj=Object.keys(chAdjust||{}).some(function(w){return chAdjust[w]&&Object.keys(chAdjust[w]).length;});
     if(hasAdj)h+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="bs" style="font-size:10px;color:var(--red);" onclick="chResetAdjust()">♻️ Réinitialiser tous les ajustements manuels</button></div>';
@@ -1720,13 +1732,15 @@ function renderChallenges(){
     h+='<div class="al" style="background:rgba(217,138,61,.12);border:1px solid #d98a3d;margin-bottom:10px;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">Registre WhatsApp non importé</strong> <span style="color:var(--txt3);">— le Challenge Mandats compte UNIQUEMENT la conversation WhatsApp. Vue Direction → 📥 Import WhatsApp → Analyser → « Enregistrer comme registre officiel ».</span></div>';
   }
   var rowsM=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
-  h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026'+(currentUser==='alexis'?' · Source : registre WhatsApp ('+WA_REG.length+' entrées)':''),chDaysLeft(cm.to),
+  if(chIsDone(cm.to)){hDone+=chDoneRow('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026',rowsM,'mandat(s)');}
+  else h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026'+(currentUser==='alexis'?' · Source : registre WhatsApp ('+WA_REG.length+' entrées)':''),chDaysLeft(cm.to),
     '🥇 iPhone 17 Pro / Pro Max ou dernier Samsung Galaxy · 🥈 Bon d\'achat vestimentaire 600 € · <em>Minimum requis pour être primé : 10 mandats signés</em>',
     chLeaderboard(rowsM,'mandat(s)',cm.min,'mandats'));
   // 2. CHALLENGE RDV
   var cr=CHALLENGES.rdv;
   var rowsR=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
-  h+=chCard('CHALLENGE RDV','Du 15 juin au 15 août 2026',chDaysLeft(cr.to),
+  if(chIsDone(cr.to)){hDone+=chDoneRow('CHALLENGE RDV','Du 15 juin au 15 août 2026',rowsR,'RDV');}
+  else h+=chCard('CHALLENGE RDV','Du 15 juin au 15 août 2026',chDaysLeft(cr.to),
     '🥇 Voyage de 5 jours en Europe · <em>Un seul gagnant · minimum requis : 40 RDV R1 vendeurs (soit 5/semaine) · seuls les RDV vendeurs saisis au Journal comptent</em>',
     chLeaderboard(rowsR,'RDV',cr.min,'rdv'));
   // 3. RÉVÉLATION DU MOIS
@@ -1773,7 +1787,8 @@ function renderChallenges(){
       '</div>';
     }).join('');
   }
-  h+=chCard('CHALLENGE TERRAIN — PROSPECTION PHYSIQUE','Du 16 juillet au 16 août 2026',terrainStarted?chDaysLeft(ct2.to):null,
+  if(chIsDone(ct2.to)){hDone+=chDoneRow('CHALLENGE TERRAIN','Du 16 juillet au 16 août 2026',rowsEst,'estim.');}
+  else h+=chCard('CHALLENGE TERRAIN — PROSPECTION PHYSIQUE','Du 16 juillet au 16 août 2026',terrainStarted?chDaysLeft(ct2.to):null,
     '🥇 <strong>10 estimations</strong> décrochées en porte-à-porte → <strong>week-end œnologique pour deux dans le Médoc (2 nuits)</strong> · 🥈 <strong>140 contacts qualifiés</strong> → <strong>journée bien-être aux Sources de Caudalie pour deux</strong> · <em>Reporting Vision Board (canal « Porte à porte ») · non cumulable</em>',
     terrainBody);
 
@@ -1800,6 +1815,10 @@ function renderChallenges(){
     '<div style="font-size:11px;color:rgba(244,239,228,.8);margin-bottom:12px;">Rolex pour ces messieurs, Cartier pour ces dames — offerte à chaque négociateur qui atteint son objectif annuel d\'<strong>honoraires actés</strong> (étape Acte uniquement) · montre au choix dans la limite de 10 000 €</div>'+
     annBody+
   '</div>';
+  // Section repliable « Challenges terminés » (en bas, avant la signature)
+  if(hDone){
+    h+='<details style="margin:6px 0 14px;"><summary style="cursor:pointer;font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:2px;color:var(--txt3);padding:8px 0;list-style:none;">🏁 CHALLENGES TERMINÉS <span style="font-size:10px;opacity:.7;">(cliquer pour déplier)</span></summary><div style="padding-top:8px;">'+hDone+'<div style="font-size:10px;color:var(--txt3);text-align:center;padding:4px 0;">Palmarès complet dans le Hall of Fame ci-dessus.</div></div></details>';
+  }
   h+='<div style="text-align:center;font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:13px;color:var(--txt3);padding:8px 0 16px;">Que le meilleur gagne — bonne chasse à tous. · <span style="color:var(--or);">Une confiance bâtie pour durer.</span></div>';
   box.innerHTML=h;
 }
@@ -2583,7 +2602,7 @@ function prospWeekMax(who){
   for(var i=0;i<7;i++){out.c[i]=Math.max(wd[i]||0,j.c[i]||0);out.r[i]=Math.max(wr[i]||0,j.r[i]||0);out.m[i]=Math.max(wm[i]||0,j.m[i]||0);}
   return out;
 }
-function renderProsp(){try{console.log('Vision Board v16.07-C (lots terrain figés)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=caAgence2026();document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderProsp(){try{console.log('Vision Board v16.07-D (challenges terminés repliés)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=caAgence2026();document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
