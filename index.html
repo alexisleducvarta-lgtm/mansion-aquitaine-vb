@@ -385,7 +385,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="main">
 
 <div class="pg active" id="pg-prosp">
-  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v14.07-A (registre WA officiel)</span></div></div>
+  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v16.07-A (palmarès + terrain)</span></div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
   </div>
   <div class="kg k4" id="prosp-kpis"></div>
@@ -823,6 +823,7 @@ var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:60};
 var PROG=['pauline','nolan'];
 var SAL=['swan','enrik']; // Salariés avec barème Swan (10/12%)
 var ALL=['swan','enrik','pauline','nolan','thibault','nicolas','laurent','alexis'];
+var CHAL_PARTICIPANTS=['swan','enrik','pauline','nolan','thibault','nicolas','laurent']; // Alexis = organisateur, hors classement
 var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a'};
 var INITS={swan:'SD',enrik:'EE',pauline:'PL',nolan:'NO',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL'};
 var NAMES={swan:'Swan Dumas',enrik:'Enrik Enache',pauline:'Pauline',nolan:'Nolan',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc'};
@@ -1447,8 +1448,8 @@ function openMeeting(){
   var mon=getMonday(now);var from=fmtDate(mon);var to=fmtDate(new Date(mon.getTime()+6*86400000));
   var lastMon=new Date(mon.getTime()-7*86400000);var lFrom=fmtDate(lastMon);var lTo=fmtDate(new Date(lastMon.getTime()+6*86400000));
   var cm=CHALLENGES.mandats,cr=CHALLENGES.rdv;
-  var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
-  var rowsR=ALL.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
+  var rowsM=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
+  var rowsR=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
   var weekRows=ALL.map(function(w){
     var d=D[w]||{contacts:[]};
     var c=(d.contacts||[]).filter(function(x){var cd=x.contact_date||'';return cd>=lFrom&&cd<=lTo&&x.categorie!=='Acquéreur';}).length;
@@ -1471,6 +1472,7 @@ function goChallenges(btn){clearAll();btn.classList.add('active');setFooter('Cha
 var CHALLENGES={
   mandats:{from:'2026-06-15',to:'2026-07-15',min:10},
   rdv:{from:'2026-06-15',to:'2026-08-15',min:40},
+  terrain:{from:'2026-07-16',to:'2026-08-16',minEst:10,minCont:140},
   annuel:{from:'2026-06-15',to:'2027-06-15',objDefault:180000,objPerso:{swan:200000,enrik:200000,nicolas:220000,thibault:220000}}
 };
 // Ajustements manuels (Alexis) : mansion/challengeAdjust/{who} = {mandats:N, rdv:N}
@@ -1479,6 +1481,12 @@ if(db){db.ref('mansion/challengeAdjust').on('value',function(snap){chAdjust=snap
 // Registre WhatsApp officiel (source UNIQUE du Challenge Mandats)
 var WA_REG=[];
 if(db){db.ref('mansion/waRegistre').on('value',function(snap){var v=snap.val();WA_REG=v?(Array.isArray(v)?v:Object.values(v)):[];var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
+// PALMARÈS / HALL OF FAME : mansion/palmares = [{who, challenge, lot, date, mois}]
+var PALMARES=[];
+if(db){db.ref('mansion/palmares').on('value',function(snap){var v=snap.val();PALMARES=v?(Array.isArray(v)?v.filter(Boolean):Object.values(v)):[];var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
+// Titres honorifiques attribués : mansion/titres/{who} = "Le Bâtisseur"
+var TITRES={};
+if(db){db.ref('mansion/titres').on('value',function(snap){TITRES=snap.val()||{};var ap=document.querySelector('.pg.active');if(ap&&ap.id==='pg-challenges')renderChallenges();});}
 function chAdj(who,key){return(chAdjust[who]&&chAdjust[who][key])||0;}
 function chEditAdjust(who,key,label){
   if(currentUser!=='alexis')return;
@@ -1535,6 +1543,28 @@ function chRdv(who,from,to){
   }).length;
   return n+chAdj(who,'rdv');
 }
+// Challenge Terrain : contacts qualifiés en PORTE-À-PORTE saisis au Journal, sur la période.
+function chTerrainContacts(who,from,to){
+  var d=D[who];if(!d||!d.contacts)return 0;
+  var list=Array.isArray(d.contacts)?d.contacts:Object.values(d.contacts);
+  var n=list.filter(function(c){
+    var cd=(c.contact_date||'').substring(0,10);
+    return cd>=from&&cd<=to&&c.canal==='Porte à porte'&&c.categorie!=='Acquéreur';
+  }).length;
+  return n+chAdj(who,'terrainCont');
+}
+// Estimations décrochées en porte-à-porte = RDV vendeurs issus du porte-à-porte
+function chTerrainEstim(who,from,to){
+  var d=D[who];if(!d||!d.contacts)return 0;
+  var list=Array.isArray(d.contacts)?d.contacts:Object.values(d.contacts);
+  var n=list.filter(function(c){
+    var cd=((c.rdv_date||c.contact_date)||'').substring(0,10);
+    return cd>=from&&cd<=to&&c.canal==='Porte à porte'&&c.categorie==='Vendeur'&&(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé');
+  }).length;
+  return n+chAdj(who,'terrainEst');
+}
+// Nombre de challenges gagnés par un négo (pour les étoiles)
+function chWins(who){return PALMARES.filter(function(p){return p.who===who;}).length;}
 function chActes(who,from,to){
   var total=0;
   dossiers.forEach(function(dos){
@@ -1564,7 +1594,7 @@ function chLeaderboard(rows,unit,min,adjKey){
     return'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;margin-bottom:4px;background:'+(isMe?'var(--orl)':'var(--bg3)')+';'+(isMe?'border:1px solid var(--borderor);':'')+'">'+
       '<span style="font-size:14px;width:26px;text-align:center;">'+medal+'</span>'+
       '<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:'+COLORS[r.who]+'1c;color:'+COLORS[r.who]+';border:1.5px solid '+COLORS[r.who]+'55;">'+INITS[r.who]+'</div>'+
-      '<span style="flex:1;font-size:12px;color:var(--txt);font-weight:'+(isMe?'600':'400')+';">'+NAMES[r.who]+(isMe?' (moi)':'')+' '+adjNote+'</span>'+
+      '<span style="flex:1;font-size:12px;color:var(--txt);font-weight:'+(isMe?'600':'400')+';">'+NAMES[r.who]+(isMe?' (moi)':'')+chStarsInline(r.who)+' '+adjNote+'</span>'+
       '<span style="font-family:Cinzel,Georgia,serif;font-size:14px;color:'+(ok?'var(--green)':'var(--txt2)')+';">'+valStr+'</span>'+
       (min?'<span style="font-size:9px;color:'+(ok?'var(--green)':'var(--txt3)')+';">'+(ok?'✓ primable':'min. '+min)+'</span>':'')+
       editBtn+
@@ -1575,12 +1605,95 @@ function chCard(title,period,daysLeft,prizes,body){
   return'<div style="background:var(--bg2);border:1px solid var(--borderor);border-radius:14px;padding:16px;margin-bottom:14px;">'+
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:4px;">'+
       '<div><div style="font-family:Cinzel,Georgia,serif;font-size:15px;color:var(--bx);">'+title+'</div><div style="font-size:10px;color:var(--txt3);">'+period+'</div></div>'+
-      '<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:10px;">'+(daysLeft>0?'⏳ '+daysLeft+' jours restants':'Terminé')+'</span>'+
+      (daysLeft===null?'<span class="pill" style="background:var(--bg3);color:var(--txt3);border:1px solid var(--border);font-size:10px;">À venir</span>':'<span class="pill" style="background:var(--orl);color:var(--or);border:1px solid var(--borderor);font-size:10px;">'+(daysLeft>0?'⏳ '+daysLeft+' jours restants':'Terminé')+'</span>')+
     '</div>'+
     '<div style="font-size:11px;color:var(--txt2);margin-bottom:10px;">'+prizes+'</div>'+
     body+
   '</div>';
 }
+
+// ---- PALMARÈS / HALL OF FAME ----
+var TITRES_DEFAUT={mandats:'Le Bâtisseur',rdv:'Le Chasseur',terrain:'L\'Infatigable',annuel:'La Légende'};
+function chStarsInline(who){
+  var n=chWins(who);if(!n)return '';
+  var t=TITRES[who]?' <span style="font-size:9px;color:var(--or);font-style:italic;">· '+escH(TITRES[who])+'</span>':'';
+  return ' <span title="'+n+' challenge(s) remporté(s)" style="color:var(--or);font-size:11px;letter-spacing:1px;">'+Array(n+1).join('★')+'</span>'+t;
+}
+function renderHallOfFame(){
+  var wins=PALMARES.slice().sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
+  var h='<div style="background:linear-gradient(160deg,#1a1410,#12100c);border:1px solid var(--borderor);border-radius:14px;padding:16px;margin-bottom:14px;">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-family:Cinzel,Georgia,serif;font-size:16px;letter-spacing:2px;color:var(--or);">🏛️ HALL OF FAME</div>';
+  if(currentUser==='alexis')h+='<button class="bs" style="font-size:10px;" onclick="chAddWin()">+ Enregistrer un lauréat</button>';
+  h+='</div>';
+  h+='<div style="font-size:10px;color:var(--txt3);margin-bottom:12px;font-style:italic;">La mémoire de l\'équipe — chaque victoire gravée, chaque champion honoré.</div>';
+  // Médailler : nb de victoires par négo
+  var board=CHAL_PARTICIPANTS.map(function(w){return{who:w,n:chWins(w)};}).filter(function(x){return x.n>0;}).sort(function(a,b){return b.n-a.n;});
+  if(board.length){
+    h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">';
+    board.forEach(function(b){
+      h+='<div style="background:rgba(195,163,91,.10);border:1px solid var(--borderor);border-radius:10px;padding:7px 11px;">'+
+        '<div style="font-size:12px;color:var(--txt);font-weight:600;">'+NAMES[b.who]+'</div>'+
+        '<div style="color:var(--or);font-size:12px;letter-spacing:1px;">'+Array(b.n+1).join('★')+'</div>'+
+        (TITRES[b.who]?'<div style="font-size:9px;color:var(--or);font-style:italic;">'+escH(TITRES[b.who])+'</div>':'')+
+      '</div>';
+    });
+    h+='</div>';
+  }
+  // Historique des victoires
+  if(!wins.length){
+    h+='<div style="text-align:center;padding:10px;font-size:12px;color:var(--txt3);">Aucun lauréat enregistré pour l\'instant.'+(currentUser==='alexis'?' Clique « + Enregistrer un lauréat » à la clôture d\'un challenge.':'')+'</div>';
+  }else{
+    wins.forEach(function(p,i){
+      var dstr=p.date?new Date(p.date+'T12:00:00').toLocaleDateString('fr-FR',{month:'long',year:'numeric'}):'';
+      h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(195,163,91,.15);">'+
+        '<span style="font-size:16px;">🏆</span>'+
+        '<div style="flex:1;"><div style="font-size:13px;color:var(--txt);"><strong style="color:var(--or);">'+NAMES[p.who]+'</strong> — '+escH(p.challenge||'')+'</div>'+
+        '<div style="font-size:10px;color:var(--txt3);">'+escH(p.lot||'')+(dstr?' · '+dstr:'')+'</div></div>'+
+        (currentUser==='alexis'?'<button class="bs" style="font-size:9px;padding:1px 6px;color:var(--red);" onclick="chRemoveWin('+i+')">✕</button>':'')+
+      '</div>';
+    });
+  }
+  h+='</div>';
+  return h;
+}
+function chAddWin(){
+  if(currentUser!=='alexis')return;
+  var opts=CHAL_PARTICIPANTS.map(function(w,i){return(i+1)+'. '+NAMES[w];}).join('\n');
+  var pick=prompt('Quel négociateur a gagné ?\n\n'+opts+'\n\nTape le numéro :');
+  if(pick===null)return;
+  var idx=parseInt(pick,10)-1;
+  if(isNaN(idx)||!CHAL_PARTICIPANTS[idx]){alert('Numéro invalide');return;}
+  var who=CHAL_PARTICIPANTS[idx];
+  var chal=prompt('Nom du challenge remporté :','Challenge Mandats — juillet 2026');
+  if(chal===null)return;
+  var lot=prompt('Lot gagné :','iPhone 17 Pro Max');
+  if(lot===null)return;
+  var win={who:who,challenge:chal.trim(),lot:(lot||'').trim(),date:tresoFmt(new Date())};
+  var arr=PALMARES.slice();arr.push(win);
+  if(db)db.ref('mansion/palmares').set(arr);
+  PALMARES=arr;
+  // Proposer un titre honorifique
+  var guessTitre='';
+  var cl=chal.toLowerCase();
+  if(cl.indexOf('mandat')>=0)guessTitre=TITRES_DEFAUT.mandats;
+  else if(cl.indexOf('rdv')>=0)guessTitre=TITRES_DEFAUT.rdv;
+  else if(cl.indexOf('terrain')>=0)guessTitre=TITRES_DEFAUT.terrain;
+  else if(cl.indexOf('année')>=0||cl.indexOf('annee')>=0)guessTitre=TITRES_DEFAUT.annuel;
+  var titre=prompt('Titre honorifique à décerner à '+NAMES[who]+' ? (laisse vide pour aucun)',TITRES[who]||guessTitre);
+  if(titre!==null){var t=titre.trim();if(t){TITRES[who]=t;if(db)db.ref('mansion/titres/'+who).set(t);}else{delete TITRES[who];if(db)db.ref('mansion/titres/'+who).remove();}}
+  renderChallenges();
+  if(typeof toast==='function')toast('🏆 '+NAMES[who]+' inscrit au Hall of Fame');
+}
+function chRemoveWin(i){
+  if(currentUser!=='alexis')return;
+  var wins=PALMARES.slice().sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
+  var p=wins[i];if(!p)return;
+  if(!confirm('Retirer « '+NAMES[p.who]+' — '+p.challenge+' » du Hall of Fame ?'))return;
+  var arr=PALMARES.filter(function(x){return!(x.who===p.who&&x.challenge===p.challenge&&x.date===p.date);});
+  if(db)db.ref('mansion/palmares').set(arr);
+  PALMARES=arr;renderChallenges();
+}
+function chStarsInline_neg(who){return chStarsInline(who);}
 function renderChallenges(){
   var box=document.getElementById('challenges-body');if(!box)return;
   var h='';
@@ -1593,13 +1706,13 @@ function renderChallenges(){
   if(!WA_REG.length&&currentUser==='alexis'){
     h+='<div class="al" style="background:rgba(217,138,61,.12);border:1px solid #d98a3d;margin-bottom:10px;"><div class="ald" style="background:#d98a3d;"></div><strong style="color:#d98a3d;">Registre WhatsApp non importé</strong> <span style="color:var(--txt3);">— le Challenge Mandats compte UNIQUEMENT la conversation WhatsApp. Vue Direction → 📥 Import WhatsApp → Analyser → « Enregistrer comme registre officiel ».</span></div>';
   }
-  var rowsM=ALL.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
+  var rowsM=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chMandats(w,cm.from,cm.to)};}).sort(function(a,b){return b.val-a.val;});
   h+=chCard('CHALLENGE MANDATS','Du 15 juin au 15 juillet 2026'+(currentUser==='alexis'?' · Source : registre WhatsApp ('+WA_REG.length+' entrées)':''),chDaysLeft(cm.to),
     '🥇 iPhone 17 Pro / Pro Max ou dernier Samsung Galaxy · 🥈 Bon d\'achat vestimentaire 600 € · <em>Minimum requis pour être primé : 10 mandats signés</em>',
     chLeaderboard(rowsM,'mandat(s)',cm.min,'mandats'));
   // 2. CHALLENGE RDV
   var cr=CHALLENGES.rdv;
-  var rowsR=ALL.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
+  var rowsR=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chRdv(w,cr.from,cr.to)};}).sort(function(a,b){return b.val-a.val;});
   h+=chCard('CHALLENGE RDV','Du 15 juin au 15 août 2026',chDaysLeft(cr.to),
     '🥇 Voyage de 5 jours en Europe · <em>Un seul gagnant · minimum requis : 40 RDV R1 vendeurs (soit 5/semaine) · seuls les RDV vendeurs saisis au Journal comptent</em>',
     chLeaderboard(rowsR,'RDV',cr.min,'rdv'));
@@ -1626,9 +1739,37 @@ function renderChallenges(){
   }).join(''):'<div class="ct-empty">Pas encore assez de données ce mois-ci</div>';
   h+=chCard('RÉVÉLATION DU MOIS','Chaque mois — la plus belle progression en % est mise à l\'honneur',chDaysLeft(fmtDate(new Date(now.getFullYear(),now.getMonth()+1,0))),
     'Progression d\'activité (contacts + RDV vendeurs ×2 + mandats ×5) vs mois précédent — <em>tout le monde peut briller</em>',revBody);
+  // 3bis. CHALLENGE TERRAIN (porte-à-porte)
+  var ct2=CHALLENGES.terrain;
+  var rowsEst=CHAL_PARTICIPANTS.map(function(w){return{who:w,val:chTerrainEstim(w,ct2.from,ct2.to),cont:chTerrainContacts(w,ct2.from,ct2.to)};}).sort(function(a,b){return b.val-a.val||b.cont-a.cont;});
+  var terrainStarted=tresoFmt(new Date())>=ct2.from;
+  var terrainBody='';
+  if(!terrainStarted){
+    terrainBody='<div style="text-align:center;padding:14px;font-size:12px;color:var(--txt3);">Démarre le 16/07/2026 — le classement s\'affichera dès les premières estimations saisies au Journal (canal « Porte à porte »).</div>';
+  }else{
+    terrainBody=rowsEst.map(function(r,i){
+      var medal=['🥇','🥈','🥉'][i]||'<span style="color:var(--txt3);">'+(i+1)+'.</span>';
+      var estOk=r.val>=ct2.minEst,contOk=r.cont>=ct2.minCont;
+      var isMe=r.who===currentUser;
+      return'<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;margin-bottom:4px;background:'+(isMe?'rgba(195,163,91,.10)':'rgba(255,255,255,.02)')+';border:1px solid '+(isMe?'var(--borderor)':'transparent')+';">'+
+        '<span style="width:26px;text-align:center;font-size:14px;">'+medal+'</span>'+
+        '<span style="flex:1;font-size:13px;color:var(--txt);font-weight:'+(isMe?'700':'500')+';">'+NAMES[r.who]+chStarsInline(r.who)+'</span>'+
+        '<span style="font-size:12px;color:'+(estOk?'var(--green)':'var(--or)')+';font-weight:600;">'+r.val+' estim.</span>'+
+        '<span style="font-size:11px;color:'+(contOk?'var(--green)':'var(--txt3)')+';width:90px;text-align:right;">'+r.cont+' / '+ct2.minCont+' contacts</span>'+
+        (currentUser==='alexis'?'<button class="bs" style="font-size:9px;padding:1px 6px;" onclick="chEditAdjust(\''+r.who+'\',\'terrainEst\',\'estimations\')">✏️</button>':'')+
+      '</div>';
+    }).join('');
+  }
+  h+=chCard('CHALLENGE TERRAIN — PROSPECTION PHYSIQUE','Du 16 juillet au 16 août 2026',terrainStarted?chDaysLeft(ct2.to):null,
+    '🥇 <strong>10 estimations</strong> décrochées en porte-à-porte → week-end œnologique pour deux dans le Médoc · 🥈 <strong>140 contacts qualifiés</strong> → 2ᵉ lot à confirmer · <em>Reporting Vision Board (canal « Porte à porte ») · non cumulable</em>',
+    terrainBody);
+
+  // 3ter. HALL OF FAME
+  h+=renderHallOfFame();
+
   // 4. DÉFI DE L'ANNÉE
   var ca=CHALLENGES.annuel;
-  var annBody=ALL.map(function(w){
+  var annBody=CHAL_PARTICIPANTS.map(function(w){
     var obj=ca.objPerso[w]||ca.objDefault;
     var val=chActes(w,ca.from,ca.to);
     var pct=Math.min(Math.round(val/obj*100),100);
@@ -2429,7 +2570,7 @@ function prospWeekMax(who){
   for(var i=0;i<7;i++){out.c[i]=Math.max(wd[i]||0,j.c[i]||0);out.r[i]=Math.max(wr[i]||0,j.r[i]||0);out.m[i]=Math.max(wm[i]||0,j.m[i]||0);}
   return out;
 }
-function renderProsp(){try{console.log('Vision Board v14.07-A (registre WA officiel)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderProsp(){try{console.log('Vision Board v16.07-A (palmarès + terrain)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=ALL.reduce(function(s,w){return s+getStats(w).ca;},0);document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
