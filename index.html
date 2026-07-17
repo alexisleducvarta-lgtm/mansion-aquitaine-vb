@@ -385,7 +385,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <div class="main">
 
 <div class="pg active" id="pg-prosp">
-  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v16.07-D (challenges terminés repliés)</span></div></div>
+  <div class="ph"><div><div class="pt">Tableau de prospection</div><div class="pss">Objectifs équipe · Semaine en cours · <span style="opacity:.55;">v17.07-A (entrées manuelles tréso)</span></div></div>
     <div style="display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--txt3);">Obj. CA annuel :</span><input type="number" id="obj-ca" value="800000" step="50000" class="ni2" style="width:85px;padding:3px 6px;" oninput="renderProsp()"><span style="font-size:10px;color:var(--txt3);">€</span></div>
   </div>
   <div class="kg k4" id="prosp-kpis"></div>
@@ -2602,7 +2602,7 @@ function prospWeekMax(who){
   for(var i=0;i<7;i++){out.c[i]=Math.max(wd[i]||0,j.c[i]||0);out.r[i]=Math.max(wr[i]||0,j.r[i]||0);out.m[i]=Math.max(wm[i]||0,j.m[i]||0);}
   return out;
 }
-function renderProsp(){try{console.log('Vision Board v16.07-D (challenges terminés repliés)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=caAgence2026();document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+function renderProsp(){try{console.log('Vision Board v17.07-A (entrées manuelles tréso)');}catch(e){}var PW={};ALL.forEach(function(w){PW[w]=prospWeekMax(w);});var tC=0,tR=0,tM=0;ALL.forEach(function(w){var p=PW[w];tC+=p.c.reduce(function(a,b){return a+b;},0);tR+=p.r.reduce(function(a,b){return a+b;},0);tM+=p.m.reduce(function(a,b){return a+b;},0);});var objT=ALL.length*60,objCA=parseInt((document.getElementById('obj-ca')||{value:'800000'}).value)||800000,tCA=caAgence2026();document.getElementById('prosp-kpis').innerHTML='<div class="kc or"><div class="kl">Contacts équipe</div><div class="kv gold">'+tC+'</div><div class="ks">Obj. : '+objT+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tC/objT*100),100)+'%;background:var(--or);"></div></div></div><div class="kc bl"><div class="kl">RDV équipe</div><div class="kv sm" style="color:var(--blue)">'+tR+'</div></div><div class="kc gr"><div class="kl">CA agence</div><div class="kv sm" style="color:var(--green)">'+fmt(tCA)+'</div><div class="ks">Obj. : '+fmt(objCA)+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(tCA/objCA*100),100)+'%;background:var(--green);"></div></div></div><div class="kc pu"><div class="kl">Mandats</div><div class="kv sm" style="color:var(--pur)">'+tM+'</div></div>';var tb=document.getElementById('prosp-tbody');if(!tb)return;var h='';ALL.forEach(function(w){var p=PW[w],tot=p.c.reduce(function(a,b){return a+b;},0),c2=COLORS[w],sp=tot>=60?'<span class="pill p-gr">OK</span>':tot>=42?'<span class="pill p-or">En cours</span>':'<span class="pill p-re">Retard</span>';h+='<tr><td><div style="display:flex;align-items:center;gap:5px;"><div style="width:18px;height:18px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;">'+INITS[w]+'</div><span style="color:var(--txt);font-size:10px;">'+NAMES[w]+'</span></div></td>'+p.c.map(function(v){var cl=v>=OBJ_J?'var(--green)':(v>=7?'var(--or)':'var(--red)');return'<td style="text-align:center;color:'+cl+';font-weight:500;">'+v+'</td>';}).join('')+'<td style="font-weight:500;color:'+(tot>=60?'var(--green)':'var(--or)')+';">'+tot+'</td><td style="color:var(--txt3);">60</td><td>'+sp+'</td></tr>';});tb.innerHTML=h;var tf=document.getElementById('prosp-tfoot');if(tf)tf.innerHTML='<tr><td style="color:var(--or);">TOTAL</td>'+[0,1,2,3,4,5,6].map(function(i){return'<td style="text-align:center;color:var(--or);">'+ALL.reduce(function(s,w){return s+(PW[w].c[i]||0);},0)+'</td>';}).join('')+'<td style="color:var(--or);font-weight:500;">'+tC+'</td><td></td><td></td></tr>';if(charts.prosp){charts.prosp.destroy();charts.prosp=null;}var pc=document.getElementById('prosp-chart');if(pc){charts.prosp=new Chart(pc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'Contacts',data:ALL.map(function(w){return PW[w].c.reduce(function(a,b){return a+b;},0);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Obj.',data:Array(8).fill(60),type:'line',borderColor:'rgba(201,168,76,.4)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // PIPELINE — avec confirmation suppression
 // PIPELINE — filtre par mois
@@ -3547,6 +3547,22 @@ function renderTreso(){
       enc[k].ttc+=ttc; enc[k].com+=com;
       enc[k].items.push({ref:d.ref,neg:d.neg,ttc:ttc,com:com,stage:d.stage,date:da,projete:projete});
     });
+    // --- Entrées d'argent MANUELLES (hors Pipeline) ---
+    (TRESO.recettes||[]).forEach(function(rc){
+      var rdate=(rc.date||'').substring(0,10);if(!rdate)return;
+      var ttcR=parseFloat(rc.montant)||0;if(ttcR<=0)return;
+      if(rdate<=today){
+        // déjà encaissée : réputée dans le solde. Si TTC, sa TVA rejoint la dette.
+        if(rc.tva)tvaBacklog+=ttcR-(ttcR/(1+tvaR));
+        return;
+      }
+      var kR=moisKey(rdate);
+      if(!enc[kR])enc[kR]={ttc:0,com:0,items:[]};
+      // Si HT saisi, on convertit en TTC pour la ligne (la TVA est recalculée sur le TTC) ; si HT sans TVA, on neutralise
+      var ttcLine=ttcR; // on garde le montant saisi tel quel ; la TVA n'est générée que si rc.tva
+      enc[kR].ttc+=ttcLine; enc[kR].com+=0;
+      enc[kR].items.push({ref:rc.label,neg:'✋ entrée manuelle',ttc:ttcLine,com:0,stage:'manuel',date:rdate,manuel:true,noTva:!rc.tva});
+    });
     // Dette TVA de départ : auto (actes signés non reversés) ou saisie manuelle
     var tvaDette=(TRESO.tvaDette===null||TRESO.tvaDette===undefined||TRESO.tvaDette==='')?tvaBacklog:(parseFloat(TRESO.tvaDette)||0);
 
@@ -3564,13 +3580,17 @@ function renderTreso(){
         chTot+=m; chDet.push(c);
         if(c.tva)tvaDed+=m-(m/(1+tvaR));
       });
-      var tvaColl=e.ttc-(e.ttc/(1+tvaR));
+      // TVA collectée sur le TTC du mois, MOINS les entrées manuelles sans TVA (apports, remboursements)
+      var ttcSansTva=0;
+      (e.items||[]).forEach(function(it){if(it.noTva)ttcSansTva+=it.ttc;});
+      var ttcTaxable=Math.max(0,e.ttc-ttcSansTva);
+      var tvaColl=ttcTaxable-(ttcTaxable/(1+tvaR));
       var tvaNette=Math.max(0,tvaColl-tvaDed);
       var margeBrute=e.ttc-e.com;
       var cash=margeBrute-chTot;
       var soldeDeb=solde; solde=soldeDeb+cash;
       // IS sur résultat HT approx
-      var resultat=(e.ttc/(1+tvaR))-e.com-(chTot-tvaDed);
+      var resultat=(ttcTaxable/(1+tvaR))-e.com-(chTot-tvaDed);
       var isProv=Math.max(0,resultat*isR);
       provCum+=tvaNette+isProv;
       var dispo=solde-provCum-(parseFloat(TRESO.matelas)||0);
@@ -3658,6 +3678,25 @@ function renderTreso(){
         (TRESO.depenses||[]).slice().reverse().forEach(function(dp,ri){
           var realIdx=(TRESO.depenses.length-1)-ri;
           ph+='<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt3);padding:3px 0;"><span style="flex:1;">'+escH(dp.label)+' <span style="color:var(--txt3);opacity:.7;">· '+escH(dp.date)+'</span></span><span style="color:var(--red);">−'+fmt(dp.montant)+'</span><button class="bs" style="padding:1px 5px;font-size:10px;" onclick="tresoAnnulerDepense('+realIdx+')" title="Annuler : recrédite le solde">↩</button></div>';
+        });
+      }
+      ph+='</div>';
+      ph+='<div style="background:rgba(74,130,192,.08);border:1px solid var(--border);border-radius:10px;padding:11px 12px;margin-bottom:16px;">';
+      ph+='<div style="font-size:11px;color:var(--blue);font-weight:600;margin-bottom:6px;">💰 Entrée d\'argent manuelle</div>';
+      ph+='<div style="font-size:10px;color:var(--txt3);margin-bottom:7px;">Pour un encaissement qui n\'est pas un dossier du Pipeline : acte à forcer, apport, indemnité, remboursement, honoraires divers… Choisis le mois où l\'argent tombe.</div>';
+      ph+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;">';
+      ph+='<div style="flex:2;min-width:130px;"><input class="ci" style="margin:0;" id="tp-rec-lbl" placeholder="Ex : Acte Harmach (12 rue de la bombe)"></div>';
+      ph+='<div style="flex:1;min-width:80px;"><input class="ci" style="margin:0;" type="number" id="tp-rec-amt" placeholder="7500"></div>';
+      ph+='<div style="min-width:120px;"><input class="ci" style="margin:0;" type="date" id="tp-rec-date" value="'+tresoFmt(new Date())+'"></div>';
+      ph+='</div>';
+      ph+='<label style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--txt3);margin-top:6px;cursor:pointer;"><input type="checkbox" id="tp-rec-tva" checked style="width:auto;"> Ce montant est TTC (générer la provision TVA correspondante)</label>';
+      ph+='<button class="bs" style="color:var(--blue);margin-top:6px;" onclick="tresoRecetteManuelle()">+ Ajouter l\'entrée</button>';
+      if((TRESO.recettes||[]).length){
+        ph+='<div style="margin-top:9px;font-size:10px;color:var(--txt3);">Entrées manuelles :</div>';
+        (TRESO.recettes||[]).slice().reverse().forEach(function(rc,ri){
+          var realIdx=(TRESO.recettes.length-1)-ri;
+          var dd=new Date(rc.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+          ph+='<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt3);padding:3px 0;"><span style="flex:1;">'+escH(rc.label)+' <span style="opacity:.7;">· '+dd+(rc.tva?' · TTC':' · HT')+'</span></span><span style="color:var(--green);">+'+fmt(rc.montant)+'</span><button class="bs" style="padding:1px 5px;font-size:10px;" onclick="tresoSupprRecette('+realIdx+')" title="Supprimer">✕</button></div>';
         });
       }
       ph+='</div>';
@@ -3873,6 +3912,23 @@ function tresoChatSend(){
     chatBusy=false;
     var b=document.getElementById('chat-send');if(b){b.textContent='Envoyer';b.disabled=false;}
   });
+}
+function tresoRecetteManuelle(){
+  var lbl=(document.getElementById('tp-rec-lbl')||{}).value||'';
+  var amt=parseFloat((document.getElementById('tp-rec-amt')||{}).value)||0;
+  var date=(document.getElementById('tp-rec-date')||{}).value||tresoFmt(new Date());
+  var tva=!!(document.getElementById('tp-rec-tva')||{}).checked;
+  if(amt<=0){alert('Saisis un montant.');return;}
+  if(!lbl)lbl='Entrée manuelle';
+  if(!TRESO.recettes)TRESO.recettes=[];
+  TRESO.recettes.push({label:lbl,montant:amt,date:date,tva:tva});
+  tresoSave();renderTreso();
+  if(typeof toast==='function')toast('Entrée ajoutée : +'+fmt(amt));
+}
+function tresoSupprRecette(i){
+  var rc=(TRESO.recettes||[])[i];if(!rc)return;
+  if(!confirm('Supprimer « '+rc.label+' » (+'+fmt(rc.montant)+') ?'))return;
+  TRESO.recettes.splice(i,1);tresoSave();renderTreso();
 }
 function tresoDepensePayee(){
   var lbl=(document.getElementById('tp-dep-lbl')||{}).value||'';
