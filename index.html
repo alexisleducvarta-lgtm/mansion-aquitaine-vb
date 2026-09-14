@@ -2262,6 +2262,18 @@ function renderReporting(){
 
 // ====== SUIVI VENDEURS ======
 var suiviCurId=null;
+// ====== RELAIS IA (Google Apps Script) ======
+var IA_URL='https://script.google.com/macros/s/AKfycbz9cSMGqtsCgpNoNUjjcf7icz5rSLOztaXaR7o2jTwN_ko_MiV9Vrs2sYggxcOsDJ5_/exec';
+function askIA(prompt,cb){
+  toast('✨ Rédaction en cours...');
+  fetch(IA_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({prompt:prompt})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.error){alert('Erreur IA : '+d.error);cb(null);return;}
+      cb(d.text||'');
+    })
+    .catch(function(e){alert('Relais IA injoignable : '+e.message);cb(null);});
+}
 function getSuiviDossiers(who){
   return dossiers.filter(function(d){if(d.stage!=='mandat'&&d.stage!=='offre')return false;return d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);});
 }
@@ -2346,13 +2358,13 @@ function renderSuiviPanel(){
   });
   h+='</div><div class="sv-grid" style="grid-template-columns:1fr 1fr;margin-top:10px;"><div><div class="sv-lbl">Contacts reçus</div><input type="number" id="rp-contacts"></div><div><div class="sv-lbl">Visites</div><input type="number" id="rp-visites"></div></div>';
   h+='<div style="margin-top:10px;"><div class="sv-lbl">Motif de blocage dominant</div><select id="rp-motif"><option>Budget insuffisant</option><option>Prix jugé trop élevé</option><option>Travaux à prévoir</option><option>Emplacement</option><option>Configuration du bien</option><option>Aucun blocage identifié</option></select></div>';
-  h+='<button class="sv-btn" style="background:var(--bx);border-color:var(--bx);color:#F4EFE4;" onclick="genRapport()">Générer le rapport</button>';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr 1fr;"><button class="sv-btn" style="background:var(--bx);border-color:var(--bx);color:#F4EFE4;" onclick="genRapport(false)">Rapport standard</button><button class="sv-btn" style="background:linear-gradient(135deg,var(--or),var(--or2));border-color:var(--or);color:#fff;" onclick="genRapport(true)">✨ Rapport IA</button></div>';
   h+='</div></details>';
   // VISITE
   h+='<details class="sv-sec"><summary style="color:var(--blue);">👁️ Compte-rendu de visite</summary><div class="sv-in">';
   h+='<div class="sv-grid" style="grid-template-columns:1fr 1fr;"><div><div class="sv-lbl">Acquéreur</div><input type="text" id="vs-nom" placeholder="Nom"></div><div><div class="sv-lbl">Position</div><select id="vs-avis"><option>Intéressé — réfléchit</option><option>Coup de cœur</option><option>Offre à venir</option><option>Pas intéressé</option><option>Budget insuffisant</option></select></div></div>';
   h+='<div style="margin-top:8px;"><div class="sv-lbl">Retour de l\'acquéreur</div><textarea id="vs-note" rows="3" placeholder="Points forts relevés, réserves, questions..."></textarea></div>';
-  h+='<button class="sv-btn" style="background:var(--bluel);border-color:rgba(58,107,158,.45);color:var(--blue);" onclick="suiviAddVisite()">Enregistrer et générer le CR</button>';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr 1fr;"><button class="sv-btn" style="background:var(--bluel);border-color:rgba(58,107,158,.45);color:var(--blue);" onclick="suiviAddVisite(false)">CR standard</button><button class="sv-btn" style="background:linear-gradient(135deg,var(--or),var(--or2));border-color:var(--or);color:#fff;" onclick="suiviAddVisite(true)">✨ CR rédigé IA</button></div>';
   h+='</div></details>';
   // PRIX
   h+='<details class="sv-sec"><summary style="color:var(--red);">📉 Baisse de prix</summary><div class="sv-in">';
@@ -2382,12 +2394,16 @@ function renderSuiviPanel(){
   h+=tl.length?tl.map(function(t){return'<div class="sv-tl"><div class="ic" style="background:'+t.bg+';">'+t.ico+'</div><div style="flex:1;min-width:0;"><div style="font-size:12px;color:var(--txt);line-height:1.45;">'+t.txt+'</div><div style="font-size:10px;color:var(--txt3);margin-top:3px;">'+new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+'</div>'+t.html+'</div></div>';}).join(''):'<div class="ct-empty">Aucun suivi enregistré — commence par valider un appel</div>';
   document.getElementById('suivi-body').innerHTML=h;
 }
-function suiviAddVisite(){
+function suiviAddVisite(useIA){
   var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
   var nom=(document.getElementById('vs-nom').value||'').trim();
   if(!nom){alert("Indique le nom de l'acquéreur");return;}
   var v={id:Date.now(),date:fmtDate(new Date()),nom:nom,avis:document.getElementById('vs-avis').value,note:(document.getElementById('vs-note').value||'').trim()};
-  s.visites.push(v);saveDoss();toast('Visite enregistrée');renderSuiviPanel();printCR(v.id);
+  s.visites.push(v);saveDoss();renderSuiviPanel();
+  if(useIA){
+    var p="Rédige le compte-rendu d'une visite immobilière destiné au vendeur.\n\nBien : "+(d.adresse||d.ref)+"\nPrix : "+fmt(d.prixVente||0)+"\nVisiteur : "+v.nom+"\nPosition à l'issue de la visite : "+v.avis+"\nRetour brut du négociateur : "+(v.note||'aucune note')+"\n\nÉcris 2 paragraphes : (1) déroulé de la visite et retour de l'acquéreur reformulé professionnellement, (2) suite donnée et prochaine étape. Ton sobre, factuel, rassurant pour le vendeur.";
+    askIA(p,function(txt){if(txt){v.iaText=txt;saveDoss();}printCR(v.id);});
+  } else printCR(v.id);
 }
 function mansionDoc(w,title,subtitle,body){
   var css='@page{margin:18mm;}body{font-family:Georgia,serif;color:#2B2118;max-width:700px;margin:24px auto;background:#FDFBF6;}h1{font-family:Cinzel,Georgia,serif;color:#6B2233;letter-spacing:3px;text-align:center;font-size:19px;margin-bottom:2px;}.sub{font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;text-align:center;font-size:14px;margin-top:0;}h2{font-family:Cinzel,Georgia,serif;color:#6B2233;font-size:13px;letter-spacing:1px;border-bottom:1px solid #C3A35B;padding-bottom:4px;margin-top:22px;}table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}th,td{border:1px solid #E9E1CF;padding:8px;text-align:left;}th{background:#6B2233;color:#F4EFE4;font-family:Cinzel,Georgia,serif;font-size:11px;}tr:nth-child(even){background:#F4EFE4;}p{font-size:12.5px;line-height:1.55;}.kw{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap;}.kw span{border:1px solid #C3A35B;color:#A8842F;padding:5px 14px;border-radius:16px;font-size:11px;font-family:Cinzel,Georgia,serif;letter-spacing:1px;}.foot{text-align:center;font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;font-size:12px;margin-top:28px;border-top:1px solid #E9E1CF;padding-top:10px;}.meta{text-align:center;font-size:11px;color:#5C4F40;margin-bottom:6px;}';
@@ -2397,7 +2413,7 @@ function mansionDoc(w,title,subtitle,body){
   w.document.write('<div class="foot">69 rue Nationale, 33240 Saint-André-de-Cubzac &middot; 13 allée Jean Jaurès, 33210 Langon<br>Une confiance bâtie pour durer.</div></body></html>');
   w.document.close();setTimeout(function(){w.print();},600);
 }
-function genRapport(){
+function genRapport(useIA){
   var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
   var g=function(id){return parseInt((document.getElementById(id)||{}).value)||0;};
   var pv=[{n:'SeLoger',v:g('rp-sl-v'),c:g('rp-sl-c')},{n:'Leboncoin',v:g('rp-lbc-v'),c:g('rp-lbc-c')},{n:"Bien'ici",v:g('rp-bi-v'),c:g('rp-bi-c')}];
@@ -2406,7 +2422,16 @@ function genRapport(){
   var tx=Math.round(clics/vues*1000)/10;
   var r={id:Date.now(),date:fmtDate(new Date()),vues:vues,clics:clics,tx:tx,contacts:g('rp-contacts'),visites:g('rp-visites'),motif:document.getElementById('rp-motif').value,portails:pv,prix:d.prixVente||0,sent:false};
   s.reports.push(r);s.nextReport=fmtDate(new Date(Date.now()+15*86400000));
-  saveDoss();toast('Rapport généré');renderSuiviPanel();renderSuivi();printRapport(r.id);
+  saveDoss();renderSuiviPanel();renderSuivi();
+  if(useIA){
+    var p="Rédige l'analyse et les recommandations d'un rapport promotionnel immobilier pour ce bien.\n\n"+
+      "Bien : "+(d.adresse||d.ref)+"\nPrix de présentation : "+fmt(d.prixVente||0)+"\nJours de commercialisation : "+(d.createdAt?Math.round((new Date()-new Date(d.createdAt+'T12:00:00'))/86400000):0)+"\n"+
+      "Diffusion : "+pv.filter(function(x){return x.v;}).map(function(x){return x.n+' '+x.v+' vues / '+x.c+' clics';}).join(', ')+"\n"+
+      "Total : "+vues+" vues, "+clics+" clics, taux de clic "+tx+" %\n"+
+      "Contacts reçus : "+r.contacts+"\nVisites : "+r.visites+"\nMotif de blocage dominant : "+r.motif+"\n\n"+
+      "Écris 3 paragraphes : (1) bilan de la visibilité en interprétant le taux de clic (un taux sous 2 % traduit un déficit d'attractivité au prix affiché), (2) analyse du traitement des contacts et du motif de blocage, (3) recommandation stratégique claire (repositionnement du prix si les signaux sont faibles, maintien et intensification sinon). Ton sobre et professionnel, destiné au vendeur.";
+    askIA(p,function(txt){if(txt){r.iaText=txt;saveDoss();}printRapport(r.id);});
+  } else printRapport(r.id);
 }
 function printRapport(rid){
   var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
@@ -2420,9 +2445,12 @@ function printRapport(rid){
   b+='<tr><td><strong>Total</strong></td><td><strong>'+r.vues+'</strong></td><td><strong>'+r.clics+'</strong></td><td><strong>'+r.tx+' %</strong></td></tr></table>';
   b+='<h2>Traitement des contacts</h2><p>'+r.contacts+' demande(s) directe(s) et '+r.visites+' visite(s) sur la période. Motif de blocage dominant : <strong>'+escH(r.motif)+'</strong>.</p>';
   b+='<h2>Analyse et recommandations</h2>';
+  if(r.iaText){r.iaText.split(/\n+/).forEach(function(par){if(par.trim())b+='<p>'+escH(par.trim())+'</p>';});}
+  else{
   b+='<p>Depuis le lancement de la commercialisation au prix souhaité, le bien fait l&rsquo;objet d&rsquo;une diffusion active sur l&rsquo;ensemble de nos canaux : annonces en ligne, réseau investisseurs et portefeuille agence. Les résultats obtenus permettent de tirer un bilan objectif de son positionnement.</p>';
   b+='<p>Sur le plan de la visibilité, l&rsquo;annonce a généré <strong>'+r.vues+' vues</strong> pour <strong>'+r.clics+' clics</strong>, soit un taux de clic de <strong>'+r.tx+' %</strong>. '+(faible?'Ce niveau reste faible au regard des standards du secteur et traduit un déficit d&rsquo;attractivité au prix actuellement affiché : le volume de vues confirme que la diffusion touche bien sa cible, mais la conversion en demandes qualifiées ne suit pas.':'Ce niveau est conforme aux standards du secteur : la diffusion touche sa cible et l&rsquo;annonce convertit correctement.')+'</p>';
   b+='<p>'+(faible?'Aussi, la stratégie que nous préconisons consiste à <strong>repositionner le bien de manière plus compétitive</strong> par une baisse de prix ciblée. L&rsquo;objectif n&rsquo;est pas de brader, mais de réaligner le bien avec les attentes du marché afin de déclencher davantage de contacts qualifiés et de capter les acquéreurs dont les alertes sont paramétrées par tranche de prix.':'Nous préconisons de <strong>maintenir le positionnement actuel</strong> et de poursuivre l&rsquo;effort de diffusion en intensifiant la relance du fichier acquéreurs.')+'</p>';
+  }
   b+='<div class="kw"><span>VISIBILITÉ</span><span>ATTRACTIVITÉ</span><span>RÉACTIVITÉ</span><span>RÉAJUSTEMENT</span></div>';
   mansionDoc(window.open('','_blank'),'Rapport promotionnel','Rapport promotionnel',b);
 }
@@ -2432,9 +2460,11 @@ function printCR(vid){
   var b='<p class="meta">Compte-rendu du '+new Date(v.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' &middot; Conseiller : '+escH(d.neg)+'</p>';
   b+='<h2>Le bien visité</h2><p><strong>'+escH(d.client||d.ref)+'</strong><br>'+escH(d.adresse||d.ref)+(d.prixVente?'<br>Prix de présentation : <strong>'+fmt(d.prixVente)+'</strong>':'')+'</p>';
   b+='<h2>La visite</h2><p>Visiteur : <strong>'+escH(v.nom)+'</strong><br>Position à l&rsquo;issue de la visite : <strong>'+escH(v.avis)+'</strong></p>';
-  if(v.note)b+='<h2>Retour de l&rsquo;acquéreur</h2><p>'+escH(v.note)+'</p>';
+  if(v.iaText){b+='<h2>Retour de la visite</h2>';v.iaText.split(/\n+/).forEach(function(par){if(par.trim())b+='<p>'+escH(par.trim())+'</p>';});}
+  else if(v.note)b+='<h2>Retour de l&rsquo;acquéreur</h2><p>'+escH(v.note)+'</p>';
+  if(!v.iaText){
   var suite=v.avis.indexOf('Offre')>=0?'Une offre écrite est attendue. Nous vous la présenterons dès réception avec notre analyse.':v.avis.indexOf('cœur')>=0?'Le visiteur a manifesté un très vif intérêt. Nous poursuivons les échanges afin de concrétiser rapidement.':v.avis.indexOf('réfléchit')>=0?'Le visiteur souhaite prendre le temps de la réflexion. Une relance est programmée sous 48 heures.':'Nous poursuivons la commercialisation et vous tiendrons informé des prochains retours.';
-  b+='<h2>Suite donnée</h2><p>'+suite+'</p>';
+  b+='<h2>Suite donnée</h2><p>'+suite+'</p>';}
   mansionDoc(window.open('','_blank'),'Compte-rendu de visite','Compte-rendu de visite',b);
 }
 function printAvenant(pid){
