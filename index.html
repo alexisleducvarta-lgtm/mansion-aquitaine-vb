@@ -176,8 +176,28 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 /* SLIDE PANEL — remplace la modale */
 .slide-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;}
 .slide-overlay.open{opacity:1;pointer-events:auto;}
-.slide-panel{position:fixed;top:0;right:0;bottom:0;width:340px;max-width:92vw;background:var(--bg1);border-left:1px solid var(--borderor);z-index:910;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;display:flex;flex-direction:column;}
+.slide-panel{position:fixed;top:0;right:0;bottom:0;width:470px;max-width:96vw;background:var(--bg1);border-left:1px solid var(--borderor);z-index:910;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;display:flex;flex-direction:column;}
 .slide-panel.open{transform:translateX(0);}
+.slide-panel.wide{width:min(1100px,96vw);}
+/* Blocs d'action du suivi */
+.sv-sec{border:1px solid var(--border);border-radius:12px;margin-bottom:9px;overflow:hidden;background:var(--bg2);}
+.sv-sec>summary{list-style:none;cursor:pointer;padding:12px 14px;font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:.6px;display:flex;align-items:center;gap:9px;}
+.sv-sec>summary::-webkit-details-marker{display:none;}
+.sv-sec>summary::after{content:'▾';margin-left:auto;font-size:11px;opacity:.5;}
+.sv-sec[open]>summary::after{content:'▴';}
+.sv-sec>summary:hover{background:var(--bg3);}
+.sv-in{padding:0 14px 14px;}
+.sv-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:4px;font-weight:600;}
+.sv-grid{display:grid;gap:8px;}
+.sv-in input,.sv-in select,.sv-in textarea{width:100%;background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:13px;color:var(--txt);font-family:inherit;outline:none;box-sizing:border-box;}
+.sv-in input:focus,.sv-in select:focus,.sv-in textarea:focus{border-color:var(--or);box-shadow:0 0 0 3px var(--orl);}
+.sv-btn{width:100%;padding:11px 16px;border-radius:10px;font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:.8px;cursor:pointer;border:1px solid;transition:all .15s;margin-top:10px;}
+.sv-btn:hover{filter:brightness(1.08);}
+.sv-kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;text-align:center;}
+.sv-kpi .l{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--txt3);margin-bottom:3px;}
+.sv-kpi .v{font-family:Cinzel,Georgia,serif;font-size:15px;}
+.sv-tl{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+.sv-tl .ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
 .slide-head{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;border-bottom:1px solid var(--border);}
 .slide-head-t{font-family:Cinzel,Georgia,serif;font-size:14px;color:var(--or);}
 .slide-close{background:none;border:1px solid var(--border);color:var(--txt3);border-radius:6px;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -348,7 +368,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 <!-- SLIDE PANEL SUIVI VENDEUR -->
 <div class="slide-overlay" id="suivi-overlay" onclick="closeSuiviPanel()"></div>
 <div class="slide-panel" id="suivi-panel">
-  <div class="slide-head"><span class="slide-head-t" id="suivi-title">📞 Suivi vendeur</span><button class="slide-close" onclick="closeSuiviPanel()">×</button></div>
+  <div class="slide-head"><span class="slide-head-t" id="suivi-title">Suivi vendeur</span><div style="display:flex;gap:4px;"><button class="slide-close" onclick="toggleSuiviWide()" title="Agrandir / réduire">⛶</button><button class="slide-close" onclick="closeSuiviPanel()">×</button></div></div>
   <div class="slide-body" id="suivi-body"></div>
 </div>
 <div class="mobile-burger" id="mobile-burger" onclick="toggleMobileMenu()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
@@ -2290,36 +2310,76 @@ function openSuiviPanel(id){
   document.getElementById('suivi-overlay').classList.add('open');document.getElementById('suivi-panel').classList.add('open');
   renderSuiviPanel();
 }
+function toggleSuiviWide(){document.getElementById('suivi-panel').classList.toggle('wide');}
 function closeSuiviPanel(){document.getElementById('suivi-overlay').classList.remove('open');document.getElementById('suivi-panel').classList.remove('open');}
 function suiviOf(d){d.suivi=d.suivi||{};['calls','prix','events','docs','reports','visites'].forEach(function(k){d.suivi[k]=d.suivi[k]||[];});return d.suivi;}
 function renderSuiviPanel(){
   var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;
   var s=suiviOf(d);var st=suiviState(d);
-  document.getElementById('suivi-title').textContent='📞 '+(d.client||d.ref);
-  var today=fmtDate(new Date());var def15=fmtDate(new Date(Date.now()+15*86400000));
-  var h='<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;">'+escH(d.ref)+' · '+escH(d.neg)+(d.tel?' · <a href="tel:'+escH(d.tel)+'" style="color:var(--blue);">📞 '+escH(d.tel)+'</a>':'')+'</div>';
-  h+='<div class="kg k3" style="margin-bottom:10px;"><div class="kc or"><div class="kl">Prix actuel</div><div class="kv sm gold">'+(d.prixVente?fmt(d.prixVente):'—')+'</div></div><div class="kc gr"><div class="kl">Mandat du</div><div class="kv sm" style="color:var(--green);font-size:12px;">'+(d.createdAt?new Date(d.createdAt+'T12:00:00').toLocaleDateString('fr-FR'):'—')+'</div></div><div class="kc" style="border-top:3px solid '+st.col+';"><div class="kl">Prochain appel</div><div class="kv sm" style="color:'+st.col+';font-size:12px;">'+new Date(st.next+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div></div></div>';
-  // Appel
-  h+='<div style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--green);">✓ Valider un appel de suivi</div><textarea class="na" id="sv-call-note" placeholder="Compte-rendu (2 lignes) : état d\'esprit du vendeur, retours visites, prix évoqué..." style="min-height:50px;"></textarea><div style="display:flex;gap:6px;align-items:end;margin-top:6px;"><div style="flex:1;"><div class="fct">Prochain appel</div><input type="date" id="sv-next" class="ci" value="'+def15+'" style="margin:0;"></div><button class="bp" style="margin:0;padding:8px 14px;" onclick="suiviAddCall()">✓ Appel fait</button></div></div>';
-  h+='<div style="background:var(--bxl);border:1px solid var(--bxb);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--bx);">📄 Rapport promotionnel — statistiques portails</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;">'+['sl','lbc','bi'].map(function(k,i){var n=['SeLoger','Leboncoin',"Bien'ici"][i];return'<div><div class="fct">'+n+'</div><div style="display:flex;gap:3px;"><input type="number" id="rp-'+k+'-v" class="ci" placeholder="vues" style="margin:0;padding:5px;font-size:10px;"><input type="number" id="rp-'+k+'-c" class="ci" placeholder="clics" style="margin:0;padding:5px;font-size:10px;"></div></div>';}).join('')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:6px;margin-top:6px;"><div><div class="fct">Contacts</div><input type="number" id="rp-contacts" class="ci" style="margin:0;padding:5px;font-size:11px;"></div><div><div class="fct">Visites</div><input type="number" id="rp-visites" class="ci" style="margin:0;padding:5px;font-size:11px;"></div><div><div class="fct">Motif de blocage dominant</div><select id="rp-motif" class="ci" style="margin:0;padding:5px;font-size:11px;"><option>Budget insuffisant</option><option>Prix jugé trop élevé</option><option>Travaux à prévoir</option><option>Emplacement</option><option>Configuration du bien</option><option>Aucun blocage identifié</option></select></div></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;"><button class="bp" style="margin:0;padding:8px 14px;" onclick="genRapport(false)">📄 Générer le rapport</button></div></div>';
-  h+='<div style="background:var(--bluel);border:1px solid rgba(58,107,158,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--blue);">👁️ Compte-rendu de visite (sous 24 h)</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><div style="flex:1;min-width:120px;"><div class="fct">Acquéreur</div><input type="text" id="vs-nom" class="ci" placeholder="Nom" style="margin:0;"></div><div><div class="fct">Avis</div><select id="vs-avis" class="ci" style="margin:0;"><option>Intéressé — réfléchit</option><option>Coup de cœur</option><option>Offre à venir</option><option>Pas intéressé</option><option>Budget insuffisant</option></select></div></div><textarea class="na" id="vs-note" placeholder="Retour de l\'acquéreur : points forts, réserves, questions..." style="min-height:45px;margin-top:5px;"></textarea><button class="bs" style="margin-top:5px;background:rgba(58,107,158,.15);border-color:rgba(58,107,158,.35);color:var(--blue);" onclick="suiviAddVisite()">+ Enregistrer et générer le CR</button></div>';
-  // Baisse de prix
-  h+='<div style="background:var(--redl);border:1px solid rgba(168,53,60,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--red);">📉 Baisse de prix</div><div style="display:flex;gap:6px;align-items:end;"><div style="flex:1;"><div class="fct">Nouveau prix (€)</div><input type="number" id="sv-prix" class="ci" placeholder="'+(d.prixVente||'')+'" style="margin:0;"></div><div style="flex:1;"><div class="fct">Motif</div><input type="text" id="sv-prix-motif" class="ci" placeholder="Pas de visites, retour marché..." style="margin:0;"></div><button class="bs" style="color:var(--red);" onclick="suiviAddPrix()">Enregistrer</button></div></div>';
-  // Événement
-  h+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct">📝 Événement / avenant</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><select id="sv-ev-type" class="ci" style="margin:0;flex:1;"><option>Avenant</option><option>Passage en exclusivité</option><option>Passage en simple</option><option>Prolongation mandat</option><option>Visite</option><option>Offre reçue</option><option>Retour acquéreur</option><option>Autre</option></select><input type="text" id="sv-ev-note" class="ci" placeholder="Détail" style="margin:0;flex:2;"><button class="bs" onclick="suiviAddEvent()">Ajouter</button></div></div>';
-  // Document
-  h+='<div style="background:var(--bg2);border:1px dashed var(--borderor);border-radius:10px;padding:10px;margin-bottom:10px;"><div class="fct" style="color:var(--or);">📎 Rapport de suivi / estimation présentée</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><select id="sv-doc-type" class="ci" style="margin:0;flex:1;"><option>Rapport de suivi</option><option>Estimation présentée</option><option>Avenant signé</option><option>Autre</option></select><div><div class="fct">Prix proposé (€)</div><input type="number" id="sv-doc-prix" class="ci" placeholder="Optionnel" style="margin:0;width:110px;"></div><input type="file" id="sv-doc-file" style="font-size:10px;flex:1;" onchange="suiviUploadDoc(event)"></div></div>';
-  // Timeline
+  document.getElementById('suivi-title').textContent=(d.client||d.ref);
+  var def=fmtDate(new Date(Date.now()+st.delay*86400000));
+  var jours=d.createdAt?Math.round((new Date()-new Date(d.createdAt+'T12:00:00'))/86400000):0;
+  var h='';
+  // EN-TÊTE
+  h+='<div style="background:var(--bg3);border-radius:12px;padding:12px 14px;margin-bottom:10px;">';
+  h+='<div style="font-size:12px;color:var(--txt);font-weight:600;">'+escH(d.adresse||d.ref)+'</div>';
+  h+='<div style="font-size:11px;color:var(--txt3);margin-top:3px;">'+escH(d.neg)+(d.numMandat?' · Mandat n°'+d.numMandat:'')+' · '+jours+' j de commercialisation</div>';
+  if(d.tel||d.email){h+='<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">'+(d.tel?'<a href="tel:'+escH(d.tel)+'" class="ct-contact-btn">📞 '+escH(d.tel)+'</a>':'')+(d.email?'<a href="mailto:'+escH(d.email)+'" class="ct-contact-btn">✉️ '+escH(d.email)+'</a>':'')+'</div>';}
+  h+='</div>';
+  // KPIs
+  h+='<div class="sv-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">';
+  h+='<div class="sv-kpi"><div class="l">Prix actuel</div><div class="v" style="color:var(--or);">'+(d.prixVente?fmt(d.prixVente):'—')+'</div></div>';
+  h+='<div class="sv-kpi" style="border-color:'+st.col+'55;"><div class="l">Prochain appel</div><div class="v" style="color:'+st.col+';">'+new Date(st.next+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div></div>';
+  h+='<div class="sv-kpi" style="border-color:'+st.colR+'55;"><div class="l">Prochain rapport</div><div class="v" style="color:'+st.colR+';">'+new Date(st.nextRep+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div></div>';
+  h+='</div>';
+  if(!st.firstReport)h+='<div style="background:var(--orl);border:1px solid var(--borderor);border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:11px;color:var(--txt2);">📌 Premier rapport promotionnel à J+21 — c\'est le moment d\'aborder le repositionnement du prix.</div>';
+  // APPEL
+  h+='<details class="sv-sec" open><summary style="color:var(--green);">✓ Valider un appel de suivi</summary><div class="sv-in">';
+  h+='<div class="sv-lbl">Compte-rendu</div><textarea id="sv-call-note" rows="3" placeholder="État d\'esprit du vendeur, retours de visites, prix évoqué..."></textarea>';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr auto;align-items:end;margin-top:8px;"><div><div class="sv-lbl">Prochain appel</div><input type="date" id="sv-next" value="'+def+'"></div><button class="sv-btn" style="margin:0;background:var(--greenl);border-color:rgba(62,125,78,.45);color:var(--green);width:auto;padding:11px 20px;" onclick="suiviAddCall()">Appel fait</button></div>';
+  h+='</div></details>';
+  // RAPPORT
+  h+='<details class="sv-sec"><summary style="color:var(--bx);">📄 Rapport promotionnel</summary><div class="sv-in">';
+  h+='<div class="sv-lbl">Statistiques par portail (vues / clics)</div><div class="sv-grid" style="grid-template-columns:repeat(3,1fr);">';
+  [['sl','SeLoger'],['lbc','Leboncoin'],['bi',"Bien'ici"]].forEach(function(p){
+    h+='<div><div style="font-size:10px;color:var(--txt2);margin-bottom:3px;">'+p[1]+'</div><div style="display:flex;gap:4px;"><input type="number" id="rp-'+p[0]+'-v" placeholder="vues"><input type="number" id="rp-'+p[0]+'-c" placeholder="clics"></div></div>';
+  });
+  h+='</div><div class="sv-grid" style="grid-template-columns:1fr 1fr;margin-top:10px;"><div><div class="sv-lbl">Contacts reçus</div><input type="number" id="rp-contacts"></div><div><div class="sv-lbl">Visites</div><input type="number" id="rp-visites"></div></div>';
+  h+='<div style="margin-top:10px;"><div class="sv-lbl">Motif de blocage dominant</div><select id="rp-motif"><option>Budget insuffisant</option><option>Prix jugé trop élevé</option><option>Travaux à prévoir</option><option>Emplacement</option><option>Configuration du bien</option><option>Aucun blocage identifié</option></select></div>';
+  h+='<button class="sv-btn" style="background:var(--bx);border-color:var(--bx);color:#F4EFE4;" onclick="genRapport()">Générer le rapport</button>';
+  h+='</div></details>';
+  // VISITE
+  h+='<details class="sv-sec"><summary style="color:var(--blue);">👁️ Compte-rendu de visite</summary><div class="sv-in">';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr 1fr;"><div><div class="sv-lbl">Acquéreur</div><input type="text" id="vs-nom" placeholder="Nom"></div><div><div class="sv-lbl">Position</div><select id="vs-avis"><option>Intéressé — réfléchit</option><option>Coup de cœur</option><option>Offre à venir</option><option>Pas intéressé</option><option>Budget insuffisant</option></select></div></div>';
+  h+='<div style="margin-top:8px;"><div class="sv-lbl">Retour de l\'acquéreur</div><textarea id="vs-note" rows="3" placeholder="Points forts relevés, réserves, questions..."></textarea></div>';
+  h+='<button class="sv-btn" style="background:var(--bluel);border-color:rgba(58,107,158,.45);color:var(--blue);" onclick="suiviAddVisite()">Enregistrer et générer le CR</button>';
+  h+='</div></details>';
+  // PRIX
+  h+='<details class="sv-sec"><summary style="color:var(--red);">📉 Baisse de prix</summary><div class="sv-in">';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr 1.4fr;"><div><div class="sv-lbl">Nouveau prix (€)</div><input type="number" id="sv-prix" placeholder="'+(d.prixVente||'')+'"></div><div><div class="sv-lbl">Motif</div><input type="text" id="sv-prix-motif" placeholder="Pas de visites, retour marché..."></div></div>';
+  h+='<button class="sv-btn" style="background:var(--redl);border-color:rgba(168,53,60,.45);color:var(--red);" onclick="suiviAddPrix()">Enregistrer et générer l\'avenant</button>';
+  h+='</div></details>';
+  // ÉVÉNEMENT
+  h+='<details class="sv-sec"><summary style="color:var(--pur);">📝 Événement / avenant</summary><div class="sv-in">';
+  h+='<div class="sv-grid" style="grid-template-columns:1fr 1.4fr;"><div><div class="sv-lbl">Type</div><select id="sv-ev-type"><option>Avenant</option><option>Passage en exclusivité</option><option>Passage en simple</option><option>Prolongation mandat</option><option>Visite</option><option>Offre reçue</option><option>Retour acquéreur</option><option>Autre</option></select></div><div><div class="sv-lbl">Détail</div><input type="text" id="sv-ev-note" placeholder="Précision"></div></div>';
+  h+='<button class="sv-btn" style="background:var(--purl);border-color:rgba(106,91,176,.45);color:var(--pur);" onclick="suiviAddEvent()">Ajouter</button>';
+  h+='</div></details>';
+  // DOCUMENT
+  h+='<details class="sv-sec"><summary style="color:var(--or);">📎 Déposer un document</summary><div class="sv-in">';
+  h+='<div class="sv-grid" style="grid-template-columns:1.4fr 1fr;"><div><div class="sv-lbl">Type</div><select id="sv-doc-type"><option>Rapport de suivi</option><option>Estimation présentée</option><option>Avenant signé</option><option>Mandat</option><option>Autre</option></select></div><div><div class="sv-lbl">Prix proposé (€)</div><input type="number" id="sv-doc-prix" placeholder="Optionnel"></div></div>';
+  h+='<div style="margin-top:8px;"><input type="file" id="sv-doc-file" onchange="suiviUploadDoc(event)" style="padding:8px;"></div>';
+  h+='</div></details>';
+  // HISTORIQUE
   var tl=[];
-  s.calls.forEach(function(c){tl.push({date:c.date,ico:'📞',col:'var(--green)',txt:'Appel de suivi'+(c.note?' — '+escH(c.note):''),extra:c.next?'Prochain : '+new Date(c.next+'T12:00:00').toLocaleDateString('fr-FR'):''});});
-  s.prix.forEach(function(p){tl.push({date:p.date,ico:'📉',col:'var(--red)',txt:fmt(p.ancien)+' → <strong>'+fmt(p.nouveau)+'</strong>'+(p.motif?' — '+escH(p.motif):''),extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printAvenant('+p.id+')">📄 Avenant</button>'});});
-  (s.reports||[]).forEach(function(r){tl.push({date:r.date,ico:'📄',col:'var(--bx)',txt:'<strong>Rapport promotionnel</strong> — '+r.vues+' vues · '+r.clics+' clics ('+r.tx+' %) · '+r.contacts+' contacts',extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printRapport('+r.id+')">📄 Ouvrir</button>'});});
-  (s.visites||[]).forEach(function(v){tl.push({date:v.date,ico:'👁️',col:'var(--blue)',txt:'<strong>Visite</strong> '+escH(v.nom)+' — '+escH(v.avis)+(v.note?' : '+escH(v.note):''),extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printCR('+v.id+')">📄 CR</button>'});});
-  s.events.forEach(function(e){tl.push({date:e.date,ico:'📝',col:'var(--pur)',txt:'<strong>'+escH(e.type)+'</strong>'+(e.note?' — '+escH(e.note):''),extra:''});});
-  s.docs.forEach(function(x){tl.push({date:x.date,ico:'📎',col:'var(--or)',txt:'<a href="'+x.url+'" target="_blank" style="color:var(--or);">'+escH(x.type)+' · '+escH(x.name)+'</a>'+(x.prix?' — prix proposé <strong>'+fmt(x.prix)+'</strong>':''),extra:''});});
+  s.calls.forEach(function(c){tl.push({date:c.date,ico:'📞',bg:'var(--greenl)',col:'var(--green)',txt:'<strong>Appel de suivi</strong>'+(c.note?'<br><span style="color:var(--txt2);">'+escH(c.note)+'</span>':''),html:''});});
+  s.prix.forEach(function(p){tl.push({date:p.date,ico:'📉',bg:'var(--redl)',col:'var(--red)',txt:'<strong>Baisse de prix</strong> '+fmt(p.ancien)+' → '+fmt(p.nouveau)+(p.motif?'<br><span style="color:var(--txt2);">'+escH(p.motif)+'</span>':''),html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printAvenant('+p.id+')">📄 Avenant</button>'});});
+  (s.reports||[]).forEach(function(r){tl.push({date:r.date,ico:'📄',bg:'var(--bxl)',col:'var(--bx)',txt:'<strong>Rapport promotionnel</strong><br><span style="color:var(--txt2);">'+r.vues+' vues · '+r.clics+' clics ('+r.tx+' %) · '+r.contacts+' contacts</span>',html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printRapport('+r.id+')">📄 Ouvrir</button>'});});
+  (s.visites||[]).forEach(function(v){tl.push({date:v.date,ico:'👁️',bg:'var(--bluel)',col:'var(--blue)',txt:'<strong>Visite — '+escH(v.nom)+'</strong><br><span style="color:var(--txt2);">'+escH(v.avis)+(v.note?' · '+escH(v.note):'')+'</span>',html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printCR('+v.id+')">📄 CR</button>'});});
+  s.events.forEach(function(e){tl.push({date:e.date,ico:'📝',bg:'var(--purl)',col:'var(--pur)',txt:'<strong>'+escH(e.type)+'</strong>'+(e.note?'<br><span style="color:var(--txt2);">'+escH(e.note)+'</span>':''),html:''});});
+  s.docs.forEach(function(x){tl.push({date:x.date,ico:'📎',bg:'var(--orl)',col:'var(--or)',txt:'<a href="'+x.url+'" target="_blank" style="color:var(--or);"><strong>'+escH(x.type)+'</strong> · '+escH(x.name)+'</a>'+(x.prix?'<br><span style="color:var(--txt2);">Prix proposé '+fmt(x.prix)+'</span>':''),html:''});});
   tl.sort(function(a,b){return b.date.localeCompare(a.date);});
-  h+='<div class="fct" style="margin-bottom:6px;">Historique ('+tl.length+')</div>';
-  h+=tl.length?tl.map(function(t){return'<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px;"><span style="font-size:14px;">'+t.ico+'</span><div style="flex:1;"><div style="color:var(--txt);">'+t.txt+'</div><div style="font-size:9px;color:var(--txt3);">'+new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',year:'2-digit'})+(t.extra?' · '+t.extra:'')+'</div>'+(t.html||'')+'</div></div>';}).join(''):'<div class="ct-empty">Aucun suivi enregistré — commence par valider un appel</div>';
+  h+='<div style="font-family:Cinzel,Georgia,serif;font-size:12px;color:var(--bx);letter-spacing:.6px;margin:16px 0 6px;">Historique ('+tl.length+')</div>';
+  h+=tl.length?tl.map(function(t){return'<div class="sv-tl"><div class="ic" style="background:'+t.bg+';">'+t.ico+'</div><div style="flex:1;min-width:0;"><div style="font-size:12px;color:var(--txt);line-height:1.45;">'+t.txt+'</div><div style="font-size:10px;color:var(--txt3);margin-top:3px;">'+new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+'</div>'+t.html+'</div></div>';}).join(''):'<div class="ct-empty">Aucun suivi enregistré — commence par valider un appel</div>';
   document.getElementById('suivi-body').innerHTML=h;
 }
 function suiviAddVisite(){
