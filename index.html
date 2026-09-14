@@ -345,6 +345,12 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div id="plus-items" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
 </div>
 
+<!-- SLIDE PANEL SUIVI VENDEUR -->
+<div class="slide-overlay" id="suivi-overlay" onclick="closeSuiviPanel()"></div>
+<div class="slide-panel" id="suivi-panel">
+  <div class="slide-head"><span class="slide-head-t" id="suivi-title">📞 Suivi vendeur</span><button class="slide-close" onclick="closeSuiviPanel()">×</button></div>
+  <div class="slide-body" id="suivi-body"></div>
+</div>
 <div class="mobile-burger" id="mobile-burger" onclick="toggleMobileMenu()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
 <div class="mobile-overlay" id="mobile-overlay" onclick="toggleMobileMenu()"></div>
 <div class="shell">
@@ -412,6 +418,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="stab" id="stab-reporting" onclick="switchSub('reporting',this)">📊 Sources</button>
     <button class="stab" id="stab-biens" onclick="switchSub('biens',this)">🏠 Biens/R1</button>
     <button class="stab" id="stab-registre" onclick="switchSub('registre',this)">📜 Registre</button>
+    <button class="stab" id="stab-suivi" onclick="switchSub('suivi',this)">📞 Suivi vendeurs</button>
   </div>
   <div class="subtab-content active" id="stc-journal">
     <!-- NAV SEMAINE -->
@@ -514,6 +521,11 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     </div>
     <div id="registre-body"></div>
   </div>
+  <div class="subtab-content" id="stc-suivi">
+    <div class="kg k4" id="suivi-kpis"></div>
+    <div style="font-size:10px;color:var(--txt3);margin:8px 0;">📞 Règle d'équipe : chaque vendeur sous mandat est appelé au moins tous les 15 jours. Clique sur un vendeur pour valider un appel, enregistrer une baisse de prix, un avenant ou déposer un rapport.</div>
+    <div id="suivi-list"></div>
+  </div>
 </div>
 
 <div class="pg" id="pg-pipeline">
@@ -564,7 +576,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <div class="pg" id="pg-dir" style="position:relative;min-height:500px;">
   <div class="pin-ov" id="dir-pin-ov"><div class="pin-bx"><div class="pin-t">Vue Direction</div><div class="pin-s">Saisissez votre code</div><div class="pin-ds"><div class="pin-d" id="dp0"></div><div class="pin-d" id="dp1"></div><div class="pin-d" id="dp2"></div><div class="pin-d" id="dp3"></div></div><div class="pin-g"><button class="pin-b" onclick="dirPin('1')">1</button><button class="pin-b" onclick="dirPin('2')">2</button><button class="pin-b" onclick="dirPin('3')">3</button><button class="pin-b" onclick="dirPin('4')">4</button><button class="pin-b" onclick="dirPin('5')">5</button><button class="pin-b" onclick="dirPin('6')">6</button><button class="pin-b" onclick="dirPin('7')">7</button><button class="pin-b" onclick="dirPin('8')">8</button><button class="pin-b" onclick="dirPin('9')">9</button><button class="pin-b" onclick="dirPinClear()" style="font-size:11px;color:var(--txt3);">←</button><button class="pin-b" onclick="dirPin('0')">0</button><button class="pin-b" onclick="dirPinSubmit()" style="background:var(--orb);border-color:var(--borderor);color:var(--or);">OK</button></div><div class="pin-e" id="dir-err"></div></div></div>
-  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="openWaImport()" style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);color:var(--green);">📥 Import WhatsApp</button><button class="bs" onclick="openMeeting()" style="background:var(--bxl);border:1px solid var(--bxb);color:var(--bx);">📺 Mode Réunion</button><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div id="dir-planning" style="margin-bottom:.8rem;"></div><div id="dir-funnel" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
+  <div id="dir-ct" style="display:none;"><div class="ph"><div><div class="pt">Vue Direction</div><div class="pss">Performance consolidée · 8 collaborateurs</div></div><div style="display:flex;gap:6px;"><button class="bs" onclick="openWaImport()" style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);color:var(--green);">📥 Import WhatsApp</button><button class="bs" onclick="openMeeting()" style="background:var(--bxl);border:1px solid var(--bxb);color:var(--bx);">📺 Mode Réunion</button><button class="bs" onclick="exportCSV()" style="background:rgba(74,156,93,.15);border:1px solid rgba(74,156,93,.35);color:var(--green);">📊 Exporter CSV</button><button class="bs" onclick="exportFullBackup()" style="background:rgba(74,130,192,.15);border:1px solid rgba(74,130,192,.35);color:var(--blue);">💾 Sauvegarde JSON</button><button class="bs" onclick="dirLock()" style="border-color:rgba(192,68,74,.3);color:var(--red);">Verrouiller</button></div></div><div class="kg k4" id="dir-kpis"></div><div id="dir-objectifs" style="margin-bottom:.8rem;"></div><div id="dir-planning" style="margin-bottom:.8rem;"></div><div id="dir-funnel" style="margin-bottom:.8rem;"></div><div id="dir-suivi" style="margin-bottom:.8rem;"></div><div class="stitle">Équipe</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:.8rem;" id="dir-grid"></div><div class="stitle">Classement</div><div class="tbox"><div style="overflow-x:auto;"><table class="tbl"><colgroup><col style="width:24px"><col style="width:auto"><col style="width:70px"><col style="width:48px"><col style="width:72px"><col style="width:65px"><col style="width:80px"></colgroup><thead><tr><th>#</th><th>Collaborateur</th><th>Contrat</th><th>Comp.</th><th>CA TTC</th><th>Taux</th><th>Commission</th></tr></thead><tbody id="dir-rank"></tbody><tfoot id="dir-rf"></tfoot></table></div></div><div class="cw"><div class="cwt">CA TTC & commissions</div><div style="position:relative;width:100%;height:185px;"><canvas id="dir-chart"></canvas></div></div></div>
 </div>
 
 <!-- SLIDE PANEL pour nouveau dossier -->
@@ -582,6 +594,10 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <select class="ci" id="md-neg"><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Tom Chevalier</option><option>Mia Dumas</option><option>Mazarine Chapron</option><option>Laurent</option><option>Alexis Leduc</option></select>
     <div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><input type="checkbox" id="md-bin" style="width:auto;accent-color:var(--or);" onchange="document.getElementById('md-neg2-wrap').style.display=this.checked?'block':'none';"><label for="md-bin" style="font-size:10px;color:var(--txt2);">Dossier en binôme (50/50 commission)</label></div>
     <div id="md-neg2-wrap" style="display:none;"><div class="fct" style="margin-top:8px;">Co-négociateur</div><select class="ci" id="md-neg2"><option value="">— Choisir —</option><option>Swan Dumas</option><option>Enrik Enache</option><option>Pauline</option><option>Nolan</option><option>Thibault</option><option>Nicolas</option><option>Tom Chevalier</option><option>Mia Dumas</option><option>Mazarine Chapron</option><option>Laurent</option><option>Alexis Leduc</option></select></div>
+    <div class="fct" style="margin-top:8px;">N° de mandat</div>
+    <input class="ci" type="number" id="md-num" placeholder="auto">
+    <div class="fct" style="margin-top:8px;">Prix de vente (€)</div>
+    <input class="ci" type="number" id="md-prix" placeholder="250000">
     <div class="fct" style="margin-top:8px;">Honoraires TTC (€)</div>
     <input class="ci" type="number" id="md-fee" placeholder="9500">
     <div class="fct" style="margin-top:8px;">Étape</div>
@@ -1247,7 +1263,9 @@ function renderHomeInner(box){
   h+='<div class="kc re"><div class="kl">🔔 Relances dues</div><div class="kv sm" style="color:var(--red)">'+relances.length+'</div></div>';
   h+='<div class="kc pu"><div class="kl">🎯 R1 à débriefer</div><div class="kv sm" style="color:var(--pur)">'+deb.length+'</div></div>';
   h+='<div class="kc or"><div class="kl">Contacts prospection auj.</div><div class="kv gold">'+todayCt+'/'+OBJ_J+'</div><div class="bbar"><div class="bbarf" style="width:'+Math.min(Math.round(todayCt/OBJ_J*100),100)+'%;background:var(--or);"></div></div></div>';
+  var svLate=getSuiviDossiers(who).filter(function(d){return suiviState(d).diff<=0;}).length;
   h+='</div>';
+  if(svLate)h+='<div style="background:var(--redl);border:1px solid rgba(168,53,60,.35);border-radius:11px;padding:10px 14px;margin:10px 0;font-size:12px;color:var(--txt);cursor:pointer;" onclick="var e=document.getElementById(\'nav-'+who+'\');if(e){goNeg(\''+who+'\',e);var b=document.getElementById(\'stab-suivi\');if(b)switchSub(\'suivi\',b);}"><strong style="color:var(--red);">📞 '+svLate+' vendeur'+(svLate>1?'s':'')+' à appeler</strong> — suivi 15 jours à faire →</div>';
   if(rdvToday.length){
     h+='<div style="background:var(--bg2);border:1px solid var(--borderor);border-radius:12px;padding:12px 14px;margin:10px 0;"><div style="font-size:11px;color:var(--or);font-weight:600;margin-bottom:8px;">📆 Tes RDV du jour</div>';
     rdvToday.forEach(function(it){h+='<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><strong style="color:var(--or);min-width:44px;">'+(it.heure||'—')+'</strong><span style="color:var(--txt);">'+escH(it.nom)+'</span>'+(it.lieu?'<span style="font-size:10px;color:var(--txt3);">📍 '+escH(it.lieu)+'</span>':'')+'</div>';});
@@ -1537,7 +1555,7 @@ function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
 
-function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();else if(tab==='registre')renderRegistre();}
+function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();else if(tab==='registre')renderRegistre();else if(tab==='suivi')renderSuivi();}
 
 // --- RENDER NEG (compteurs RDV et Mandats séparés) ---
 function renderNeg(){
@@ -2222,6 +2240,194 @@ function renderReporting(){
   var btDate=document.getElementById('rep-bt-date');if(btDate&&!btDate.value)btDate.value=fmtDate(new Date());
 }
 
+// ====== SUIVI VENDEURS ======
+var suiviCurId=null;
+function getSuiviDossiers(who){
+  return dossiers.filter(function(d){if(d.stage!=='mandat'&&d.stage!=='offre')return false;return d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);});
+}
+function suiviState(d){
+  var s=d.suivi||{};var today=fmtDate(new Date());
+  var base=d.createdAt||today;
+  var firstReport=((s.reports||[]).length)>0;
+  var delay=firstReport?15:21;
+  var next=s.nextCall||fmtDate(new Date(new Date(base+'T12:00:00').getTime()+delay*86400000));
+  var diff=Math.round((new Date(next+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);
+  var nextRep=s.nextReport||fmtDate(new Date(new Date(base+'T12:00:00').getTime()+delay*86400000));
+  var diffR=Math.round((new Date(nextRep+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);
+  return{next:next,diff:diff,delay:delay,firstReport:firstReport,nextRep:nextRep,diffR:diffR,
+    col:diff<0?'var(--red)':diff<=3?'var(--or)':'var(--green)',
+    lbl:diff<0?'Retard '+(-diff)+' j':diff===0?'Aujourd\'hui':'Dans '+diff+' j',
+    colR:diffR<0?'var(--red)':diffR<=3?'var(--or)':'var(--green)',
+    lblR:diffR<0?'Rapport retard '+(-diffR)+' j':diffR===0?'Rapport aujourd\'hui':'Rapport dans '+diffR+' j'};
+}
+var MANDAT_START=309;
+function nextMandatNum(){var max=MANDAT_START;dossiers.forEach(function(d){var n=parseInt(d.numMandat||0);if(n>max)max=n;});return max+1;}
+function renderSuivi(){
+  var who=curWho;if(!who)return;
+  var list=getSuiviDossiers(who);
+  var today=fmtDate(new Date());
+  var late=0,soon=0;
+  list.forEach(function(d){var st=suiviState(d);if(st.diff<0)late++;else if(st.diff<=3)soon++;});
+  var kp=document.getElementById('suivi-kpis');
+  if(kp)kp.innerHTML='<div class="kc or"><div class="kl">Vendeurs sous mandat</div><div class="kv gold">'+list.length+'</div></div><div class="kc re"><div class="kl">Appels en retard</div><div class="kv sm" style="color:var(--red)">'+late+'</div></div><div class="kc bl"><div class="kl">À appeler sous 3 j</div><div class="kv sm" style="color:var(--blue)">'+soon+'</div></div><div class="kc gr"><div class="kl">À jour</div><div class="kv sm" style="color:var(--green)">'+(list.length-late-soon)+'</div></div>';
+  var box=document.getElementById('suivi-list');if(!box)return;
+  if(!list.length){box.innerHTML='<div class="ct-empty">Aucun vendeur sous mandat dans le Pipeline</div>';return;}
+  list.sort(function(a,b){return suiviState(a).next.localeCompare(suiviState(b).next);});
+  box.innerHTML=list.map(function(d){
+    var st=suiviState(d);var s=d.suivi||{};
+    var lastCall=(s.calls||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);})[0];
+    var days=d.createdAt?Math.round((new Date()-new Date(d.createdAt+'T12:00:00'))/86400000):0;
+    return'<div onclick="openSuiviPanel('+d.id+')" style="background:var(--bg2);border:1px solid var(--border);border-left:4px solid '+st.col+';border-radius:11px;padding:11px 14px;margin-bottom:7px;cursor:pointer;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">'+
+      '<div style="flex:1;min-width:180px;"><div style="font-family:Cinzel,Georgia,serif;font-size:13px;color:var(--txt);">'+escH(d.client||d.ref)+'</div><div style="font-size:10px;color:var(--txt3);">'+escH(d.ref)+(d.adresse?' · '+escH(d.adresse):'')+'</div></div>'+
+      '<div style="text-align:right;"><div style="font-size:12px;color:var(--or);font-weight:600;">'+(d.prixVente?fmt(d.prixVente):'Prix ?')+'</div><div style="font-size:9px;color:var(--txt3);">'+days+' j sur le marché · '+(s.prix||[]).length+' baisse'+((s.prix||[]).length>1?'s':'')+'</div></div>'+
+      '<div style="min-width:130px;text-align:right;"><span class="pill" style="background:'+st.col+'22;color:'+st.col+';border:1px solid '+st.col+'55;font-size:10px;">📞 '+st.lbl+'</span><div style="margin-top:3px;"><span class="pill" style="background:'+st.colR+'18;color:'+st.colR+';border:1px solid '+st.colR+'44;font-size:9px;">📄 '+st.lblR+'</span></div><div style="font-size:9px;color:var(--txt3);margin-top:3px;">'+(lastCall?'Dernier appel '+new Date(lastCall.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'Jamais appelé')+' · '+((s.reports||[]).length)+' rapport'+(((s.reports||[]).length)>1?'s':'')+'</div></div>'+
+    '</div>';
+  }).join('');
+}
+function openSuiviPanel(id){
+  var d=dossiers.find(function(x){return x.id==id;});if(!d)return;
+  suiviCurId=d.id;
+  document.getElementById('suivi-overlay').classList.add('open');document.getElementById('suivi-panel').classList.add('open');
+  renderSuiviPanel();
+}
+function closeSuiviPanel(){document.getElementById('suivi-overlay').classList.remove('open');document.getElementById('suivi-panel').classList.remove('open');}
+function suiviOf(d){d.suivi=d.suivi||{};['calls','prix','events','docs','reports','visites'].forEach(function(k){d.suivi[k]=d.suivi[k]||[];});return d.suivi;}
+function renderSuiviPanel(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;
+  var s=suiviOf(d);var st=suiviState(d);
+  document.getElementById('suivi-title').textContent='📞 '+(d.client||d.ref);
+  var today=fmtDate(new Date());var def15=fmtDate(new Date(Date.now()+15*86400000));
+  var h='<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;">'+escH(d.ref)+' · '+escH(d.neg)+(d.tel?' · <a href="tel:'+escH(d.tel)+'" style="color:var(--blue);">📞 '+escH(d.tel)+'</a>':'')+'</div>';
+  h+='<div class="kg k3" style="margin-bottom:10px;"><div class="kc or"><div class="kl">Prix actuel</div><div class="kv sm gold">'+(d.prixVente?fmt(d.prixVente):'—')+'</div></div><div class="kc gr"><div class="kl">Mandat du</div><div class="kv sm" style="color:var(--green);font-size:12px;">'+(d.createdAt?new Date(d.createdAt+'T12:00:00').toLocaleDateString('fr-FR'):'—')+'</div></div><div class="kc" style="border-top:3px solid '+st.col+';"><div class="kl">Prochain appel</div><div class="kv sm" style="color:'+st.col+';font-size:12px;">'+new Date(st.next+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+'</div></div></div>';
+  // Appel
+  h+='<div style="background:var(--greenl);border:1px solid rgba(62,125,78,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--green);">✓ Valider un appel de suivi</div><textarea class="na" id="sv-call-note" placeholder="Compte-rendu (2 lignes) : état d\'esprit du vendeur, retours visites, prix évoqué..." style="min-height:50px;"></textarea><div style="display:flex;gap:6px;align-items:end;margin-top:6px;"><div style="flex:1;"><div class="fct">Prochain appel</div><input type="date" id="sv-next" class="ci" value="'+def15+'" style="margin:0;"></div><button class="bp" style="margin:0;padding:8px 14px;" onclick="suiviAddCall()">✓ Appel fait</button></div></div>';
+  h+='<div style="background:var(--bxl);border:1px solid var(--bxb);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--bx);">📄 Rapport promotionnel — statistiques portails</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px;">'+['sl','lbc','bi'].map(function(k,i){var n=['SeLoger','Leboncoin',"Bien'ici"][i];return'<div><div class="fct">'+n+'</div><div style="display:flex;gap:3px;"><input type="number" id="rp-'+k+'-v" class="ci" placeholder="vues" style="margin:0;padding:5px;font-size:10px;"><input type="number" id="rp-'+k+'-c" class="ci" placeholder="clics" style="margin:0;padding:5px;font-size:10px;"></div></div>';}).join('')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:6px;margin-top:6px;"><div><div class="fct">Contacts</div><input type="number" id="rp-contacts" class="ci" style="margin:0;padding:5px;font-size:11px;"></div><div><div class="fct">Visites</div><input type="number" id="rp-visites" class="ci" style="margin:0;padding:5px;font-size:11px;"></div><div><div class="fct">Motif de blocage dominant</div><select id="rp-motif" class="ci" style="margin:0;padding:5px;font-size:11px;"><option>Budget insuffisant</option><option>Prix jugé trop élevé</option><option>Travaux à prévoir</option><option>Emplacement</option><option>Configuration du bien</option><option>Aucun blocage identifié</option></select></div></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;"><button class="bp" style="margin:0;padding:8px 14px;" onclick="genRapport(false)">📄 Générer le rapport</button></div></div>';
+  h+='<div style="background:var(--bluel);border:1px solid rgba(58,107,158,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--blue);">👁️ Compte-rendu de visite (sous 24 h)</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><div style="flex:1;min-width:120px;"><div class="fct">Acquéreur</div><input type="text" id="vs-nom" class="ci" placeholder="Nom" style="margin:0;"></div><div><div class="fct">Avis</div><select id="vs-avis" class="ci" style="margin:0;"><option>Intéressé — réfléchit</option><option>Coup de cœur</option><option>Offre à venir</option><option>Pas intéressé</option><option>Budget insuffisant</option></select></div></div><textarea class="na" id="vs-note" placeholder="Retour de l\'acquéreur : points forts, réserves, questions..." style="min-height:45px;margin-top:5px;"></textarea><button class="bs" style="margin-top:5px;background:rgba(58,107,158,.15);border-color:rgba(58,107,158,.35);color:var(--blue);" onclick="suiviAddVisite()">+ Enregistrer et générer le CR</button></div>';
+  // Baisse de prix
+  h+='<div style="background:var(--redl);border:1px solid rgba(168,53,60,.35);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct" style="color:var(--red);">📉 Baisse de prix</div><div style="display:flex;gap:6px;align-items:end;"><div style="flex:1;"><div class="fct">Nouveau prix (€)</div><input type="number" id="sv-prix" class="ci" placeholder="'+(d.prixVente||'')+'" style="margin:0;"></div><div style="flex:1;"><div class="fct">Motif</div><input type="text" id="sv-prix-motif" class="ci" placeholder="Pas de visites, retour marché..." style="margin:0;"></div><button class="bs" style="color:var(--red);" onclick="suiviAddPrix()">Enregistrer</button></div></div>';
+  // Événement
+  h+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;"><div class="fct">📝 Événement / avenant</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><select id="sv-ev-type" class="ci" style="margin:0;flex:1;"><option>Avenant</option><option>Passage en exclusivité</option><option>Passage en simple</option><option>Prolongation mandat</option><option>Visite</option><option>Offre reçue</option><option>Retour acquéreur</option><option>Autre</option></select><input type="text" id="sv-ev-note" class="ci" placeholder="Détail" style="margin:0;flex:2;"><button class="bs" onclick="suiviAddEvent()">Ajouter</button></div></div>';
+  // Document
+  h+='<div style="background:var(--bg2);border:1px dashed var(--borderor);border-radius:10px;padding:10px;margin-bottom:10px;"><div class="fct" style="color:var(--or);">📎 Rapport de suivi / estimation présentée</div><div style="display:flex;gap:6px;align-items:end;flex-wrap:wrap;"><select id="sv-doc-type" class="ci" style="margin:0;flex:1;"><option>Rapport de suivi</option><option>Estimation présentée</option><option>Avenant signé</option><option>Autre</option></select><div><div class="fct">Prix proposé (€)</div><input type="number" id="sv-doc-prix" class="ci" placeholder="Optionnel" style="margin:0;width:110px;"></div><input type="file" id="sv-doc-file" style="font-size:10px;flex:1;" onchange="suiviUploadDoc(event)"></div></div>';
+  // Timeline
+  var tl=[];
+  s.calls.forEach(function(c){tl.push({date:c.date,ico:'📞',col:'var(--green)',txt:'Appel de suivi'+(c.note?' — '+escH(c.note):''),extra:c.next?'Prochain : '+new Date(c.next+'T12:00:00').toLocaleDateString('fr-FR'):''});});
+  s.prix.forEach(function(p){tl.push({date:p.date,ico:'📉',col:'var(--red)',txt:fmt(p.ancien)+' → <strong>'+fmt(p.nouveau)+'</strong>'+(p.motif?' — '+escH(p.motif):''),extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printAvenant('+p.id+')">📄 Avenant</button>'});});
+  (s.reports||[]).forEach(function(r){tl.push({date:r.date,ico:'📄',col:'var(--bx)',txt:'<strong>Rapport promotionnel</strong> — '+r.vues+' vues · '+r.clics+' clics ('+r.tx+' %) · '+r.contacts+' contacts',extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printRapport('+r.id+')">📄 Ouvrir</button>'});});
+  (s.visites||[]).forEach(function(v){tl.push({date:v.date,ico:'👁️',col:'var(--blue)',txt:'<strong>Visite</strong> '+escH(v.nom)+' — '+escH(v.avis)+(v.note?' : '+escH(v.note):''),extra:'',html:'<button class="bs" style="font-size:9px;padding:2px 6px;margin-top:3px;" onclick="printCR('+v.id+')">📄 CR</button>'});});
+  s.events.forEach(function(e){tl.push({date:e.date,ico:'📝',col:'var(--pur)',txt:'<strong>'+escH(e.type)+'</strong>'+(e.note?' — '+escH(e.note):''),extra:''});});
+  s.docs.forEach(function(x){tl.push({date:x.date,ico:'📎',col:'var(--or)',txt:'<a href="'+x.url+'" target="_blank" style="color:var(--or);">'+escH(x.type)+' · '+escH(x.name)+'</a>'+(x.prix?' — prix proposé <strong>'+fmt(x.prix)+'</strong>':''),extra:''});});
+  tl.sort(function(a,b){return b.date.localeCompare(a.date);});
+  h+='<div class="fct" style="margin-bottom:6px;">Historique ('+tl.length+')</div>';
+  h+=tl.length?tl.map(function(t){return'<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px;"><span style="font-size:14px;">'+t.ico+'</span><div style="flex:1;"><div style="color:var(--txt);">'+t.txt+'</div><div style="font-size:9px;color:var(--txt3);">'+new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short',year:'2-digit'})+(t.extra?' · '+t.extra:'')+'</div>'+(t.html||'')+'</div></div>';}).join(''):'<div class="ct-empty">Aucun suivi enregistré — commence par valider un appel</div>';
+  document.getElementById('suivi-body').innerHTML=h;
+}
+function suiviAddVisite(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var nom=(document.getElementById('vs-nom').value||'').trim();
+  if(!nom){alert("Indique le nom de l'acquéreur");return;}
+  var v={id:Date.now(),date:fmtDate(new Date()),nom:nom,avis:document.getElementById('vs-avis').value,note:(document.getElementById('vs-note').value||'').trim()};
+  s.visites.push(v);saveDoss();toast('Visite enregistrée');renderSuiviPanel();printCR(v.id);
+}
+function mansionDoc(w,title,subtitle,body){
+  var css='@page{margin:18mm;}body{font-family:Georgia,serif;color:#2B2118;max-width:700px;margin:24px auto;background:#FDFBF6;}h1{font-family:Cinzel,Georgia,serif;color:#6B2233;letter-spacing:3px;text-align:center;font-size:19px;margin-bottom:2px;}.sub{font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;text-align:center;font-size:14px;margin-top:0;}h2{font-family:Cinzel,Georgia,serif;color:#6B2233;font-size:13px;letter-spacing:1px;border-bottom:1px solid #C3A35B;padding-bottom:4px;margin-top:22px;}table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}th,td{border:1px solid #E9E1CF;padding:8px;text-align:left;}th{background:#6B2233;color:#F4EFE4;font-family:Cinzel,Georgia,serif;font-size:11px;}tr:nth-child(even){background:#F4EFE4;}p{font-size:12.5px;line-height:1.55;}.kw{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap;}.kw span{border:1px solid #C3A35B;color:#A8842F;padding:5px 14px;border-radius:16px;font-size:11px;font-family:Cinzel,Georgia,serif;letter-spacing:1px;}.foot{text-align:center;font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;font-size:12px;margin-top:28px;border-top:1px solid #E9E1CF;padding-top:10px;}.meta{text-align:center;font-size:11px;color:#5C4F40;margin-bottom:6px;}';
+  var fonts='https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap';
+  w.document.write('<html><head><meta charset="utf-8"><title>'+title+'</title><link href="'+fonts+'" rel="stylesheet"><style>'+css+'</style></head><body>');
+  w.document.write('<h1>MANSION AQUITAINE</h1><p class="sub">'+subtitle+'</p>'+body);
+  w.document.write('<div class="foot">69 rue Nationale, 33240 Saint-André-de-Cubzac &middot; 13 allée Jean Jaurès, 33210 Langon<br>Une confiance bâtie pour durer.</div></body></html>');
+  w.document.close();setTimeout(function(){w.print();},600);
+}
+function genRapport(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var g=function(id){return parseInt((document.getElementById(id)||{}).value)||0;};
+  var pv=[{n:'SeLoger',v:g('rp-sl-v'),c:g('rp-sl-c')},{n:'Leboncoin',v:g('rp-lbc-v'),c:g('rp-lbc-c')},{n:"Bien'ici",v:g('rp-bi-v'),c:g('rp-bi-c')}];
+  var vues=pv.reduce(function(a,b){return a+b.v;},0),clics=pv.reduce(function(a,b){return a+b.c;},0);
+  if(!vues){alert("Renseigne au moins les vues d'un portail");return;}
+  var tx=Math.round(clics/vues*1000)/10;
+  var r={id:Date.now(),date:fmtDate(new Date()),vues:vues,clics:clics,tx:tx,contacts:g('rp-contacts'),visites:g('rp-visites'),motif:document.getElementById('rp-motif').value,portails:pv,prix:d.prixVente||0,sent:false};
+  s.reports.push(r);s.nextReport=fmtDate(new Date(Date.now()+15*86400000));
+  saveDoss();toast('Rapport généré');renderSuiviPanel();renderSuivi();printRapport(r.id);
+}
+function printRapport(rid){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var r=(s.reports||[]).find(function(x){return x.id==rid;});if(!r)return;
+  var jours=d.createdAt?Math.round((new Date(r.date+'T12:00:00')-new Date(d.createdAt+'T12:00:00'))/86400000):0;
+  var faible=r.tx<2;
+  var b='<p class="meta">Rapport du '+new Date(r.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' &middot; Conseiller : '+escH(d.neg)+(d.bin&&d.neg2?' &amp; '+escH(d.neg2):'')+'</p>';
+  b+='<h2>Le bien</h2><p><strong>'+escH(d.client||d.ref)+'</strong><br>'+escH(d.adresse||d.ref)+'<br>Prix de présentation : <strong>'+fmt(r.prix)+'</strong> &middot; '+jours+' jours de commercialisation'+(d.numMandat?' &middot; Mandat n°'+d.numMandat:'')+'</p>';
+  b+='<h2>Diffusion et visibilité</h2><table><tr><th>Portail</th><th>Vues</th><th>Clics</th><th>Taux de clic</th></tr>';
+  r.portails.forEach(function(p){if(p.v||p.c)b+='<tr><td>'+p.n+'</td><td>'+p.v+'</td><td>'+p.c+'</td><td>'+(p.v?Math.round(p.c/p.v*1000)/10:0)+' %</td></tr>';});
+  b+='<tr><td><strong>Total</strong></td><td><strong>'+r.vues+'</strong></td><td><strong>'+r.clics+'</strong></td><td><strong>'+r.tx+' %</strong></td></tr></table>';
+  b+='<h2>Traitement des contacts</h2><p>'+r.contacts+' demande(s) directe(s) et '+r.visites+' visite(s) sur la période. Motif de blocage dominant : <strong>'+escH(r.motif)+'</strong>.</p>';
+  b+='<h2>Analyse et recommandations</h2>';
+  b+='<p>Depuis le lancement de la commercialisation au prix souhaité, le bien fait l&rsquo;objet d&rsquo;une diffusion active sur l&rsquo;ensemble de nos canaux : annonces en ligne, réseau investisseurs et portefeuille agence. Les résultats obtenus permettent de tirer un bilan objectif de son positionnement.</p>';
+  b+='<p>Sur le plan de la visibilité, l&rsquo;annonce a généré <strong>'+r.vues+' vues</strong> pour <strong>'+r.clics+' clics</strong>, soit un taux de clic de <strong>'+r.tx+' %</strong>. '+(faible?'Ce niveau reste faible au regard des standards du secteur et traduit un déficit d&rsquo;attractivité au prix actuellement affiché : le volume de vues confirme que la diffusion touche bien sa cible, mais la conversion en demandes qualifiées ne suit pas.':'Ce niveau est conforme aux standards du secteur : la diffusion touche sa cible et l&rsquo;annonce convertit correctement.')+'</p>';
+  b+='<p>'+(faible?'Aussi, la stratégie que nous préconisons consiste à <strong>repositionner le bien de manière plus compétitive</strong> par une baisse de prix ciblée. L&rsquo;objectif n&rsquo;est pas de brader, mais de réaligner le bien avec les attentes du marché afin de déclencher davantage de contacts qualifiés et de capter les acquéreurs dont les alertes sont paramétrées par tranche de prix.':'Nous préconisons de <strong>maintenir le positionnement actuel</strong> et de poursuivre l&rsquo;effort de diffusion en intensifiant la relance du fichier acquéreurs.')+'</p>';
+  b+='<div class="kw"><span>VISIBILITÉ</span><span>ATTRACTIVITÉ</span><span>RÉACTIVITÉ</span><span>RÉAJUSTEMENT</span></div>';
+  mansionDoc(window.open('','_blank'),'Rapport promotionnel','Rapport promotionnel',b);
+}
+function printCR(vid){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var v=(s.visites||[]).find(function(x){return x.id==vid;});if(!v)return;
+  var b='<p class="meta">Compte-rendu du '+new Date(v.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' &middot; Conseiller : '+escH(d.neg)+'</p>';
+  b+='<h2>Le bien visité</h2><p><strong>'+escH(d.client||d.ref)+'</strong><br>'+escH(d.adresse||d.ref)+(d.prixVente?'<br>Prix de présentation : <strong>'+fmt(d.prixVente)+'</strong>':'')+'</p>';
+  b+='<h2>La visite</h2><p>Visiteur : <strong>'+escH(v.nom)+'</strong><br>Position à l&rsquo;issue de la visite : <strong>'+escH(v.avis)+'</strong></p>';
+  if(v.note)b+='<h2>Retour de l&rsquo;acquéreur</h2><p>'+escH(v.note)+'</p>';
+  var suite=v.avis.indexOf('Offre')>=0?'Une offre écrite est attendue. Nous vous la présenterons dès réception avec notre analyse.':v.avis.indexOf('cœur')>=0?'Le visiteur a manifesté un très vif intérêt. Nous poursuivons les échanges afin de concrétiser rapidement.':v.avis.indexOf('réfléchit')>=0?'Le visiteur souhaite prendre le temps de la réflexion. Une relance est programmée sous 48 heures.':'Nous poursuivons la commercialisation et vous tiendrons informé des prochains retours.';
+  b+='<h2>Suite donnée</h2><p>'+suite+'</p>';
+  mansionDoc(window.open('','_blank'),'Compte-rendu de visite','Compte-rendu de visite',b);
+}
+function printAvenant(pid){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var p=(s.prix||[]).find(function(x){return x.id==pid;});if(!p)return;
+  var b='<p class="meta">Avenant au mandat'+(d.numMandat?' n°'+d.numMandat:'')+' &middot; '+new Date(p.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</p>';
+  b+='<h2>Parties</h2><p>Entre le mandant <strong>'+escH(d.client||'—')+'</strong>'+(d.adresse?', pour le bien sis '+escH(d.adresse):'')+'<br>Et le mandataire <strong>SAS MANSION BORDEAUX</strong>, enseigne Mansion Aquitaine, 69 rue Nationale, 33240 Saint-André-de-Cubzac.</p>';
+  b+='<h2>Objet de l&rsquo;avenant</h2><p>Les parties conviennent de modifier le prix de présentation du bien objet du mandat susvisé :</p>';
+  b+='<table><tr><th>Prix précédent</th><th>Nouveau prix</th></tr><tr><td>'+fmt(p.ancien)+'</td><td><strong>'+fmt(p.nouveau)+'</strong></td></tr></table>';
+  if(p.motif)b+='<p>Motif : '+escH(p.motif)+'.</p>';
+  b+='<p>Les autres clauses et conditions du mandat demeurent inchangées.</p>';
+  b+='<h2>Signatures</h2><table><tr><th>Le Mandant</th><th>Le Mandataire</th></tr><tr><td style="height:70px;">Lu et approuvé</td><td style="height:70px;">Mansion Aquitaine</td></tr></table>';
+  mansionDoc(window.open('','_blank'),'Avenant de prix','Avenant au mandat de vente',b);
+}
+function suiviAddCall(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var next=document.getElementById('sv-next').value||fmtDate(new Date(Date.now()+15*86400000));
+  s.calls.push({id:Date.now(),date:fmtDate(new Date()),note:(document.getElementById('sv-call-note').value||'').trim(),next:next});
+  s.nextCall=next;saveDoss();toast('✓ Appel enregistré — prochain le '+new Date(next+'T12:00:00').toLocaleDateString('fr-FR'));renderSuiviPanel();renderSuivi();
+}
+function suiviAddPrix(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var np=parseFloat(document.getElementById('sv-prix').value);if(!np){alert('Indique le nouveau prix');return;}
+  s.prix.push({id:Date.now(),date:fmtDate(new Date()),ancien:d.prixVente||0,nouveau:np,motif:(document.getElementById('sv-prix-motif').value||'').trim()});
+  var pid=s.prix[s.prix.length-1].id;
+  d.prixVente=np;saveDoss();toast('Baisse enregistrée');renderSuiviPanel();renderSuivi();
+  if(confirm("Générer l'avenant de prix à faire signer au vendeur ?"))printAvenant(pid);
+}
+function suiviAddEvent(){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  s.events.push({id:Date.now(),date:fmtDate(new Date()),type:document.getElementById('sv-ev-type').value,note:(document.getElementById('sv-ev-note').value||'').trim()});
+  saveDoss();toast('📝 Événement ajouté');renderSuiviPanel();
+}
+function suiviUploadDoc(evt){
+  var f=evt.target.files&&evt.target.files[0];if(!f)return;
+  if(!storageRef){alert('Firebase Storage non configuré.');return;}
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var type=document.getElementById('sv-doc-type').value,prix=parseFloat(document.getElementById('sv-doc-prix').value)||0;
+  var path='mansion/suivi/'+d.id+'_'+Date.now()+'_'+f.name;
+  toast('⏳ Envoi du document...');
+  storageRef.child(path).put(f).then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
+    s.docs.push({id:Date.now(),date:fmtDate(new Date()),type:type,name:f.name,url:url,path:path,prix:prix});
+    saveDoss();toast('📎 Document enregistré');renderSuiviPanel();
+  }).catch(function(e){alert('Erreur upload : '+e.message);});
+}
+function renderDirSuivi(){
+  var box=document.getElementById('dir-suivi');if(!box)return;
+  var rows=[];
+  ACTIVE().forEach(function(w){getSuiviDossiers(w).forEach(function(d){var st=suiviState(d);if(st.diff<0)rows.push({who:w,d:d,st:st});});});
+  if(!rows.length){box.innerHTML='<div class="stitle">📞 Suivis vendeurs</div><div class="al ag2"><div class="ald"></div>Tous les vendeurs sous mandat ont été appelés dans les 15 jours.</div>';return;}
+  rows.sort(function(a,b){return a.st.diff-b.st.diff;});
+  box.innerHTML='<div class="stitle">📞 '+rows.length+' suivi'+(rows.length>1?'s':'')+' vendeur en retard</div><div style="background:var(--bg2);border:1px solid rgba(168,53,60,.35);border-radius:11px;padding:10px 12px;">'+rows.map(function(r){return'<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;"><span style="width:22px;height:22px;border-radius:50%;background:'+COLORS[r.who]+'22;color:'+COLORS[r.who]+';display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;">'+INITS[r.who]+'</span><span style="flex:1;color:var(--txt);">'+escH(r.d.client||r.d.ref)+'</span><span class="pill p-re" style="font-size:9px;">'+r.st.lbl+'</span></div>';}).join('')+'</div>';
+}
 // ====== REGISTRE CHRONOLOGIQUE ======
 function getRegistreRows(who,ym){
   var start=ym+'-01';
@@ -2312,7 +2518,7 @@ function getFilteredDossiers(){
     return true;
   });
 }
-function openModal(){resetPanel();openPanel();}
+function openModal(){resetPanel();openPanel();var n=document.getElementById('md-num');if(n)n.placeholder='auto → '+nextMandatNum();}
 function openPanel(){document.getElementById('slide-overlay').classList.add('open');document.getElementById('slide-panel').classList.add('open');}
 function closeModal(){closePanel();}
 function closePanel(){document.getElementById('slide-overlay').classList.remove('open');document.getElementById('slide-panel').classList.remove('open');}
@@ -2335,6 +2541,8 @@ function savePanel(){
     bin:document.getElementById('md-bin').checked,
     neg2:document.getElementById('md-bin').checked?(document.getElementById('md-neg2').value||'').trim():'',
     fee:parseFloat(document.getElementById('md-fee').value)||0,
+    prixVente:parseFloat((document.getElementById('md-prix')||{}).value)||0,
+    numMandat:parseInt((document.getElementById('md-num')||{}).value)||0,
     dateComp:document.getElementById('md-dcomp').value,
     dateActe:document.getElementById('md-dacte').value,
     stage:document.getElementById('md-stage').value,
@@ -2347,6 +2555,7 @@ function savePanel(){
     createdAt:fmtDate(new Date()),
     encaisse:false
   };
+  if(!data.numMandat)data.numMandat=nextMandatNum();
   if(editId){
     // Édition : trouver par == au lieu de === pour gérer string vs number
     var existing=dossiers.find(function(x){return x.id==editId;});
@@ -2355,6 +2564,8 @@ function savePanel(){
       data.createdAt=existing.createdAt||data.createdAt;
       data.encaisse=existing.encaisse;
       data.files=existing.files||[]; // PRÉSERVER les fichiers attachés !
+      data.suivi=existing.suivi||null; // PRÉSERVER le suivi vendeur
+      if(existing.prixVente&&data.prixVente&&existing.prixVente!==data.prixVente){data.suivi=data.suivi||{calls:[],prix:[],events:[],docs:[]};data.suivi.prix=data.suivi.prix||[];data.suivi.prix.push({id:Date.now(),date:fmtDate(new Date()),ancien:existing.prixVente,nouveau:data.prixVente,motif:'Modifié depuis le dossier'});}
       dossiers=dossiers.map(function(x){return x.id==editId?data:x;});
     } else {
       // Pas trouvé, on crée
@@ -2366,7 +2577,7 @@ function savePanel(){
   saveDoss();closePanel();resetPanel();renderPipeline();
 }
 function resetPanel(){
-  ['md-ref','md-fee','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['md-ref','md-fee','md-prix','md-num','md-dcomp','md-dacte','md-notes','md-client','md-tel','md-email','md-notaire','md-adresse'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   var eid=document.getElementById('md-edit-id');if(eid)eid.value='';
   var bb=document.getElementById('md-bin');if(bb)bb.checked=false;
   var nn=document.getElementById('md-neg2');if(nn)nn.value='';
@@ -2387,6 +2598,8 @@ function editDoss(id){
   document.getElementById('md-neg2-wrap').style.display=d.bin?'block':'none';
   if(document.getElementById('md-neg2'))document.getElementById('md-neg2').value=d.neg2||'';
   document.getElementById('md-fee').value=d.fee||'';
+  if(document.getElementById('md-prix'))document.getElementById('md-prix').value=d.prixVente||'';
+  if(document.getElementById('md-num'))document.getElementById('md-num').value=d.numMandat||'';
   document.getElementById('md-stage').value=d.stage||'mandat';
   document.getElementById('md-dcomp').value=d.dateComp||'';
   document.getElementById('md-dacte').value=d.dateActe||'';
@@ -2536,7 +2749,7 @@ function renderDirFunnel(){
   h+='</div>';
   box.innerHTML=h;
 }
-function renderDir(){renderDirPlanning();renderDirFunnel();var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';
+function renderDir(){renderDirPlanning();renderDirFunnel();renderDirSuivi();var stats=ALL.map(function(w){var s=getStats(w);return{who:w,ca:s.ca,com:s.com,nb:s.nb};}).sort(function(a,b){return b.ca-a.ca;});var tCA=stats.reduce(function(s,a){return s+a.ca;},0),tCom=stats.reduce(function(s,a){return s+a.com;},0),tNb=stats.reduce(function(s,a){return s+a.nb;},0);document.getElementById('dir-kpis').innerHTML='<div class="kc or"><div class="kl">CA agence TTC</div><div class="kv gold" style="font-size:17px;">'+fmt(tCA)+'</div></div><div class="kc gr"><div class="kl">Commissions</div><div class="kv sm" style="color:var(--green)">'+fmt(tCom)+'</div></div><div class="kc re"><div class="kl">Marge agence</div><div class="kv sm" style="color:var(--red)">'+fmt(tCA-tCom)+'</div></div><div class="kc bl"><div class="kl">Compromis</div><div class="kv sm" style="color:var(--blue)">'+tNb+'</div></div>';
 // AFFICHAGE OBJECTIFS PERSONNALISÉS
 var objBox=document.getElementById('dir-objectifs');
 if(objBox){
