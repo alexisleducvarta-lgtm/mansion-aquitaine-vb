@@ -179,6 +179,38 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 .slide-panel{position:fixed;top:0;right:0;bottom:0;width:470px;max-width:96vw;background:var(--bg1);border-left:1px solid var(--borderor);z-index:910;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;display:flex;flex-direction:column;}
 .slide-panel.open{transform:translateX(0);}
 .slide-panel.wide{width:min(1100px,96vw);}
+/* Lot 2 — documents & formation */
+.bs.gold{background:var(--orl);border-color:var(--borderor);color:var(--or);}
+.bs.pdf{background:var(--bxl);border-color:var(--bxb);color:var(--bx);text-decoration:none;}
+.doc-intro{font-size:12px;color:var(--txt2);background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 14px;margin-bottom:12px;line-height:1.5;}
+.doc-cat{font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:1px;color:var(--bx);margin:16px 0 8px;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;}
+.doc-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;}
+.doc-card.legal{border-color:rgba(168,53,60,.3);}
+.doc-t{font-family:Cinzel,Georgia,serif;font-size:12.5px;color:var(--txt);}
+.doc-d{font-size:11px;color:var(--txt3);flex:1;line-height:1.45;}
+.doc-legal{font-size:10px;color:var(--red);background:var(--redl);border-radius:7px;padding:5px 8px;}
+.doc-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.fm-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.fm-title{font-family:Cinzel,Georgia,serif;font-size:15px;color:var(--bx);}
+.fm-sub{font-size:11px;color:var(--txt3);margin-top:3px;}
+.fm-pct{display:flex;align-items:center;gap:8px;font-family:Cinzel,Georgia,serif;color:var(--or);font-size:14px;}
+.fm-bar{width:160px;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.fm-bar>div{height:100%;background:linear-gradient(90deg,var(--or),var(--bx));border-radius:4px;}
+.fm-block{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:12px 0;}
+.fm-bt{font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:.6px;color:var(--bx);margin-bottom:8px;}
+.fm-step{padding:9px 0;border-bottom:1px solid var(--border);}
+.fm-step:last-child{border-bottom:none;}
+.fm-step label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:12.5px;color:var(--txt);}
+.fm-step input[type=checkbox]{width:auto!important;flex:none;margin:3px 0 0;accent-color:var(--or);}
+.fm-step.done .fm-st{text-decoration:line-through;color:var(--txt3);}
+.fm-sd{font-size:11px;color:var(--txt3);margin:3px 0 0 26px;line-height:1.45;}
+.fm-meta{font-size:10px;color:var(--txt3);margin:4px 0 0 26px;}
+.fm-edit{background:transparent;border:1px solid var(--borderor);color:var(--or);border-radius:6px;padding:2px 8px;font-size:9.5px;cursor:pointer;margin-top:4px;}
+.fm-tool{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px;color:var(--txt2);padding:7px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.fm-tool:last-child{border-bottom:none;}
+.fm-list{font-size:12px;color:var(--txt2);line-height:1.6;padding-left:18px;margin:0;}
+
 /* Blocs d'action du suivi */
 .sv-sec{border:1px solid var(--border);border-radius:12px;margin-bottom:9px;overflow:hidden;background:var(--bg2);}
 .sv-sec>summary{list-style:none;cursor:pointer;padding:12px 14px;font-family:Cinzel,Georgia,serif;font-size:12px;letter-spacing:.6px;display:flex;align-items:center;gap:9px;}
@@ -365,6 +397,12 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div id="plus-items" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
 </div>
 
+<!-- SLIDE PANEL DOCUMENTS -->
+<div class="slide-overlay" id="doc-overlay" onclick="closeDocPanel()"></div>
+<div class="slide-panel" id="doc-panel">
+  <div class="slide-head"><span class="slide-head-t" id="doc-title">Document</span><div style="display:flex;gap:4px;"><button class="slide-close" onclick="toggleDocWide()" title="Agrandir / réduire">⛶</button><button class="slide-close" onclick="closeDocPanel()">×</button></div></div>
+  <div class="slide-body" id="doc-body"></div>
+</div>
 <!-- SLIDE PANEL SUIVI VENDEUR -->
 <div class="slide-overlay" id="suivi-overlay" onclick="closeSuiviPanel()"></div>
 <div class="slide-panel" id="suivi-panel">
@@ -439,6 +477,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="stab" id="stab-biens" onclick="switchSub('biens',this)">🏠 Biens/R1</button>
     <button class="stab" id="stab-registre" onclick="switchSub('registre',this)">📜 Registre</button>
     <button class="stab" id="stab-suivi" onclick="switchSub('suivi',this)">📞 Suivi vendeurs</button>
+    <button class="stab" id="stab-docs" onclick="switchSub('docs',this)">📚 Documents</button>
+    <button class="stab" id="stab-formation" onclick="switchSub('formation',this)" style="display:none">🎓 Formation</button>
   </div>
   <div class="subtab-content active" id="stc-journal">
     <!-- NAV SEMAINE -->
@@ -546,6 +586,8 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <div style="font-size:10px;color:var(--txt3);margin:8px 0;">📞 Règle d'équipe : chaque vendeur sous mandat est appelé au moins tous les 15 jours. Clique sur un vendeur pour valider un appel, enregistrer une baisse de prix, un avenant ou déposer un rapport.</div>
     <div id="suivi-list"></div>
   </div>
+  <div class="subtab-content" id="stc-docs"><div id="docs-body"></div></div>
+  <div class="subtab-content" id="stc-formation"><div id="formation-body"></div></div>
 </div>
 
 <div class="pg" id="pg-pipeline">
@@ -750,6 +792,9 @@ var TVA=1.2,OBJ_J=12,OBJ_FEES=7000;
 // Format: { who: [{from: 'YYYY-MM', rdv_vendeurs: X, mandats: X, compromis_ttc: X, label: ''}, ...] }
 // Les périodes sont cumulatives : la plus récente s'applique jusqu'à la suivante
 var OBJECTIFS_NEGO={
+  swan:[
+    {from:'2026-09',rdv_vendeurs:15,mandats:8,compromis_ttc:12000,label:'À partir de Sept. 2026'}
+  ],
   enrik:[
     // cumul_from = date depuis laquelle on cumule les stats (pour Enrik: depuis mai)
     {from:'2026-06',rdv_vendeurs:15,mandats:8,compromis_ttc:0,label:'Juin 2026 — Mois d\'intégration'},
@@ -850,6 +895,86 @@ var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thi
 var INITS={swan:'SD',enrik:'EE',pauline:'PL',nolan:'NO',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL',mia:'MD',mazarine:'MC',tom:'TC'};
 var NAMES={swan:'Swan Dumas',enrik:'Enrik Enache',pauline:'Pauline',nolan:'Nolan',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc',mia:'Mia Dumas',mazarine:'Mazarine Chapron',tom:'Tom Chevalier'};
 var ROLES={swan:'Salariée · Langon',enrik:'Salarié · Langon',pauline:'Agent commercial',nolan:'Agent commercial',thibault:'Agent commercial',nicolas:'Agent commercial',laurent:'Agent commercial',alexis:'Gérant',mia:'Alternante · Langon',mazarine:'Alternante · Saint-André',tom:'Agent commercial · Saint-André'};
+
+// ====== LOT 2 — CONFIG : identité agence, infos négociateurs, formation ======
+var AGENCE={
+  raison:'MANSION BORDEAUX',forme:'SAS au capital de 1 000,00 €',siege:'69 rue Nationale, 33240 Saint-André-de-Cubzac',
+  rcs:'immatriculée au Registre du Commerce et des Sociétés de Libourne sous le numéro 994 896 249',
+  siret:'994 896 249 00012',
+  carte:'Titulaire de la carte professionnelle « transactions sur immeubles et fonds de commerce » CPI33012026000000004 délivrée par la CCI de Bordeaux-Gironde, avec non-détention de fonds, sans garantie financière',
+  presidente:'Lisa OLIVIER',dg:'Alexis LEDUC',
+  rcp:'Assurance Responsabilité Civile Professionnelle souscrite auprès de ACM IARD SA, 4 rue Frédéric-Guillaume Raiffeisen – 67000 Strasbourg, garantissant l’activité de transactions sur immeubles et fonds de commerce',
+  agences:'69 rue Nationale, 33240 Saint-André-de-Cubzac · 13 allée Jean Jaurès, 33210 Langon',
+  baseline:'Une confiance bâtie pour durer.',
+  logo:'logo.png' // à déposer à la racine du dépôt GitHub (PNG fond transparent)
+};
+// Coordonnées et statut de chaque négociateur (utilisés dans les mandats, baux, courriers).
+// Modifiables ici ; le formulaire de génération les propose pré-remplies et modifiables.
+var NEGO_INFO={
+  alexis:{civ:'Monsieur',tel:'06 71 19 30 48',email:'alexis@mansion-aquitaine.fr',statut:'dg',agence:'saint-andre'},
+  swan:{civ:'Madame',tel:'07 68 09 65 01',email:'swan@mansion-aquitaine.fr',statut:'salarie',agence:'langon'},
+  enrik:{civ:'Monsieur',tel:'06 95 86 22 23',email:'enrik@mansion-aquitaine.fr',statut:'salarie',agence:'langon'},
+  pauline:{civ:'Madame',tel:'07 61 45 94 32',email:'pauline@mansion-aquitaine.fr',statut:'agent',rsac:'',agence:'saint-andre'},
+  nicolas:{civ:'Monsieur',tel:'',email:'nicolas@mansion-aquitaine.fr',statut:'agent',rsac:'',agence:'saint-andre'},
+  tom:{civ:'Monsieur',tel:'',email:'tom@mansion-aquitaine.fr',statut:'agent',rsac:'en cours d’attribution',agence:'saint-andre'},
+  mia:{civ:'Madame',tel:'',email:'mia@mansion-aquitaine.fr',statut:'alternant',agence:'langon'},
+  mazarine:{civ:'Madame',tel:'',email:'mazarine@mansion-aquitaine.fr',statut:'alternant',agence:'saint-andre'},
+  thibault:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
+  nolan:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
+  laurent:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'}
+};
+var AGENCE_ADR={'saint-andre':'69 rue Nationale, 33240 Saint-André-de-Cubzac','langon':'13 allée Jean Jaurès, 33210 Langon'};
+function negoInfo(who){return NEGO_INFO[who]||{civ:'',tel:'',email:'',statut:'agent',agence:'saint-andre'};}
+function negoStatutLabel(who){var s=negoInfo(who).statut;return s==='salarie'?'négociateur salarié':s==='alternant'?'négociateur en alternance (contrat d’apprentissage)':s==='dg'?'Directeur Général':'agent commercial';}
+
+// Personnes ayant accès à l'espace Formation (+ Alexis)
+var FORMATION_WHO=['tom','mia','mazarine'];
+var FORMATION_START={mia:'2026-08-31',mazarine:'2026-08-31',tom:'2026-09-01'};
+// Parcours d'intégration — étapes cochées par le nouveau, validées par Alexis
+var FORMATION_PARCOURS=[
+  {id:'s1',titre:'Semaine 1 — Bienvenue & outils',steps:[
+    {id:'s1a',t:'Lire le livret d’accueil et le livret de commercialisation',d:'Comprendre la promesse Mansion : estimation juste, diffusion premium, suivi hebdomadaire, bilan à 3 semaines, compte-rendu de visite sous 24 h.'},
+    {id:'s1b',t:'Accès aux outils : Vision Board, Flatbay, boîte @mansion-aquitaine.fr, agenda Google partagé',d:'Installer le Vision Board sur le téléphone (icône M), vérifier son PIN, partager son agenda Google avec la direction (RDV nommés « R1 »).'},
+    {id:'s1c',t:'Cadre légal : loi Hoguet, carte pro de l’agence, RGPD, prospection terrain (loi de juin 2025 : plus de pige téléphonique à froid)',d:'Un agent commercial ne signe jamais un mandat au nom de la société : signature par la Présidente ou le DG.'},
+    {id:'s1d',t:'Découverte des deux agences et des secteurs (Saint-André-de-Cubzac / Langon)',d:'Repérer les quartiers, les prix au m² de référence, les biens en vitrine.'},
+    {id:'s1e',t:'Journée d’accompagnement terrain avec un négociateur confirmé',d:'Observer une prospection, une visite, un appel de suivi vendeur.'}
+  ]},
+  {id:'s2',titre:'Semaine 2 — Prospection & Journal',steps:[
+    {id:'s2a',t:'Boîtage et porte-à-porte sur son îlot (objectif équipe : 12 contacts prospection / jour)',d:'Saisir chaque contact dans le Journal (saisie express) : nom, canal, catégorie, statut.'},
+    {id:'s2b',t:'Utiliser le courrier PAP et le générateur de courriers de la bibliothèque',d:'Documents → Courrier vendeur PAP, personnalisé à son nom.'},
+    {id:'s2c',t:'Onglet Sources : comprendre d’où viennent ses contacts et son CA',d:'Renseigner le boîtage (nombre de BAL) chaque jour.'},
+    {id:'s2d',t:'Fiche bien 🏠 après chaque R1 sans mandat',d:'Photos, description, prix souhaité vs estimé, raison du refus, relance programmée.'}
+  ]},
+  {id:'s3',titre:'Semaine 3 — R1, estimation & mandat',steps:[
+    {id:'s3a',t:'Préparer un R1 : recherche cadastre, DVF, comparables, rapport d’estimation Mansion',d:'Assister à 2 R1 puis en mener un en binôme.'},
+    {id:'s3b',t:'Argumentaire mandat exclusif vs simple ; les engagements Mansion (livret)',d:'Savoir expliquer la clause de délégation, la durée (3 mois + 3), le droit de rétractation 14 jours.'},
+    {id:'s3c',t:'Générer un mandat depuis la bibliothèque (pré-rempli depuis un dossier Pipeline)',d:'Vérifier : identité complète des mandants, désignation, parcelle, notaire, prix FAI / net vendeur, honoraires, n° de mandat.'},
+    {id:'s3d',t:'Pièces obligatoires du dossier vendeur',d:'CNI, titre de propriété, taxe foncière, diagnostics complets, PV d’AG et charges si copropriété.'},
+    {id:'s3e',t:'Créer le dossier dans le Pipeline et rattacher les pièces (onglet Fichiers)',d:'Le n° de mandat est attribué automatiquement.'}
+  ]},
+  {id:'s4',titre:'Semaine 4 — Commercialisation & suivi vendeur',steps:[
+    {id:'s4a',t:'Annonce : photos HDR/drone, texte, diffusion SeLoger / Leboncoin / Bien’ici via Flatbay',d:''},
+    {id:'s4b',t:'Suivi vendeur : appel tous les 15 jours, premier rapport promotionnel à J+21',d:'Onglet 📞 Suivi vendeurs : valider l’appel, saisir les statistiques portails, générer le rapport.'},
+    {id:'s4c',t:'Visite : préparation, déroulé, compte-rendu au vendeur sous 24 h',d:'Générer le CR depuis la fiche vendeur.'},
+    {id:'s4d',t:'Offre d’achat et négociation ; conditions suspensives ; délai de réponse 8 jours',d:'Générer l’offre depuis la bibliothèque.'},
+    {id:'s4e',t:'Du compromis à l’acte : pièces, notaires, délais, suivi Pipeline',d:''}
+  ]},
+  {id:'s5',titre:'Après 45 jours — Autonomie',steps:[
+    {id:'s5a',t:'Bilan des 45 jours avec Alexis (KPIs ci-dessous)',d:''},
+    {id:'s5b',t:'Objectifs de l’année 1 fixés par lettre d’objectifs',d:''},
+    {id:'s5c',t:'Participation aux challenges d’équipe',d:''}
+  ]}
+];
+var FORMATION_OUTILS=[
+  {n:'Vision Board',d:'CRM interne : Journal des contacts, Pipeline, Suivi vendeurs, Documents, Challenges. Installe-le sur ton téléphone (Chrome : Installer · iPhone : Partager → Sur l’écran d’accueil).',u:'https://alexisleducvarta-lgtm.github.io/mansion-aquitaine-vb/'},
+  {n:'Flatbay',d:'Logiciel de transaction : rédaction et diffusion des annonces sur les portails, gestion des acquéreurs.',u:''},
+  {n:'Google Agenda',d:'Partagé avec la direction. Chaque RDV vendeur porte « R1 » dans son titre : il remonte automatiquement dans le Vision Board.',u:'https://calendar.google.com'},
+  {n:'Boîte mail pro',d:'prenom@mansion-aquitaine.fr — signature mail Mansion fournie par la direction.',u:''},
+  {n:'Google Drive — Transactions',d:'Un dossier par mandat : NOM - VILLE - n° de mandat. Pièces, diagnostics, mandat signé.',u:'https://drive.google.com'},
+  {n:'Cadastre & DVF',d:'cadastre.gouv.fr pour les parcelles, app.dvf.etalab.gouv.fr pour les ventes récentes : indispensables pour l’estimation et la division.',u:'https://app.dvf.etalab.gouv.fr'},
+  {n:'Canva',d:'Visuels réseaux sociaux et affichettes vitrine (charte : Cinzel / Cormorant Garamond, ivoire, bordeaux, or).',u:'https://www.canva.com'}
+];
+
 var CONTRATS={swan:'Salariée HT',enrik:'Salarié HT',pauline:'Progressive',nolan:'Progressive',thibault:'60% fixe',nicolas:'60% fixe',laurent:'60% fixe',alexis:'50% fixe'};
 var MPC={Exclusif:'p-me','Semi-exclusif':'p-mse','Exclusivité morale':'p-mem',Simple:'p-ms'};
 var JNOMS=['Lun','Mar','Mer','Jeu','Ven'];
@@ -1575,7 +1700,7 @@ function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
 function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
 
-function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();else if(tab==='registre')renderRegistre();else if(tab==='suivi')renderSuivi();}
+function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();else if(tab==='registre')renderRegistre();else if(tab==='suivi')renderSuivi();else if(tab==='docs')renderDocs();else if(tab==='formation')renderFormation();}
 
 // --- RENDER NEG (compteurs RDV et Mandats séparés) ---
 function renderNeg(){
@@ -1586,6 +1711,7 @@ function renderNeg(){
     setEl('neg-date',now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}));
     var av=document.getElementById('neg-avatar');
     if(av){av.textContent=INITS[who];av.style.background=COLORS[who]+'22';av.style.color=COLORS[who];av.style.borderColor=COLORS[who]+'66';}
+    var fmTab=document.getElementById('stab-formation');if(fmTab)fmTab.style.display=(typeof FORMATION_WHO!=='undefined'&&FORMATION_WHO.indexOf(who)>=0)?'':'none';
     // Calcul des indicateurs en combinant les 2 sources : Journal + tableau Semaine
     var today=fmtDate(now);
     var wr=getMonday(now);wr.setHours(0,0,0,0);
@@ -2258,6 +2384,454 @@ function renderReporting(){
   document.getElementById('rep-boitage-history').innerHTML=bh;
   // Pré-remplir date du jour
   var btDate=document.getElementById('rep-bt-date');if(btDate&&!btDate.value)btDate.value=fmtDate(new Date());
+}
+
+// ====== LOT 2 — BIBLIOTHÈQUE DE DOCUMENTS (mandats, baux, offre, courriers) ======
+// --- Utilitaires ---
+function nToWordsFR(n){
+  n=Math.round(Math.abs(n||0));if(n===0)return'zéro';
+  var u=['','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+  var t=['','','vingt','trente','quarante','cinquante','soixante','soixante','quatre-vingt','quatre-vingt'];
+  function lt100(x){
+    if(x<20)return u[x];
+    var d=Math.floor(x/10),r=x%10;
+    if(d===7||d===9){r+=10;}
+    var s=t[d];
+    if(d===8&&r===0)return'quatre-vingts';
+    if(r===0)return s;
+    if(r===1&&d!==8&&d!==9&&d!==7)return s+' et un';
+    if(r===11&&d===7)return s+' et onze';
+    return s+'-'+u[r];
+  }
+  function lt1000(x){
+    var c=Math.floor(x/100),r=x%100,s='';
+    if(c===1)s='cent';else if(c>1)s=u[c]+' cent'+(r===0?'s':'');
+    if(r>0)s+=(s?' ':'')+lt100(r);
+    return s;
+  }
+  var parts=[],m=Math.floor(n/1000000),k=Math.floor((n%1000000)/1000),r=n%1000;
+  if(m)parts.push(m===1?'un million':lt1000(m)+' millions');
+  if(k)parts.push(k===1?'mille':lt1000(k)+' mille');
+  if(r)parts.push(lt1000(r));
+  return parts.join(' ');
+}
+function eurL(n){return fmtEur(n)+' ('+nToWordsFR(n)+' euros)';}
+function fmtEur(n){return new Intl.NumberFormat('fr-FR').format(Math.round(n||0))+' €';}
+function dateL(s){if(!s)return'';var d=new Date(s+'T12:00:00');if(isNaN(d))return s;return d.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}
+function addMonths(s,m){var d=new Date(s+'T12:00:00');d.setMonth(d.getMonth()+m);return fmtDate(d);}
+function esc(s){return escH(s);}
+function nl2p(s,cls){return String(s||'').split(/\n+/).filter(function(x){return x.trim();}).map(function(x){return'<p'+(cls?' class="'+cls+'"':'')+'>'+escH(x.trim())+'</p>';}).join('');}
+
+// --- Gabarit d'impression « affichette » : bandeau bordeaux, filets or, Cinzel / Cormorant ---
+function legalDoc(w,o){
+  var css='@page{size:A4;margin:16mm 16mm 18mm;}'+
+  'body{font-family:"Cormorant Garamond",Georgia,serif;color:#2B2118;background:#FDFBF6;margin:0;font-size:13.2px;line-height:1.5;}'+
+  '.pg{max-width:760px;margin:0 auto;padding:0 6px;}'+
+  '.band{background:#6B2233;color:#F4EFE4;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #C3A35B;}'+
+  '.band img{height:54px;}.band .bt{font-family:Cinzel,Georgia,serif;letter-spacing:4px;font-size:17px;color:#F4EFE4;}.band .bs{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;color:#C3A35B;font-size:13px;}'+
+  '.cover{text-align:center;padding:70px 20px 40px;}.cover .k{font-family:Cinzel,Georgia,serif;letter-spacing:5px;color:#A8842F;font-size:12px;}'+
+  '.cover h1{font-family:Cinzel,Georgia,serif;color:#6B2233;font-size:30px;letter-spacing:3px;margin:14px 0 6px;font-weight:600;}'+
+  '.cover .st{font-family:Cinzel,Georgia,serif;color:#A8842F;font-size:15px;letter-spacing:2px;}'+
+  '.cover .rule{width:90px;height:2px;background:#C3A35B;margin:22px auto;}'+
+  '.cover .meta{font-size:14px;color:#5C4F40;line-height:1.9;}'+
+  '.cover .num{display:inline-block;border:1px solid #C3A35B;color:#6B2233;padding:6px 18px;font-family:Cinzel,Georgia,serif;letter-spacing:2px;margin-top:20px;}'+
+  'h2{font-family:Cinzel,Georgia,serif;color:#6B2233;font-size:13.5px;letter-spacing:1.5px;border-bottom:1px solid #C3A35B;padding-bottom:5px;margin:26px 0 10px;page-break-after:avoid;}'+
+  'h2 span{color:#C3A35B;margin-right:8px;}'+
+  'h3{font-family:Cinzel,Georgia,serif;color:#A8842F;font-size:11.5px;letter-spacing:1px;margin:16px 0 5px;page-break-after:avoid;}'+
+  'p{margin:6px 0;text-align:justify;}.small{font-size:11.5px;color:#5C4F40;}.caps{text-transform:uppercase;font-size:11.8px;}'+
+  '.box{border:1px solid #E1D6BD;background:#F7F2E6;border-radius:6px;padding:10px 14px;margin:8px 0;}'+
+  '.hl{background:#F4EFE4;border-left:3px solid #C3A35B;padding:8px 12px;margin:8px 0;}'+
+  'table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px;page-break-inside:auto;}th,td{border:1px solid #E1D6BD;padding:7px 9px;text-align:left;vertical-align:top;}'+
+  'th{background:#6B2233;color:#F4EFE4;font-family:Cinzel,Georgia,serif;font-size:10.5px;letter-spacing:1px;font-weight:500;}tr:nth-child(even) td{background:#F7F2E6;}'+
+  '.sig{display:flex;gap:18px;margin-top:22px;page-break-inside:avoid;}.sig>div{flex:1;border:1px solid #C3A35B;border-radius:6px;padding:12px 14px;min-height:130px;}'+
+  '.sig .l{font-family:Cinzel,Georgia,serif;font-size:10.5px;letter-spacing:1px;color:#6B2233;}.sig .m{font-size:11px;font-style:italic;color:#5C4F40;margin-top:4px;}'+
+  '.kw{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap;}.kw span{border:1px solid #C3A35B;color:#A8842F;padding:5px 14px;border-radius:16px;font-size:11px;font-family:Cinzel,Georgia,serif;letter-spacing:1px;}'+
+  '.foot{text-align:center;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;color:#A8842F;font-size:12px;margin-top:30px;border-top:1px solid #E1D6BD;padding-top:10px;}'+
+  '.foot b{font-family:Cinzel,Georgia,serif;font-style:normal;letter-spacing:2px;color:#6B2233;font-size:11px;display:block;margin-bottom:3px;}'+
+  '.pb{page-break-before:always;}.warn{position:fixed;top:40%;left:0;right:0;text-align:center;font-family:Cinzel,Georgia,serif;font-size:44px;color:rgba(107,34,51,.08);letter-spacing:6px;transform:rotate(-20deg);pointer-events:none;z-index:0;}'+
+  '.blank{display:inline-block;min-width:160px;border-bottom:1px dotted #8a7a5a;}.blank.s{min-width:70px;}.blank.l{min-width:320px;}'+
+  '.chk{display:inline-block;width:11px;height:11px;border:1px solid #6B2233;margin-right:6px;vertical-align:-1px;}'+
+  '.ann li{margin:3px 0;}';
+  var fonts='https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap';
+  var logo='<img src="'+AGENCE.logo+'" alt="" onerror="this.style.display=\'none\'">';
+  w.document.write('<html><head><meta charset="utf-8"><title>'+escH(o.title)+'</title><link href="'+fonts+'" rel="stylesheet"><style>'+css+'</style></head><body>');
+  if(o.watermark)w.document.write('<div class="warn">'+escH(o.watermark)+'</div>');
+  w.document.write('<div class="band">'+logo+'<div style="text-align:right"><div class="bt">MANSION AQUITAINE</div><div class="bs">'+AGENCE.baseline+'</div></div></div><div class="pg">');
+  if(o.cover)w.document.write('<div class="cover"><div class="k">'+escH(o.kicker||'')+'</div><h1>'+escH(o.title)+'</h1><div class="st">'+escH(o.subtitle||'')+'</div><div class="rule"></div><div class="meta">'+(o.coverMeta||'')+'</div>'+(o.num?'<div class="num">N° '+escH(o.num)+'</div>':'')+'</div><div class="pb"></div>');
+  else w.document.write('<div class="cover" style="padding:26px 10px 6px"><div class="k">'+escH(o.kicker||'')+'</div><h1 style="font-size:22px">'+escH(o.title)+'</h1><div class="st">'+escH(o.subtitle||'')+'</div></div>');
+  w.document.write(o.body);
+  w.document.write('<div class="foot"><b>MANSION AQUITAINE</b>'+AGENCE.raison+' · '+AGENCE.forme+' · SIRET '+AGENCE.siret+' · CPI 33012026000000004<br>'+AGENCE.agences+'<br>'+AGENCE.baseline+'</div></div></body></html>');
+  w.document.close();setTimeout(function(){try{w.focus();w.print();}catch(e){}},900);
+}
+function mandataireBlock(){
+  return '<p><strong>'+AGENCE.raison+'</strong>, '+AGENCE.forme+', ayant son siège social au '+AGENCE.siege+', '+AGENCE.rcs+'.</p>'+
+  '<p>'+AGENCE.carte+'.</p><p>Société représentée par '+AGENCE.presidente+' en qualité de Présidente.</p><p class="small">'+AGENCE.rcp+'.</p>';
+}
+function negoBlock(who,tel,email){
+  var i=negoInfo(who),st=i.statut;
+  var lbl=st==='salarie'?'Le négociateur salarié':st==='alternant'?'Le négociateur en alternance':st==='dg'?'Le Directeur Général':'L’agent commercial';
+  var h='<h3>'+lbl+'</h3><p><strong>'+(i.civ?i.civ+' ':'')+escH(NAMES[who])+'</strong>, '+negoStatutLabel(who)+(st==='agent'?(i.rsac?', immatriculé(e) au RSAC : '+escH(i.rsac):', immatriculation en cours auprès du greffe du tribunal de commerce de Bordeaux (RSAC en cours d’attribution)'):'')+'.<br>Téléphone : '+escH(tel||i.tel||'—')+' · Mail : '+escH(email||i.email||'—')+'</p>';
+  if(st!=='dg')h+='<p class="small">'+(st==='agent'?'L’agent commercial':'Le négociateur')+' n’est pas habilité à signer les mandats au nom de la société, ceux-ci étant exclusivement signés par le représentant légal ou le Directeur Général.</p>';
+  return h;
+}
+
+// --- Catalogue ---
+var DOCS_LIB=[
+  {cat:'Mandats de vente',items:[
+    {id:'mandat_simple',pdf:'mandat_simple',t:'Mandat de vente simple',d:'Sans exclusivité · 3 mois irrévocables + 3 mois · signé par la direction',pre:true},
+    {id:'mandat_semi',pdf:'mandat_semi_exclusif',t:'Mandat semi-exclusif',d:'Le vendeur peut vendre en direct mais pas via une autre agence',pre:true},
+    {id:'mandat_exclusif',pdf:'mandat_exclusif',t:'Mandat exclusif',d:'Exclusivité totale · résiliation par simple email selon la clause Mansion',pre:true}
+  ]},
+  {cat:'Transaction',items:[
+    {id:'offre_achat',pdf:'offre_achat',t:'Offre d’achat',d:'Intention d’acquisition après visite · conditions suspensives · validité 8 jours',pre:true},
+    {id:'courrier_pap',t:'Courrier vendeur PAP / porte-à-porte',d:'Lettre de prise de contact laissée au domicile, à ton nom',pre:false}
+  ]},
+  {cat:'Location',items:[
+    {id:'bail_nu',pdf:'bail_nu',t:'Bail d’habitation — logement nu',d:'Contrat type loi ALUR (décret 2015-587) · 3 ans · dépôt 1 mois',pre:true,legal:true},
+    {id:'bail_meuble',pdf:'bail_meuble',t:'Bail d’habitation — logement meublé',d:'Contrat type · 1 an (ou 9 mois étudiant) · dépôt 2 mois · inventaire',pre:true,legal:true},
+    {id:'edl',t:'État des lieux',d:'Grille d’entrée / sortie pièce par pièce, compteurs, clés',pre:true}
+  ]},
+  {cat:'Présentation client',items:[
+    {id:'lien_livret',t:'Livret de commercialisation',d:'La promesse Mansion au vendeur (PDF du Drive — à ouvrir)',link:'https://drive.google.com/file/d/1bGNv3uK31rWrEDLeNXCHoMIe4Rvvqcx7/view'},
+    {id:'lien_rapport',t:'Rapport promotionnel',d:'Se génère depuis 📞 Suivi vendeurs → fiche du vendeur',go:'suivi'},
+    {id:'lien_cr',t:'Compte-rendu de visite',d:'Se génère depuis 📞 Suivi vendeurs → fiche du vendeur',go:'suivi'}
+  ]}
+];
+var docCurId=null,docCurDoss=null;
+// PDF remplissables (dossier documents/ du dépôt) : un jeu par négociateur, 'agence' = jeu vierge sans conseiller
+var PDF_WHO=['alexis','swan','enrik','pauline','nicolas','tom','mia','mazarine'];
+function docPdfUrl(file,who){return 'documents/'+(PDF_WHO.indexOf(who)>=0?who:'agence')+'/'+file+'.pdf';}
+function docDossiersFor(who){
+  var isAdmin=currentUser==='alexis';
+  return dossiers.filter(function(d){return isAdmin||d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);}).sort(function(a,b){return String(b.createdAt||'').localeCompare(String(a.createdAt||''));});
+}
+function renderDocs(){
+  var who=curWho;if(!who)return;var box=document.getElementById('docs-body');if(!box)return;
+  var h='<div class="doc-intro">📚 Chaque document peut être ouvert <strong>vierge</strong> (à compléter à la main) ou <strong>pré-rempli</strong> depuis un dossier du Pipeline : le vendeur, le bien, le prix, les honoraires et le n° de mandat sont injectés, tes coordonnées aussi. Tout s’ouvre dans un nouvel onglet, prêt à imprimer ou enregistrer en PDF.</div>';
+  DOCS_LIB.forEach(function(c){
+    h+='<div class="doc-cat">'+escH(c.cat)+'</div><div class="doc-grid">';
+    c.items.forEach(function(it){
+      h+='<div class="doc-card'+(it.legal?' legal':'')+'"><div class="doc-t">'+escH(it.t)+'</div><div class="doc-d">'+escH(it.d)+'</div>';
+      if(it.legal)h+='<div class="doc-legal">⚖️ Modèle rédigé par l’IA — à faire valider par votre conseil avant première utilisation</div>';
+      h+='<div class="doc-btns">';
+      if(it.link)h+='<a class="bs" href="'+it.link+'" target="_blank">📂 Ouvrir</a>';
+      else if(it.go)h+='<button class="bs" onclick="switchSub(\''+it.go+'\',document.getElementById(\'stab-'+it.go+'\'))">→ Aller au suivi</button>';
+      else{if(it.pdf)h+='<a class="bs pdf" href="'+docPdfUrl(it.pdf,who)+'" target="_blank" title="PDF à cases à cocher et menus déroulants, à ton nom">📥 PDF remplissable</a>';h+='<button class="bs" onclick="openDocForm(\''+it.id+'\',null)">📄 Modèle vierge</button>';if(it.pre)h+='<button class="bs gold" onclick="docPickDossier(\''+it.id+'\')">⚡ Pré-remplir</button>';}
+      h+='</div></div>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="doc-intro" style="margin-top:14px">📥 <strong>PDF remplissable</strong> : un vrai formulaire PDF à ton nom (cases à cocher, listes déroulantes, zones de texte). Ouvre-le, remplis-le dans Aperçu, Acrobat ou Chrome, enregistre, imprime : seules les valeurs saisies s’impriment. Le jeu vierge de l’agence est dans documents/agence/.</div><div class="doc-intro" style="margin-top:8px">🔢 Prochain numéro de mandat disponible : <strong>'+nextMandatNum()+'</strong> (attribué automatiquement, modifiable dans le formulaire).</div>';
+  box.innerHTML=h;
+}
+function docPickDossier(id){
+  var list=docDossiersFor(curWho);
+  if(!list.length){alert('Aucun dossier Pipeline à ton nom. Crée d’abord le dossier (Pipeline → + Nouveau dossier) ou ouvre le modèle vierge.');return;}
+  var h='<div class="sv-lbl">Choisir le dossier à injecter</div><select id="doc-doss-sel">'+list.map(function(d){return'<option value="'+d.id+'">'+escH((d.client||'—')+' · '+(d.adresse||d.ref||'')+(d.numMandat?' · n°'+d.numMandat:''))+'</option>';}).join('')+'</select>'+
+    '<button class="sv-btn" style="background:var(--or);border-color:var(--or);color:#2B2118;" onclick="openDocForm(\''+id+'\',document.getElementById(\'doc-doss-sel\').value)">Continuer →</button>';
+  docPanelOpen('Pré-remplir depuis un dossier','<div class="sv-in" style="padding-top:12px">'+h+'</div>');
+}
+function docPanelOpen(title,html){
+  document.getElementById('doc-title').textContent=title;document.getElementById('doc-body').innerHTML=html;
+  document.getElementById('doc-overlay').classList.add('open');document.getElementById('doc-panel').classList.add('open');
+}
+function closeDocPanel(){document.getElementById('doc-overlay').classList.remove('open');document.getElementById('doc-panel').classList.remove('open');}
+function toggleDocWide(){document.getElementById('doc-panel').classList.toggle('wide');}
+
+// --- Formulaires génériques ---
+function F(k,l,type,def,opt){return{k:k,l:l,type:type||'text',def:def===undefined?'':def,opt:opt||{}};}
+function docFormHtml(sections,vals){
+  var h='';
+  sections.forEach(function(s,si){
+    h+='<details class="sv-sec"'+(si===0||s.open?' open':'')+'><summary style="color:var(--bx)">'+escH(s.t)+'</summary><div class="sv-in"><div class="sv-grid" style="grid-template-columns:1fr 1fr">';
+    s.f.forEach(function(f){
+      var v=vals&&vals[f.k]!==undefined?vals[f.k]:f.def;
+      var full=f.type==='textarea'||f.opt.full;
+      h+='<div'+(full?' style="grid-column:1/-1"':'')+'><div class="sv-lbl">'+escH(f.l)+'</div>';
+      if(f.type==='textarea')h+='<textarea id="df-'+f.k+'" rows="'+(f.opt.rows||3)+'">'+escH(v)+'</textarea>';
+      else if(f.type==='select')h+='<select id="df-'+f.k+'">'+f.opt.o.map(function(o){var ov=typeof o==='string'?o:o[0],ol=typeof o==='string'?o:o[1];return'<option value="'+escH(ov)+'"'+(String(ov)===String(v)?' selected':'')+'>'+escH(ol)+'</option>';}).join('')+'</select>';
+      else if(f.type==='check')h+='<label style="display:flex;gap:6px;align-items:center;font-size:12px;padding:8px 0"><input type="checkbox" id="df-'+f.k+'"'+(v?' checked':'')+'> '+escH(f.opt.lbl||'Oui')+'</label>';
+      else h+='<input type="'+f.type+'" id="df-'+f.k+'" value="'+escH(v)+'"'+(f.opt.ph?' placeholder="'+escH(f.opt.ph)+'"':'')+'>';
+      h+='</div>';
+    });
+    h+='</div></div></details>';
+  });
+  return h;
+}
+function docFormVals(sections){
+  var v={};
+  sections.forEach(function(s){s.f.forEach(function(f){var e=document.getElementById('df-'+f.k);if(!e)return;v[f.k]=f.type==='check'?!!e.checked:e.value;});});
+  return v;
+}
+var DOC_SPECS={};
+function openDocForm(id,dossId){
+  docCurId=id;docCurDoss=dossId?dossiers.find(function(x){return x.id==dossId;}):null;
+  var spec=DOC_SPECS[id];if(!spec){alert('Document inconnu');return;}
+  var vals=spec.prefill(docCurDoss,curWho);
+  var h='<div style="font-size:11px;color:var(--txt3);margin:10px 0 12px">'+(docCurDoss?'⚡ Pré-rempli depuis le dossier <strong>'+escH(docCurDoss.client||docCurDoss.ref)+'</strong> — vérifie chaque champ avant de générer.':'📄 Modèle vierge — les champs laissés vides apparaîtront en pointillés à compléter à la main.')+'</div>';
+  h+=docFormHtml(spec.sections,vals);
+  h+='<button class="sv-btn" style="background:var(--bx);border-color:var(--bx);color:#F4EFE4;margin-top:14px" onclick="docGenerate()">🖨️ Générer le document</button>';
+  if(spec.legal)h+='<div style="font-size:10.5px;color:var(--txt3);margin-top:8px">⚖️ Modèle rédigé par l’IA sur la base du contrat type réglementaire : faites-le relire par votre conseil ou votre assureur RCP avant première utilisation. Le document porte un filigrane « MODÈLE À VALIDER » tant que la case de validation n’est pas cochée.</div>';
+  docPanelOpen(spec.title,h);
+}
+function docGenerate(){
+  var spec=DOC_SPECS[docCurId];var v=docFormVals(spec.sections);
+  var w=window.open('','_blank');if(!w){alert('Autorise les fenêtres pop-up pour ce site.');return;}
+  spec.build(w,v,curWho);
+  if(spec.after)spec.after(v);
+  closeDocPanel();toast('🖨️ Document généré dans un nouvel onglet');
+}
+function bl(v,cls){return v?escH(v):'<span class="blank'+(cls?' '+cls:'')+'">&nbsp;</span>';}
+
+// ================= MANDATS =================
+function mandantSection(){return[
+  F('m1','Mandant 1 — identité complète','text','',{ph:'Monsieur Jean DUPONT né le 12/02/1955 à Langon (33), marié, de nationalité française, retraité',full:true}),
+  F('m2','Mandant 2 — identité complète (optionnel)','text','',{ph:'Madame Marie DUPONT née MARTIN le …',full:true}),
+  F('societe','Personne morale (optionnel)','textarea','',{ph:'SCI XXX, au capital de …, siège …, RCS Bordeaux n° …, représentée par son gérant M. …',rows:2}),
+  F('adresse_m','Demeurant à','text','',{full:true}),
+  F('mail1','Mail (1)'),F('tel1','Tél (1)'),F('mail2','Mail (2)'),F('tel2','Tél (2)')
+];}
+function bienSection(){return[
+  F('copro','Copropriété','select','NON',{o:['NON','OUI']}),
+  F('loue','Bien loué','select','NON',{o:['NON','OUI']}),
+  F('adresse_b','Bien situé sis','text','',{full:true}),
+  F('designation','Désignation du bien','textarea','',{rows:4,ph:'Maison d’environ 120 m² comprenant …'}),
+  F('parcelle','Parcelle(s) cadastrale(s)'),F('notaire','Devenu(s) propriétaire(s) par acte de Maître')
+];}
+function prixSection(){return[
+  F('prix','Prix de présentation FAI (€)','number'),F('hono','Honoraires TTC (€)','number'),
+  F('charge','Honoraires à la charge de','select','l’acquéreur',{o:['l’acquéreur','le vendeur']}),
+  F('num','N° de mandat','number',''),F('date','Date de signature','date',fmtDate(new Date())),
+  F('lieu','Fait à','text','au domicile du ou des mandant(s)'),
+  F('duree1','Période irrévocable (mois)','number',3),F('duree2','Prorogation (mois)','number',3),
+  F('cond','Condition(s) particulière(s)','textarea','',{rows:2})
+];}
+function negoSection(who){var i=negoInfo(who);return[
+  F('nego','Négociateur','select',who,{o:ACTIVE().map(function(w){return[w,NAMES[w]];})}),
+  F('nego_tel','Téléphone',null,i.tel),F('nego_mail','Mail',null,i.email)
+];}
+function mandatPrefill(d,who){
+  var v={nego:who,nego_tel:negoInfo(who).tel,nego_mail:negoInfo(who).email,num:nextMandatNum(),date:fmtDate(new Date())};
+  if(d){v.m1=d.client||'';v.mail1=d.email||'';v.tel1=d.tel||'';v.adresse_b=d.adresse||'';v.prix=d.prixVente||'';v.hono=d.fee||'';v.notaire=d.notaire||'';v.num=d.numMandat||nextMandatNum();
+    var negWho=Object.keys(NAMES).find(function(k){return NAMES[k]===d.neg;});if(negWho){v.nego=negWho;v.nego_tel=negoInfo(negWho).tel;v.nego_mail=negoInfo(negWho).email;}}
+  return v;
+}
+function mandatBuild(type){
+  return function(w,v){
+    var isEx=type==='exclusif',isSemi=type==='semi';
+    var titre=isEx?'Mandat de vente avec exclusivité':isSemi?'Mandat de vente semi-exclusif':'Mandat de vente sans exclusivité';
+    var kick=isEx?'MANDAT EXCLUSIF':isSemi?'MANDAT SEMI-EXCLUSIF':'MANDAT SIMPLE';
+    var prix=parseFloat(v.prix)||0,hono=parseFloat(v.hono)||0,net=prix-hono;
+    var b='';
+    b+='<h2><span>1</span>Mandant(s)</h2><p>Nous soussigné(e)(s) :</p>';
+    if(v.societe)b+='<p>'+escH(v.societe)+'</p>';
+    b+='<p>'+bl(v.m1,'l')+'</p>'+(v.m2?'<p>'+escH(v.m2)+'</p>':'')+'<p>Demeurant : '+bl(v.adresse_m,'l')+'</p><p>Ci-après dénommé(s) le MANDANT, agissant conjointement et solidairement.</p>';
+    b+='<table><tr><th>Mail (1)</th><th>Tél (1)</th><th>Mail (2)</th><th>Tél (2)</th></tr><tr><td>'+bl(v.mail1)+'</td><td>'+bl(v.tel1)+'</td><td>'+bl(v.mail2)+'</td><td>'+bl(v.tel2)+'</td></tr></table>';
+    b+='<h2><span>2</span>Mandataire</h2>'+mandataireBlock()+negoBlock(v.nego,v.nego_tel,v.nego_mail)+'<p>Ci-après dénommé le MANDATAIRE.</p>';
+    b+='<h2><span>3</span>Mission</h2><p>Le MANDANT, étant capable juridiquement, confère au MANDATAIRE qui l’accepte, la mission de vendre les biens désignés ci-après au paragraphe « Situation et désignation des biens à vendre » et dont le MANDANT déclare être le seul propriétaire.</p>';
+    b+='<h3>Situation et désignation du bien à vendre</h3><table><tr><td style="width:30%"><strong>Copropriété</strong></td><td>'+escH(v.copro)+'</td></tr><tr><td><strong>Bien situé sis</strong></td><td>'+bl(v.adresse_b,'l')+'</td></tr><tr><td><strong>Désignation</strong></td><td>'+(v.designation?nl2p(v.designation):'<span class="blank l">&nbsp;</span>')+'</td></tr><tr><td><strong>Parcelle cadastrale</strong></td><td>'+bl(v.parcelle)+'</td></tr><tr><td><strong>Propriétaire(s) par acte de Maître</strong></td><td>'+bl(v.notaire)+'</td></tr><tr><td><strong>Bien loué</strong></td><td>'+escH(v.loue)+'</td></tr></table>';
+    b+='<h2><span>4</span>Prix de vente</h2><p>Les biens immobiliers désignés ci-dessus seront mis en vente et présentés par le MANDATAIRE au prix de (rémunération du MANDATAIRE comprise) :</p><div class="hl"><strong>'+(prix?eurL(prix):'<span class="blank l">&nbsp;</span>')+'</strong><br>Soit '+(prix?eurL(net):'<span class="blank l">&nbsp;</span>')+' net vendeur.</div><p>Si les parties le souhaitent, elles pourront ultérieurement modifier le prix en signant un nouveau mandat ou un avenant modificatif.</p>';
+    b+='<h3>Rémunération du mandataire</h3><p>La rémunération du MANDATAIRE s’élève au montant de <strong>'+(hono?eurL(hono):'<span class="blank">&nbsp;</span>')+'</strong> TVA incluse, à la charge de '+escH(v.charge)+'.</p><p>La rémunération du MANDATAIRE ci-dessus sera exigible le jour où l’opération sera effectivement conclue et constatée dans un seul acte écrit, signé par l’acquéreur et le vendeur. Dès que l’opération est conclue par acte authentique et par l’intermédiaire du MANDATAIRE, celui-ci perçoit alors sans délai sa rémunération ou ses honoraires. La vente peut être soumise au droit de préemption ; en cas d’exercice de celui-ci, le préempteur sera subrogé dans tous les droits et obligations de l’acquéreur : en conséquence, toute rémunération incombant éventuellement à l’acquéreur sera à la charge du préempteur. La présente condition est impérative.</p>';
+    b+='<h3>Diagnostics obligatoires</h3><p>Le MANDANT s’engage à remettre au MANDATAIRE le rapport complet des diagnostics.</p>';
+    b+='<div class="pb"></div><h2><span>5</span>Promotion et comptes-rendus</h2>';
+    b+='<p>'+(isEx||isSemi?'Le MANDATAIRE, ayant l’exclusivité de la vente, s’engage à réaliser des actions publicitaires ; le':'Le MANDATAIRE n’ayant pas l’exclusivité de la vente, celui-ci ne peut s’engager à réaliser des actions publicitaires ; toutefois, le')+' MANDANT l’autorise à communiquer sur tous supports publicitaires de son choix, notamment : relance du fichier d’acquéreurs / locataires, parution de l’annonce sur SeLoger, Leboncoin, Bien’ici, Logic-immo, LeFigaro Immo, Jinka, ParuVendu, sur le site de l’agence et sur différents sites internet. Il pourra donc utiliser à sa guise les photos du bien immobilier qu’il jugera utiles.</p>';
+    b+='<h3>Clés et gardiennage</h3><p>Dans le cadre de cette vente, le MANDANT peut remettre un jeu de clés au MANDATAIRE. Le MANDANT reconnaît par les présentes qu’il ne demande pas au MANDATAIRE de devenir le gardien des lieux, et qu’en conséquence il lui appartient uniquement d’être le gardien des biens désignés ci-dessus. Le MANDANT reconnaît également que le MANDATAIRE n’a ni le temps ni la vocation d’assurer la surveillance desdits biens en dehors des visites et s’engage donc à ne jamais mettre en cause le MANDATAIRE, quelle qu’en soit la raison (dégradations volontaires ou involontaires, etc.).</p>';
+    b+='<h3>Réglementation relative à la copropriété et au(x) mandant(s)</h3><p>Afin d’être en parfaite conformité avec les obligations en vigueur, le MANDANT fournit ou s’engage à fournir au MANDATAIRE dans les plus brefs délais, et au plus tard avant la signature d’un éventuel avant-contrat, tous les documents en sa possession concernant le bien'+(v.copro==='OUI'?' et la copropriété, notamment : règlement de copropriété, trois derniers procès-verbaux d’assemblée générale, dernier appel de charges, carnet d’entretien':'')+'. Documents obligatoires pour la signature du mandat : carte(s) d’identité, attestation ou titre de propriété, dossier de diagnostics complet. Par les présentes, le MANDANT autorise le MANDATAIRE à effectuer toutes démarches auprès du syndic pour obtenir les documents nécessaires à la conclusion d’un acte de vente.</p>';
+    b+='<h3>Jouissance et actes</h3><p>Le MANDANT s’engage et déclare que les biens immobiliers à vendre seront livrés dans l’état où ils auront été vus lors des visites (et loués si locataire en place). Le MANDATAIRE informe le MANDANT qu’il pourra faire intervenir le notaire de son choix pour la réalisation de l’acte authentique ; l’acquéreur pourra également choisir son propre notaire, pratique courante, les notaires ayant l’habitude de travailler ensemble. Pour la signature de l’avant-contrat, le MANDATAIRE pourra choisir de le rédiger lui-même ou de faire appel au notaire de l’une des parties.</p>';
+    b+='<h2><span>6</span>Conditions générales du mandat</h2><h3>Durée du présent mandat</h3><p>Le présent mandat de vente est consenti et accepté <strong>'+(isEx?'AVEC EXCLUSIVITÉ':isSemi?'AVEC SEMI-EXCLUSIVITÉ':'SANS EXCLUSIVITÉ')+'</strong> pour une période irrévocable de '+escH(v.duree1||3)+' mois à compter de ce jour. Sauf dénonciation à l’expiration de ce délai par lettre recommandée avec avis de réception, il sera prorogé '+(isEx?'AVEC EXCLUSIVITÉ':'SANS EXCLUSIVITÉ')+' pour une période maximale de '+escH(v.duree2||3)+' mois supplémentaires. À la fin de ce délai supplémentaire, le mandat prendra automatiquement fin.</p>';
+    if(isEx)b+='<p>Par dérogation à toute stipulation contraire du présent mandat, le MANDANT pourra résilier celui-ci à tout moment, sans préavis, sans indemnité ni pénalité, par l’envoi d’un simple courrier électronique au gestionnaire du dossier, à l’adresse suivante : <strong>'+escH(v.nego_mail||negoInfo(v.nego).email)+'</strong>. La résiliation prendra effet dès réception dudit courrier électronique par le MANDATAIRE, lequel en accusera réception par écrit. Le MANDANT pourra également demander, par simple appel téléphonique au gestionnaire du dossier, le retrait immédiat de l’ensemble des annonces relatives au bien ; le MANDATAIRE procédera à leur désactivation dès réception de la demande, sous réserve des délais techniques propres aux plateformes de diffusion. Cette demande téléphonique ne vaudra résiliation du mandat que si elle est confirmée par courrier électronique dans les conditions prévues ci-dessus.</p>';
+    b+='<h3>Condition(s) particulière(s)</h3><p>'+(v.cond?escH(v.cond):'Néant.')+'</p>';
+    b+='<h3>Pouvoirs du mandataire</h3><p>Afin que le MANDATAIRE puisse mener à bien sa mission, le MANDANT lui donne les pouvoirs suivants : proposer et présenter les biens immobiliers désignés ci-dessus, les faire visiter à toute personne qu’il jugera utile ; demander et se procurer auprès de toutes personnes privées, personnes morales ou organismes publics tout document dont il pourrait avoir besoin pour mener sa mission à son terme (diagnostics, certificats, contrats, statuts, etc.) et effectuer, le cas échéant, toutes démarches administratives, soit par lui-même, soit par le notaire du MANDANT, les frais administratifs exposés restant à la charge du MANDANT ; rédiger ou faire établir tous actes d’avant-contrat aux prix, charges et conditions des présentes, et recueillir la signature de l’acquéreur.</p>';
+    b+='<h3>Engagements du mandataire</h3><p>Étant donné les pouvoirs qui lui sont confiés, le MANDATAIRE devra en contrepartie : réaliser toutes les démarches nécessaires qu’il jugera utiles pour mener à bien la mission ; informer le MANDANT de tous changements juridiques ou financiers pouvant modifier les conditions de la vente, éventuellement imposés par un changement de législation ; informer le MANDANT de l’accomplissement de sa mission dans les 8 jours au plus tard qui suivront la signature de l’acquéreur (téléphone, SMS, courrier ou email) ; négocier si nécessaire avec un éventuel préempteur, le MANDANT restant toujours libre d’accepter ou de refuser une proposition inférieure ; lorsqu’il propose les services d’un tiers, informer le MANDANT par écrit, au moment de la proposition, des liens capitalistiques ou juridiques qu’il entretient avec ce tiers et justifier de la réception de cette information.</p>';
+    b+='<div class="pb"></div><h2><span>7</span>Engagements du mandant</h2><p>Le MANDANT s’engage pendant toute la durée du présent mandat à : transmettre sur simple demande du MANDATAIRE tous documents, contrats ou informations dont celui-ci pourrait avoir besoin ; laisser le MANDATAIRE visiter les biens avec toute personne potentiellement intéressée et, s’il n’est pas disponible, s’arranger pour que le MANDATAIRE puisse visiter librement (si les biens sont loués, il appartient au MANDANT de faire respecter les heures de visite à ses locataires) ; signaler immédiatement au MANDATAIRE toute modification juridique ou matérielle pouvant affecter les conditions de la vente.</p>';
+    b+='<p>De convention expresse et à titre de condition essentielle sans laquelle le MANDATAIRE n’aurait pas accepté la présente mission, le MANDANT s’interdit, pendant la durée du présent mandat et pendant les huit mois qui suivent son expiration, de traiter ou vendre directement ou indirectement avec un acquéreur ayant été présenté ou ayant visité avec le MANDATAIRE.</p>';
+    b+='<div class="hl">'+(isEx?'Le MANDANT s’interdit de vendre le bien en direct ou par le biais d’une autre agence immobilière pendant la durée du présent mandat (voir conditions particulières et faculté de résiliation, article 6).':isSemi?'Le MANDANT peut vendre le bien en direct mais s’interdit de traiter avec une autre agence immobilière pendant la durée du présent contrat.':'Le MANDANT peut vendre le bien en direct ou par le biais d’une autre agence immobilière.')+'</div>';
+    b+='<h3>Clause pénale</h3><p>En cas de vente conclue directement ou indirectement par le MANDANT avec un acquéreur présenté par le MANDATAIRE et identifié par écrit, le MANDATAIRE aura droit au paiement intégral de sa rémunération'+(isEx?', soit la somme de '+(hono?fmtEur(hono):'<span class="blank s">&nbsp;</span>')+', à titre d’indemnité compensatrice forfaitaire (article 1231-5 du Code civil)':'')+'.</p>';
+    b+='<h3>Informations précontractuelles</h3><p>Préalablement à la conclusion du présent mandat, le MANDATAIRE a délivré au MANDANT les informations précontractuelles listées à l’article L. 221-5 du Code de la consommation. Le MANDANT reconnaît avoir reçu et pris connaissance de ce document.</p>';
+    b+='<h2><span>8</span>Droit de rétractation · signature électronique · RGPD</h2><p><strong>Droit de rétractation (articles L.221-18 à L.221-28 du Code de la consommation).</strong> Le MANDANT dispose d’un délai de réflexion de 14 jours pendant lequel il peut renoncer au présent mandat ; pendant ces 14 jours, aucun paiement ne peut lui être demandé. Le formulaire de rétractation est annexé au présent mandat. S’il souhaite exercer ce droit, le MANDANT adresse au plus tard le 14<sup>e</sup> jour à compter de la signature le formulaire annexé ou toute déclaration dénuée d’ambiguïté exprimant sa volonté de se rétracter.</p>';
+    b+='<p><strong>Démarrage immédiat des actions du mandataire.</strong> Le MANDANT, qui dispose d’un délai de rétractation, autorise expressément le MANDATAIRE à commencer immédiatement sa prestation : promotion du bien sur tous supports et visites.</p>';
+    b+='<p><strong>Signature électronique.</strong> Les parties acceptent que le présent contrat soit signé de manière manuscrite ou par un procédé certifié de signature électronique, conformément à la législation française et européenne ; un dossier de preuve reste à disposition du MANDATAIRE et pourra être fourni au MANDANT sur simple demande écrite.</p>';
+    b+='<p><strong>Élection de domicile.</strong> Pour l’application des présentes et de leurs suites, les parties font élection de domicile à leur adresse respective stipulée ci-dessus.</p>';
+    b+='<p class="small"><strong>RGPD – Loi informatique et libertés.</strong> Les informations recueillies par MANSION BORDEAUX font l’objet d’un traitement informatique nécessaire à l’exécution des missions confiées par le présent contrat. Elles sont accessibles dans les locaux de MANSION BORDEAUX, 69 rue Nationale, 33240 Saint-André-de-Cubzac et, s’agissant des informations relatives aux biens, à des partenaires commerciaux. Elles sont conservées pendant la durée de la relation commerciale et au maximum 5 ans à compter de sa fin (article 2224 du Code civil et article L.561-12 du Code monétaire et financier). Les registres légaux sont conservés dix ans (articles 53, 65 et 72 du décret du 20 juillet 1972). Conformément à la loi n°78-17 du 6 janvier 1978 et au Règlement (UE) 2016/679, vous disposez d’un droit d’accès, de rectification, de portabilité, de limitation et de suppression des informations vous concernant, à exercer auprès du siège de la société.</p>';
+    b+='<h2><span>9</span>Signatures</h2><p>Le(s) MANDANT(s) reconnaît(ssent) avoir pris connaissance des conditions particulières et générales ci-dessus et avoir reçu un exemplaire du contrat. Fait '+escH(v.lieu||'au domicile du ou des mandant(s)')+', le <strong>'+dateL(v.date)+'</strong>, en autant d’exemplaires originaux que de parties ayant un intérêt distinct ; le MANDATAIRE reconnaît avoir reçu un exemplaire.</p><p class="small">Mots rayés nuls : ____ · Lignes rayées nulles : ____ · Nombre d’annexes : ____</p>';
+    b+='<div class="sig"><div><div class="l">LE(S) MANDANT(S)</div><div class="m">Précédée de la mention « lu et approuvé, bon pour mandat »</div></div><div><div class="l">SAS MANSION BORDEAUX</div><div class="m">Représentée par Monsieur Alexis LEDUC, Directeur Général, agissant par délégation de pouvoirs du représentant légal, dûment habilité à cet effet.<br>Précédée de la mention « lu et approuvé, bon pour mandat »</div></div></div>';
+    b+='<div class="pb"></div><h2><span>10</span>Lettre de rétractation</h2><p class="small">(Article L.221-18 du Code de la consommation) — Vous pouvez signer et envoyer cette lettre si vous souhaitez vous rétracter.</p><div class="box"><p>À : Mansion Aquitaine, 69 rue Nationale, 33240 Saint-André-de-Cubzac</p><p>Je soussigné(e) <span class="blank l">&nbsp;</span>, demeurant <span class="blank l">&nbsp;</span>, vous notifie par la présente ma rétractation du mandat de vente '+(isEx?'avec exclusivité':isSemi?'semi-exclusif':'sans exclusivité')+' n° <strong>'+bl(v.num,'s')+'</strong> concernant les biens immobiliers situés à l’adresse suivante : '+bl(v.adresse_b,'l')+'.</p><p>Fait à <span class="blank">&nbsp;</span> le ____ / ____ / ________ &nbsp;&nbsp; Signature :</p></div><p class="small">« Le consommateur dispose d’un délai de quatorze jours pour exercer son droit de rétractation d’un contrat conclu à distance, à la suite d’un démarchage téléphonique ou hors établissement, sans avoir à motiver sa décision ni à supporter d’autres coûts que ceux prévus aux articles L.221-23 à L.221-25. Le délai court à compter du jour de la conclusion du contrat, pour les contrats de prestation de services (…). »</p>';
+    legalDoc(w,{cover:true,kicker:kick,title:titre,subtitle:'Registre des mandats n° '+(v.num||'____'),num:v.num,coverMeta:'<strong>'+escH(v.m1||'Mandant(s)')+'</strong><br>'+escH(v.adresse_b||'Adresse du bien')+'<br>'+(prix?fmtEur(prix)+' FAI':'')+'<br><br>Conseiller : '+escH(NAMES[v.nego]||'')+' · '+escH(v.nego_tel||'')+'<br>'+dateL(v.date),body:b});
+  };
+}
+function mandatAfter(v){
+  // Mémoriser le n° de mandat sur le dossier s'il vient du Pipeline
+  if(docCurDoss&&v.num){var n=parseInt(v.num);if(n&&docCurDoss.numMandat!==n){docCurDoss.numMandat=n;if(parseFloat(v.prix))docCurDoss.prixVente=parseFloat(v.prix);saveDoss();toast('N° de mandat '+n+' enregistré sur le dossier');}}
+}
+['simple','semi','exclusif'].forEach(function(t){
+  DOC_SPECS['mandat_'+t]={title:t==='simple'?'Mandat de vente simple':t==='semi'?'Mandat semi-exclusif':'Mandat exclusif',
+    sections:[{t:'👤 Mandant(s)',f:mandantSection()},{t:'🏠 Bien à vendre',f:bienSection()},{t:'💰 Prix, honoraires, durée',f:prixSection()},{t:'🧑‍💼 Conseiller',f:negoSection(curWho||'alexis')}],
+    prefill:mandatPrefill,build:mandatBuild(t),after:mandatAfter};
+});
+
+// ================= OFFRE D'ACHAT =================
+DOC_SPECS.offre_achat={title:'Offre d’achat',
+  sections:[
+    {t:'🔢 Mandat & bien',f:[F('num','N° de mandat au registre'),F('nego','Négociateur','select','',{o:[]}),F('adresse_b','Bien situé','text','',{full:true}),F('designation','Désignation du bien visité','textarea','',{rows:4}),F('vendeurs','Propriétaire(s) (pour l’acceptation)','text','',{full:true,ph:'Monsieur et Madame NOGUES'})]},
+    {t:'👤 Acquéreur(s)',f:[F('a1','Acquéreur 1 — identité complète','text','',{full:true,ph:'Monsieur Geoffrey DOUCY né le 03/01/1981 à Saint-Saulve, de nationalité française, ingénieur'}),F('a2','Acquéreur 2 — identité complète','text','',{full:true}),F('adresse_a','Demeurant à','text','',{full:true}),F('mail_a','Mail'),F('tel_a','Tél')]},
+    {t:'💰 Offre & conditions',f:[F('prix','Montant de l’offre FAI (€)','number'),F('hono','Honoraires d’agence (€)','number'),F('charge','Honoraires à la charge de','select','l’acquéreur',{o:['l’acquéreur','le vendeur']}),
+      F('pret','Condition suspensive de prêt','select','OUI',{o:['OUI','NON']}),F('pret_montant','Montant du prêt (€)','number'),F('pret_duree','Durée (ans)','number'),F('pret_taux','Taux maximal (%)','number'),
+      F('vente_prealable','Conditionnée à la vente préalable de la résidence principale','select','NON',{o:['NON','OUI']}),F('date_acte','Acte authentique au plus tard le','date'),F('validite','Validité de l’offre (jours ouvrables)','number',8),F('autres','Autres conditions','textarea','',{rows:2}),F('lieu','Fait à','text','Langon'),F('date','Le','date',fmtDate(new Date()))]}
+  ],
+  prefill:function(d,who){var v={nego:who,date:fmtDate(new Date()),lieu:negoInfo(who).agence==='langon'?'Langon':'Saint-André-de-Cubzac',validite:8};DOC_SPECS.offre_achat.sections[0].f[1].opt.o=ACTIVE().map(function(w){return[w,NAMES[w]];});
+    if(d){v.num=d.numMandat||'';v.adresse_b=d.adresse||'';v.hono=d.fee||'';v.vendeurs=d.client||'';v.prix=d.prixVente||'';}return v;},
+  build:function(w,v){
+    var prix=parseFloat(v.prix)||0,hono=parseFloat(v.hono)||0;
+    var b='<h2><span>1</span>Objet</h2><p>Intention d’acquisition après visite d’un bien enregistré au registre des mandats sous le numéro <strong>'+bl(v.num,'s')+'</strong>.</p><p class="small">Cette offre est obtenue grâce au concours de l’agence '+AGENCE.raison+', '+AGENCE.forme+', siège social '+AGENCE.siege+', '+AGENCE.rcs+'. '+AGENCE.carte+'. Société représentée par '+AGENCE.presidente+' en qualité de Présidente. '+AGENCE.rcp+'. Conseiller : '+escH(NAMES[v.nego]||'')+'.</p>';
+    b+='<h2><span>2</span>Acquéreur(s)</h2><p>Nous soussigné(e)(s) : '+bl(v.a1,'l')+(v.a2?'<br>'+escH(v.a2):'')+'</p><p>Demeurant : '+bl(v.adresse_a,'l')+'<br>Mail : '+bl(v.mail_a)+' · Tél : '+bl(v.tel_a)+'</p>';
+    b+='<h2><span>3</span>Bien visité avec l’agence</h2><p><strong>'+bl(v.adresse_b,'l')+'</strong></p>'+(v.designation?nl2p(v.designation):'<p><span class="blank l">&nbsp;</span></p>');
+    b+='<h2><span>4</span>Montant de l’offre</h2><p>Nous faisons l’offre d’achat, sous réserve de l’acceptation des propriétaires, au prix de :</p><div class="hl"><strong>'+(prix?eurL(prix):'<span class="blank l">&nbsp;</span>')+'</strong> honoraires d’agence inclus.</div><p>Si l’offre est acceptée par les propriétaires, la transaction devra avoir lieu aux conditions ordinaires et de droit en pareille matière, sous réserve des conditions ci-après.</p>';
+    b+='<h2><span>5</span>Conditions</h2><p>Ces biens seront, le jour de la signature de l’acte de vente, libres de tous privilèges et hypothèques quelconques. Nous les prendrons dans l’état où ils se trouvent, les connaissant pour les avoir vus et visités. En cas d’acceptation de la présente offre et si les conditions sont réunies, les parties se rapprocheront de leurs notaires respectifs afin de faire établir l’acte sous seing privé destiné à formaliser la vente, aux clauses et conditions nécessaires à son accomplissement, notamment sous réserve des conditions suspensives ci-dessous.</p>';
+    b+='<h3>Condition(s) suspensive(s)</h3><ul class="ann">';
+    if(v.pret==='OUI')b+='<li>Obtention d’un ou plusieurs prêts'+(parseFloat(v.pret_montant)?' d’un montant total maximal de '+fmtEur(v.pret_montant):'')+(v.pret_duree?' sur une durée de '+escH(v.pret_duree)+' ans':'')+(v.pret_taux?' au taux maximal de '+escH(v.pret_taux)+' % hors assurance':'')+'.</li>';else b+='<li>Aucune condition suspensive de prêt : les acquéreurs déclarent financer l’acquisition sans recours à l’emprunt (mention manuscrite requise à l’avant-contrat, art. L.313-42 du Code de la consommation).</li>';
+    if(v.vente_prealable==='OUI')b+='<li>Offre conditionnée à la vente préalable de la résidence principale des acquéreurs : ceux-ci devront justifier auprès des propriétaires, dans un délai maximum de deux mois à compter de la signature de la présente, de la signature d’un acte sous seing privé ferme et définitif portant sur cette vente. À défaut, la présente offre sera caduque, sans indemnité de part et d’autre, sauf prorogation expressément acceptée par écrit par les propriétaires.</li>';
+    if(v.autres)b+='<li>'+escH(v.autres)+'</li>';
+    b+='</ul><h3>Délai</h3><p>La jouissance des lieux sera acquise le jour de la signature de l’acte authentique de vente, qui devra avoir lieu au plus tard le <strong>'+(v.date_acte?dateL(v.date_acte):'<span class="blank">&nbsp;</span>')+'</strong>.</p>';
+    b+='<h3>Honoraires d’agence</h3><p>Montant des honoraires d’agence : <strong>'+(hono?eurL(hono):'<span class="blank">&nbsp;</span>')+'</strong>, à la charge de '+escH(v.charge)+'.</p>';
+    b+='<h3>Durée de validité</h3><p>L’accord des propriétaires devra intervenir dans un délai maximum de <strong>'+escH(v.validite||8)+' jours ouvrables</strong> à compter de la date de la présente offre. Passé ce délai, l’offre sera caduque.</p>';
+    b+='<p>Fait à '+escH(v.lieu)+', le '+dateL(v.date)+', en deux exemplaires (signer séparément chaque exemplaire).</p>';
+    b+='<h2><span>6</span>Signatures des acquéreurs</h2><p class="small">Mention manuscrite : « Bon pour offre d’achat au prix de '+(prix?fmtEur(prix)+' honoraires d’agence inclus ('+nToWordsFR(prix)+' euros)':'________')+' »</p><div class="sig"><div><div class="l">'+escH(v.a1||'ACQUÉREUR 1')+'</div><div class="m">Date : &nbsp;&nbsp; Signature :</div></div><div><div class="l">'+escH(v.a2||'ACQUÉREUR 2')+'</div><div class="m">Date : &nbsp;&nbsp; Signature :</div></div></div>';
+    b+='<h2><span>7</span>Acceptation de l’offre par les propriétaires</h2><p class="small">Mention manuscrite : « Bon pour acceptation de la présente offre au prix de '+(prix?fmtEur(prix)+' honoraires d’agence inclus':'________')+', sous réserve de la régularisation de l’acte sous seing privé et des conditions qui y seront stipulées. »</p><div class="sig"><div><div class="l">'+escH(v.vendeurs||'PROPRIÉTAIRE(S)')+'</div><div class="m">Date : &nbsp;&nbsp; Signature :</div></div><div><div class="l">PROPRIÉTAIRE 2</div><div class="m">Date : &nbsp;&nbsp; Signature :</div></div></div>';
+    legalDoc(w,{cover:false,kicker:'TRANSACTION',title:'Offre d’achat',subtitle:(v.adresse_b||'')+(v.num?' · Mandat n° '+v.num:''),body:b});
+  }};
+
+// ================= COURRIER PAP =================
+DOC_SPECS.courrier_pap={title:'Courrier vendeur (porte-à-porte)',
+  sections:[{t:'✉️ Courrier',f:[F('nego','Signataire','select','',{o:[]}),F('date','Date','date',fmtDate(new Date())),F('objet','Objet','text','Recherche de biens pour nos acquéreurs',{full:true}),F('texte','Texte du courrier','textarea','',{rows:12})]}],
+  prefill:function(d,who){DOC_SPECS.courrier_pap.sections[0].f[0].opt.o=ACTIVE().map(function(w){return[w,NAMES[w]];});var i=negoInfo(who);
+    return{nego:who,date:fmtDate(new Date()),texte:'Madame, Monsieur,\n\nJe me suis permis de passer à votre domicile aujourd’hui afin de vous rencontrer, mais je n’ai malheureusement pas eu l’occasion de vous croiser.\n\nDans le cadre de plusieurs projets de mutation professionnelle, votre agence de quartier accompagne actuellement des familles d’acquéreurs souhaitant s’installer dans le secteur dans les prochains mois. Parmi ces recherches, certains de nos clients sont à la recherche d’un bien similaire au vôtre.\n\nJe souhaitais donc prendre contact avec vous afin de savoir si vous avez un projet immobilier en réflexion, à court ou moyen terme, ou simplement échanger sur le marché immobilier local et ses évolutions.\n\nNous réalisons gratuitement et sans engagement des estimations de biens immobiliers et restons à votre disposition pour vous conseiller, qu’il s’agisse d’un projet de vente, d’acquisition ou d’une simple demande d’information.\n\nJe vous propose un premier échange, par téléphone ou autour d’un café, sans aucun engagement de votre part. Vous pouvez me joindre au '+(i.tel||'__ __ __ __ __')+'.\n\nJe repasserai également dans les prochains jours afin d’avoir l’opportunité de vous rencontrer.\n\nDans l’attente de notre échange, je vous souhaite une excellente journée.\n\nBien cordialement,'};},
+  build:function(w,v){var i=negoInfo(v.nego);
+    var b='<p class="small" style="text-align:right">'+escH(AGENCE_ADR[i.agence]||AGENCE.siege)+'<br>Le '+dateL(v.date)+'</p><p><strong>Objet : '+escH(v.objet)+'</strong></p>'+nl2p(v.texte)+'<p style="margin-top:26px"><strong>'+escH(NAMES[v.nego])+'</strong><br>'+negoStatutLabel(v.nego).charAt(0).toUpperCase()+negoStatutLabel(v.nego).slice(1)+' · Mansion Aquitaine<br>'+escH(i.tel||'')+' · '+escH(i.email||'')+'<br>'+escH(AGENCE_ADR[i.agence]||'')+'</p>';
+    legalDoc(w,{cover:false,kicker:'VOTRE AGENCE DE QUARTIER',title:'Un projet immobilier ?',subtitle:'Estimation offerte, sans engagement',body:b});}};
+
+// ================= BAUX D'HABITATION (loi du 6 juillet 1989 · décret 2015-587) =================
+function bailSections(meuble){return[
+  {t:'🏢 Bailleur & mandataire',f:[F('bailleur','Bailleur — identité complète','text','',{full:true,ph:'Monsieur Jean DUPONT né le … à …'}),F('bailleur_adr','Adresse du bailleur','text','',{full:true}),F('bailleur_mail','Mail'),F('bailleur_tel','Tél'),F('nego','Mandataire — gestionnaire Mansion','select','',{o:[]}),F('mandat_gestion','N° de mandat de gestion / location','text','')]},
+  {t:'👤 Locataire(s)',f:[F('l1','Locataire 1 — identité complète','text','',{full:true,ph:'Madame Sophie MARTIN née le … à …'}),F('l2','Locataire 2 — identité complète','text','',{full:true}),F('l_mail','Mail'),F('l_tel','Tél'),F('caution','Caution / garant (nom, adresse)','text','',{full:true}),F('caution_type','Type de cautionnement','select','simple',{o:[['simple','Caution simple'],['solidaire','Caution solidaire'],['aucune','Aucune']]})]},
+  {t:'🏠 Logement',f:[F('adresse_b','Adresse du logement','text','',{full:true}),F('type','Type','select','Appartement',{o:['Appartement','Maison']}),F('etage','Étage / bâtiment / lot'),F('surface','Surface habitable (m²)','number'),F('pieces','Nombre de pièces principales','number'),F('periode','Période de construction','select','1990-2005',{o:['avant 1949','1949-1974','1975-1989','1990-2005','après 2005']}),F('designation','Description des locaux et équipements','textarea','',{rows:3}),F('annexes_b','Annexes (cave, parking, jardin…)','text','',{full:true}),F('chauffage','Chauffage','select','individuel électrique',{o:['individuel électrique','individuel gaz','collectif','autre']}),F('eau','Eau chaude','select','individuelle',{o:['individuelle','collective']}),F('copro','Copropriété','select','NON',{o:['NON','OUI']}),F('dpe','Classe DPE','select','D',{o:['A','B','C','D','E','F','G']}),F('usage','Usage','select','Résidence principale',{o:['Résidence principale',meuble?'Logement étudiant (bail 9 mois)':'Résidence principale']})]},
+  {t:'💰 Conditions financières',f:[F('date_effet','Date de prise d’effet','date'),F('duree','Durée','select',meuble?'1 an':'3 ans',{o:meuble?['1 an','9 mois (étudiant)']:['3 ans','6 ans (bailleur personne morale)']}),F('loyer','Loyer mensuel hors charges (€)','number'),F('charges_mode','Charges','select','provision',{o:meuble?[['forfait','Forfait de charges (meublé)'],['provision','Provision sur charges avec régularisation annuelle']]:[['provision','Provision sur charges avec régularisation annuelle (seule modalité admise en location nue)']]}),F('charges','Montant mensuel des charges (€)','number'),F('depot','Dépôt de garantie (€)','number'),F('paiement','Paiement le','text','1er de chaque mois'),F('irl_trim','Trimestre IRL de référence','text','',{ph:'2T 2026'}),F('irl_val','Valeur de l’indice','text',''),F('zone','Zone tendue (encadrement des loyers)','select','NON',{o:['NON','OUI']}),F('loyer_ref','Loyer de référence majoré si zone tendue (€/m²)','number'),F('dernier_loyer','Dernier loyer appliqué au précédent locataire (€)','number'),F('hono_loc','Honoraires locataire — visite, dossier, rédaction (€)','number'),F('hono_edl','Honoraires locataire — état des lieux (€)','number'),F('hono_bail','Honoraires à la charge du bailleur (€)','number')]},
+  {t:'📎 Annexes & particularités',f:[F('travaux','Travaux réalisés depuis le dernier bail / à réaliser','textarea','',{rows:2}),F('particulieres','Conditions particulières','textarea','',{rows:2}),F('valide','Validation juridique effectuée (retire le filigrane)','check',false,{lbl:'Ce modèle a été relu et validé par notre conseil',full:true})]}
+];}
+function bailPrefill(meuble){return function(d,who){var s=DOC_SPECS[meuble?'bail_meuble':'bail_nu'].sections;s[0].f[4].opt.o=ACTIVE().map(function(w){return[w,NAMES[w]];});
+  var v={nego:who,date_effet:fmtDate(new Date()),charges_mode:meuble?'forfait':'provision'};
+  if(d){v.bailleur=d.client||'';v.bailleur_mail=d.email||'';v.bailleur_tel=d.tel||'';v.adresse_b=d.adresse||'';}return v;};}
+function bailBuild(meuble){return function(w,v){
+  var loyer=parseFloat(v.loyer)||0,ch=parseFloat(v.charges)||0,dep=parseFloat(v.depot)||(meuble?loyer*2:loyer);
+  var etu=v.duree.indexOf('9')===0;
+  var b='';
+  b+='<h2><span>I</span>Désignation des parties</h2><p>Le présent contrat est conclu entre les soussignés :</p><p><strong>Le bailleur :</strong> '+bl(v.bailleur,'l')+', demeurant '+bl(v.bailleur_adr,'l')+(v.bailleur_mail?', mail : '+escH(v.bailleur_mail):'')+(v.bailleur_tel?', tél. : '+escH(v.bailleur_tel):'')+'.</p>';
+  b+='<p><strong>Représenté par le mandataire :</strong> '+AGENCE.raison+', '+AGENCE.forme+', '+AGENCE.siege+', '+AGENCE.rcs+'. '+AGENCE.carte+'. '+AGENCE.rcp+'.'+(v.mandat_gestion?' Mandat n° '+escH(v.mandat_gestion)+'.':'')+' Gestionnaire du dossier : '+escH(NAMES[v.nego]||'')+' ('+escH(negoInfo(v.nego).tel||'')+' · '+escH(negoInfo(v.nego).email||'')+').</p>';
+  b+='<p><strong>Le(s) locataire(s) :</strong> '+bl(v.l1,'l')+(v.l2?' et '+escH(v.l2):'')+(v.l_mail?', mail : '+escH(v.l_mail):'')+(v.l_tel?', tél. : '+escH(v.l_tel):'')+'.</p><p>Il a été convenu ce qui suit :</p>';
+  b+='<h2><span>II</span>Objet du contrat</h2><p>Le présent contrat a pour objet la location d’un logement '+(meuble?'<strong>meublé</strong>':'<strong>nu</strong>')+' ainsi déterminé :</p><table><tr><td style="width:34%"><strong>Adresse</strong></td><td>'+bl(v.adresse_b,'l')+'</td></tr><tr><td><strong>Type d’habitat</strong></td><td>'+escH(v.type)+(v.etage?' · '+escH(v.etage):'')+(v.copro==='OUI'?' · Immeuble en copropriété':' · Monopropriété')+'</td></tr><tr><td><strong>Régime juridique</strong></td><td>'+(v.copro==='OUI'?'Copropriété':'Monopropriété')+'</td></tr><tr><td><strong>Période de construction</strong></td><td>'+escH(v.periode)+'</td></tr><tr><td><strong>Surface habitable</strong></td><td>'+bl(v.surface,'s')+' m²</td></tr><tr><td><strong>Nombre de pièces principales</strong></td><td>'+bl(v.pieces,'s')+'</td></tr><tr><td><strong>Description des locaux et équipements</strong></td><td>'+(v.designation?nl2p(v.designation):'<span class="blank l">&nbsp;</span>')+'</td></tr><tr><td><strong>Annexes et accessoires</strong></td><td>'+bl(v.annexes_b)+'</td></tr><tr><td><strong>Chauffage · eau chaude</strong></td><td>'+escH(v.chauffage)+' · '+escH(v.eau)+'</td></tr><tr><td><strong>Classe énergétique (DPE)</strong></td><td>'+escH(v.dpe)+(['F','G'].indexOf(v.dpe)>=0?' — <em>logement classé F ou G : loyer non révisable et non majorable (loi Climat et résilience)</em>':'')+'</td></tr><tr><td><strong>Destination des locaux</strong></td><td>'+escH(v.usage)+' — usage d’habitation exclusivement</td></tr></table>';
+  if(meuble)b+='<p>Le logement est loué meublé au sens de l’article 25-4 de la loi du 6 juillet 1989 : il comporte au minimum les meubles et équipements listés au décret n° 2015-981 du 31 juillet 2015 (literie avec couette ou couverture, dispositif d’occultation des fenêtres dans les chambres, plaques de cuisson, four ou micro-ondes, réfrigérateur et congélateur ou compartiment à congélation, vaisselle et ustensiles de cuisine en nombre suffisant, table et sièges, étagères de rangement, luminaires, matériel d’entretien ménager adapté). Un inventaire détaillé du mobilier est annexé.</p>';
+  b+='<h2><span>III</span>Date de prise d’effet et durée</h2><p>Le contrat prend effet le <strong>'+(v.date_effet?dateL(v.date_effet):'<span class="blank">&nbsp;</span>')+'</strong> pour une durée de <strong>'+escH(v.duree)+'</strong>'+(etu?' (bail étudiant non reconductible, article 25-7 de la loi du 6 juillet 1989)':meuble?' (article 25-7 de la loi du 6 juillet 1989)':' (article 10 de la loi du 6 juillet 1989)')+'.</p>';
+  if(!etu)b+='<p>À défaut de congé donné dans les conditions légales, le contrat est reconduit tacitement pour la même durée'+(meuble?' d’un an':'')+'. Le locataire peut donner congé à tout moment avec un préavis de '+(meuble?'un mois':'trois mois, réduit à un mois dans les cas prévus à l’article 15 de la loi (zone tendue, mutation, perte d’emploi, état de santé, bénéficiaire du RSA ou de l’AAH, attribution d’un logement social)')+'. Le bailleur ne peut donner congé que pour l’échéance du bail, avec un préavis de '+(meuble?'trois':'six')+' mois, et uniquement pour reprise, vente ou motif légitime et sérieux.</p>';
+  b+='<h2><span>IV</span>Conditions financières</h2><table><tr><th>Poste</th><th>Montant mensuel</th><th>Précisions</th></tr><tr><td>Loyer hors charges</td><td><strong>'+(loyer?fmtEur(loyer):'<span class="blank s">&nbsp;</span>')+'</strong></td><td>'+(v.zone==='OUI'?'Zone d’encadrement des loyers — loyer de référence majoré : '+bl(v.loyer_ref,'s')+' €/m²'+(loyer&&parseFloat(v.surface)?' · loyer au m² : '+(loyer/parseFloat(v.surface)).toFixed(2)+' €':''):'Hors zone d’encadrement')+'</td></tr><tr><td>Charges récupérables</td><td>'+(ch?fmtEur(ch):'<span class="blank s">&nbsp;</span>')+'</td><td>'+(v.charges_mode==='forfait'?'Forfait de charges (article 23 de la loi ; ne donne pas lieu à régularisation, révisable comme le loyer)':'Provision sur charges avec régularisation annuelle sur justificatifs (article 23 de la loi)')+'</td></tr><tr><td><strong>Total mensuel</strong></td><td><strong>'+(loyer?fmtEur(loyer+ch):'')+'</strong></td><td>Payable '+escH(v.paiement||'le 1er de chaque mois')+', d’avance, par virement.</td></tr></table>';
+  b+='<p><strong>Informations sur le loyer.</strong> Dernier loyer appliqué au précédent locataire : '+(v.dernier_loyer?fmtEur(v.dernier_loyer):'<span class="blank s">&nbsp;</span>')+'. '+(v.zone==='OUI'?'Le loyer du logement fait l’objet de l’encadrement prévu à l’article 140 de la loi ELAN ; un complément de loyer ne peut être appliqué que dans les conditions légales et doit être justifié.':'')+'</p>';
+  b+='<p><strong>Révision du loyer.</strong> Le loyer sera révisé chaque année à la date anniversaire du contrat en fonction de la variation de l’indice de référence des loyers (IRL) publié par l’INSEE. Indice de référence : '+bl(v.irl_trim,'s')+' — valeur '+bl(v.irl_val,'s')+'. La révision ne peut excéder la variation de l’indice et doit être demandée dans l’année suivant sa date de prise d’effet.'+(['F','G'].indexOf(v.dpe)>=0?' Le logement étant classé '+v.dpe+', le loyer ne peut être révisé.':'')+'</p>';
+  b+='<p><strong>Dépôt de garantie.</strong> Le locataire verse à la signature un dépôt de garantie de <strong>'+fmtEur(dep)+'</strong>'+(meuble?' (maximum deux mois de loyer hors charges, article 25-6)':' (maximum un mois de loyer hors charges, article 22)')+', restitué dans un délai maximal d’un mois après la remise des clés si l’état des lieux de sortie est conforme, deux mois dans le cas contraire, déduction faite des sommes restant dues.</p>';
+  b+='<h2><span>V</span>Travaux</h2><p>'+(v.travaux?escH(v.travaux):'Aucun travaux particulier n’est prévu. Le bailleur remet un logement décent, en bon état d’usage et de réparation, équipements en bon état de fonctionnement (décret n° 2002-120). Le locataire assure l’entretien courant et les réparations locatives (décret n° 87-712).')+'</p>';
+  b+='<h2><span>VI</span>Garanties</h2><p>'+(v.caution_type==='aucune'||!v.caution?'Aucun cautionnement.':'Cautionnement '+(v.caution_type==='solidaire'?'solidaire':'simple')+' consenti par : '+escH(v.caution)+', par acte séparé annexé au présent contrat, portant les mentions prévues à l’article 22-1 de la loi du 6 juillet 1989.')+'</p>';
+  b+='<h2><span>VII</span>Clause de solidarité</h2><p>En cas de pluralité de locataires, ceux-ci sont tenus solidairement et indivisiblement de toutes les obligations du présent contrat. La solidarité du locataire ayant donné congé cesse à l’expiration du préavis dès lors qu’un nouveau colocataire figure au bail, et au plus tard six mois après la fin du préavis (article 8-1).</p>';
+  b+='<h2><span>VIII</span>Clause résolutoire</h2><p>À défaut de paiement du loyer ou des charges au terme convenu, de versement du dépôt de garantie, de souscription d’une assurance des risques locatifs, ou en cas de troubles de voisinage constatés par décision de justice, le présent contrat sera résilié de plein droit '+(true?'six semaines':'')+' après un commandement de payer ou une mise en demeure demeurés infructueux, conformément à l’article 24 de la loi du 6 juillet 1989 (délai porté par la loi du 27 juillet 2023).</p>';
+  b+='<h2><span>IX</span>Obligations des parties</h2><p><strong>Le bailleur</strong> s’engage à délivrer un logement décent, à assurer la jouissance paisible, à entretenir les locaux et à effectuer les réparations autres que locatives, à remettre gratuitement une quittance sur demande et à ne pas s’opposer aux aménagements qui ne constituent pas une transformation de la chose louée.</p><p><strong>Le locataire</strong> s’engage à payer le loyer et les charges aux termes convenus, à user paisiblement des locaux suivant leur destination, à répondre des dégradations survenues pendant la location, à prendre à sa charge l’entretien courant et les réparations locatives, à souscrire et justifier chaque année d’une assurance des risques locatifs, à laisser exécuter les travaux nécessaires, à ne pas transformer les locaux sans accord écrit et à ne pas sous-louer sans autorisation écrite du bailleur.</p>';
+  b+='<h2><span>X</span>Honoraires du mandataire</h2><p>Conformément à l’article 5 de la loi du 6 juillet 1989 et au décret n° 2014-890, les honoraires de visite, constitution du dossier et rédaction du bail sont partagés entre bailleur et locataire ; la part du locataire ne peut excéder celle du bailleur ni les plafonds réglementaires (12 € / 10 € / 8 € par m² selon la zone ; état des lieux : 3 € par m²).</p><table><tr><th>Poste</th><th>À la charge du locataire</th><th>À la charge du bailleur</th></tr><tr><td>Visite, constitution du dossier, rédaction du bail</td><td>'+(v.hono_loc?fmtEur(v.hono_loc):'<span class="blank s">&nbsp;</span>')+'</td><td rowspan="2">'+(v.hono_bail?fmtEur(v.hono_bail):'<span class="blank s">&nbsp;</span>')+'</td></tr><tr><td>Réalisation de l’état des lieux d’entrée</td><td>'+(v.hono_edl?fmtEur(v.hono_edl):'<span class="blank s">&nbsp;</span>')+'</td></tr></table>';
+  b+='<h2><span>XI</span>Conditions particulières</h2><p>'+(v.particulieres?escH(v.particulieres):'Néant.')+'</p>';
+  b+='<h2><span>XII</span>Annexes</h2><p>Sont annexés et font partie intégrante du présent contrat :</p><ul class="ann"><li><span class="chk"></span>Notice d’information relative aux droits et obligations des locataires et des bailleurs (arrêté du 29 mai 2015)</li><li><span class="chk"></span>Dossier de diagnostic technique : DPE, état des risques et pollutions (ERP), diagnostic électricité et gaz si installations de plus de 15 ans, constat de risque d’exposition au plomb (construction avant 1949), diagnostic amiante (permis avant juillet 1997), diagnostic bruit le cas échéant</li><li><span class="chk"></span>État des lieux d’entrée établi contradictoirement</li>'+(meuble?'<li><span class="chk"></span>Inventaire et état détaillé du mobilier</li>':'')+(v.copro==='OUI'?'<li><span class="chk"></span>Extraits du règlement de copropriété (destination de l’immeuble, jouissance et usage des parties privatives et communes, quote-part de charges)</li>':'')+(v.caution&&v.caution_type!=='aucune'?'<li><span class="chk"></span>Acte de cautionnement</li>':'')+'<li><span class="chk"></span>Liste des réparations locatives (décret n° 87-712) et des charges récupérables (décret n° 87-713)</li>'+(v.zone==='OUI'?'<li><span class="chk"></span>Références aux loyers de référence applicables</li>':'')+'</ul>';
+  b+='<p>Fait à Saint-André-de-Cubzac, le '+dateL(v.date_effet)+', en autant d’exemplaires que de parties, chacune reconnaissant avoir reçu le sien.</p><div class="sig"><div><div class="l">LE BAILLEUR</div><div class="m">'+escH(v.bailleur||'')+'<br>ou son mandataire, SAS Mansion Bordeaux</div></div><div><div class="l">LE(S) LOCATAIRE(S)</div><div class="m">'+escH(v.l1||'')+(v.l2?'<br>'+escH(v.l2):'')+'<br>« Lu et approuvé »</div></div></div>';
+  if(meuble)b+='<div class="pb"></div><h2>Annexe — Inventaire et état détaillé du mobilier</h2><p class="small">À compléter contradictoirement le jour de l’état des lieux d’entrée ; à comparer à la sortie.</p><table><tr><th>Pièce</th><th>Meuble / équipement</th><th>Quantité</th><th>État à l’entrée</th><th>État à la sortie</th></tr>'+['Séjour','Cuisine','Chambre 1','Chambre 2','Salle d’eau','Entrée / autres'].map(function(p){return'<tr><td>'+p+'</td><td>&nbsp;<br>&nbsp;<br>&nbsp;</td><td></td><td></td><td></td></tr>';}).join('')+'</table>';
+  legalDoc(w,{cover:true,kicker:meuble?'LOCATION MEUBLÉE':'LOCATION VIDE',title:meuble?'Contrat de location meublée':'Contrat de location — logement nu',subtitle:'Contrat type — loi n° 89-462 du 6 juillet 1989 · décret n° 2015-587',coverMeta:escH(v.adresse_b||'Adresse du logement')+'<br>Bailleur : '+escH(v.bailleur||'')+'<br>Locataire(s) : '+escH(v.l1||'')+(v.l2?', '+escH(v.l2):'')+'<br><br>Prise d’effet le '+dateL(v.date_effet)+' · Loyer '+(loyer?fmtEur(loyer)+' HC':'')+'<br>Gestionnaire : '+escH(NAMES[v.nego]||''),body:b,watermark:v.valide?'':'MODÈLE À VALIDER'});
+};}
+DOC_SPECS.bail_nu={title:'Bail d’habitation — logement nu',legal:true,sections:bailSections(false),prefill:bailPrefill(false),build:bailBuild(false)};
+DOC_SPECS.bail_meuble={title:'Bail d’habitation — logement meublé',legal:true,sections:bailSections(true),prefill:bailPrefill(true),build:bailBuild(true)};
+
+// ================= ÉTAT DES LIEUX =================
+DOC_SPECS.edl={title:'État des lieux',
+  sections:[{t:'📋 Paramètres',f:[F('sens','Type','select','entrée',{o:['entrée','sortie']}),F('date','Date','date',fmtDate(new Date())),F('adresse_b','Logement','text','',{full:true}),F('bailleur','Bailleur','text','',{full:true}),F('locataire','Locataire(s)','text','',{full:true}),F('nego','Réalisé par','select','',{o:[]}),F('pieces','Pièces (une par ligne)','textarea','Entrée\nSéjour\nCuisine\nChambre 1\nChambre 2\nSalle d’eau\nWC\nExtérieurs / annexes',{rows:6})]}],
+  prefill:function(d,who){DOC_SPECS.edl.sections[0].f[5].opt.o=ACTIVE().map(function(w){return[w,NAMES[w]];});var v={nego:who,date:fmtDate(new Date())};if(d){v.adresse_b=d.adresse||'';v.bailleur=d.client||'';}return v;},
+  build:function(w,v){
+    var b='<p><strong>Logement :</strong> '+bl(v.adresse_b,'l')+'<br><strong>Bailleur :</strong> '+bl(v.bailleur,'l')+'<br><strong>Locataire(s) :</strong> '+bl(v.locataire,'l')+'<br><strong>Établi le</strong> '+dateL(v.date)+' par '+escH(NAMES[v.nego]||'')+' (SAS Mansion Bordeaux), contradictoirement entre les parties.</p>';
+    b+='<h2><span>1</span>Compteurs et clés</h2><table><tr><th>Élément</th><th>Relevé / nombre</th><th>N° de compteur</th><th>Observations</th></tr><tr><td>Électricité</td><td></td><td></td><td></td></tr><tr><td>Gaz</td><td></td><td></td><td></td></tr><tr><td>Eau froide</td><td></td><td></td><td></td></tr><tr><td>Eau chaude</td><td></td><td></td><td></td></tr><tr><td>Clés / badges / télécommandes</td><td></td><td></td><td></td></tr></table>';
+    b+='<h2><span>2</span>Pièces</h2><p class="small">Légende : N = neuf · B = bon état · U = état d’usage · M = mauvais état.</p>';
+    String(v.pieces||'').split(/\n/).filter(function(x){return x.trim();}).forEach(function(p){
+      b+='<h3>'+escH(p.trim())+'</h3><table><tr><th style="width:22%">Élément</th><th style="width:10%">État</th><th>Observations</th></tr>'+['Sol','Murs','Plafond','Portes / fenêtres / volets','Électricité (prises, interrupteurs, luminaires)','Chauffage / plomberie','Équipements / placards'].map(function(e){return'<tr><td>'+e+'</td><td></td><td>&nbsp;</td></tr>';}).join('')+'</table>';
+    });
+    b+='<h2><span>3</span>Observations générales</h2><div class="box" style="min-height:70px">&nbsp;</div><p class="small">Le locataire peut demander la modification de l’état des lieux d’entrée dans les dix jours suivant sa réalisation (état des équipements de chauffage : durant le premier mois de la période de chauffe).</p>';
+    b+='<div class="sig"><div><div class="l">LE BAILLEUR / SON MANDATAIRE</div><div class="m">Signature :</div></div><div><div class="l">LE(S) LOCATAIRE(S)</div><div class="m">Signature :</div></div></div>';
+    legalDoc(w,{cover:false,kicker:'LOCATION',title:'État des lieux d’'+v.sens,subtitle:v.adresse_b||'',body:b});
+  }};
+
+// ====== LOT 2 — ESPACE FORMATION (Tom, Mia, Mazarine) ======
+var formationData={};
+if(db){db.ref('mansion/formation').on('value',function(snap){formationData=snap.val()||{};if(curSub==='formation'&&document.getElementById('stc-formation')&&document.getElementById('stc-formation').classList.contains('active'))renderFormation();});}
+function fmData(who){return formationData[who]||{steps:{},valid:{},kpi45:{}};}
+function fmToggleStep(who,id){
+  var f=fmData(who);var done=!(f.steps&&f.steps[id]&&f.steps[id].done);
+  if(!db){alert('Hors ligne');return;}
+  db.ref('mansion/formation/'+who+'/steps/'+id).set(done?{done:true,at:fmtDate(new Date())}:null);
+  if(!done)db.ref('mansion/formation/'+who+'/valid/'+id).remove();
+  toast(done?'✓ Étape cochée':'Étape décochée');
+}
+function fmValidate(who,id){
+  if(currentUser!=='alexis')return;
+  var f=fmData(who);var v=f.valid&&f.valid[id];
+  db.ref('mansion/formation/'+who+'/valid/'+id).set(v?null:{by:'alexis',at:fmtDate(new Date())});
+}
+function fmSetKpi(who,key,label){
+  var cur=(fmData(who).kpi45||{})[key]||0;
+  var n=prompt('Objectif 45 jours — '+label+' :',cur);if(n===null)return;
+  db.ref('mansion/formation/'+who+'/kpi45/'+key).set(parseInt(n)||0);
+}
+function fmStats45(who){
+  var start=FORMATION_START[who]||fmtDate(new Date());
+  var d=D[who]||mkE();var today=fmtDate(new Date());
+  var cts=(d.contacts||[]).filter(function(c){return(c.contact_date||'')>=start;});
+  var contacts=cts.filter(function(c){return c.categorie!=='Acquéreur';}).length;
+  var rdv=(d.contacts||[]).filter(function(c){if(c.categorie!=='Vendeur')return false;if(!(c.statut==='RDV fixé'||c.statut==='RDV effectué'||c.statut==='Mandat signé'))return false;var ed=c.rdv_date||c.contact_date||'';return ed>=start;}).length;
+  var mandats=cts.filter(function(c){return c.statut==='Mandat signé'||(c.type_man&&c.type_man!=='—');}).length;
+  dossiers.forEach(function(x){var isN=x.neg===NAMES[who],isN2=x.bin&&x.neg2===NAMES[who];if(!isN&&!isN2)return;if((x.createdAt||'')>=start)mandats+=x.bin?0.5:1;});
+  var biens=(d.contacts||[]).filter(function(c){return c.bien&&(c.bien.desc||(c.bien.photos&&c.bien.photos.length));}).length;
+  var days=Math.round((new Date(today+'T12:00:00')-new Date(start+'T12:00:00'))/86400000);
+  return{contacts:contacts,rdv:rdv,mandats:mandats,biens:biens,days:days,start:start};
+}
+function renderFormation(){
+  var who=curWho;var box=document.getElementById('formation-body');if(!box||!who)return;
+  var isAdmin=currentUser==='alexis';
+  if(FORMATION_WHO.indexOf(who)<0){box.innerHTML='<div class="ct-empty">Cet espace est réservé aux nouveaux collaborateurs en intégration.</div>';return;}
+  var f=fmData(who);var total=0,done=0,valid=0;
+  FORMATION_PARCOURS.forEach(function(s){s.steps.forEach(function(st){total++;if(f.steps&&f.steps[st.id]&&f.steps[st.id].done)done++;if(f.valid&&f.valid[st.id])valid++;});});
+  var pct=total?Math.round(done/total*100):0;
+  var h='<div class="fm-head"><div><div class="fm-title">🎓 Parcours d’intégration de '+escH(NAMES[who].split(' ')[0])+'</div><div class="fm-sub">Coche chaque étape réalisée — Alexis valide ensuite. '+done+' / '+total+' étapes faites · '+valid+' validées</div></div><div class="fm-pct"><div class="fm-bar"><div style="width:'+pct+'%"></div></div><span>'+pct+' %</span></div></div>';
+  // KPIs 45 jours (Mia, Mazarine, Tom)
+  var s=fmStats45(who);var k=f.kpi45||{};
+  h+='<div class="fm-block"><div class="fm-bt">📊 Suivi des 45 premiers jours <span style="font-weight:400;color:var(--txt3);font-size:11px">— depuis le '+dateL(s.start)+' · jour '+Math.max(0,s.days)+' / 45</span></div><div class="kg k4">';
+  [['contacts','Contacts prospection',s.contacts],['rdv','RDV vendeurs (R1)',s.rdv],['mandats','Mandats rentrés',s.mandats],['biens','Fiches bien R1',s.biens]].forEach(function(r){
+    var obj=k[r[0]]||0;var col=obj?(r[2]>=obj?'var(--green)':r[2]>=obj*.6?'var(--or)':'var(--red)'):'var(--txt2)';
+    h+='<div class="kc"><div class="kl">'+r[1]+'</div><div class="kv" style="color:'+col+'">'+r[2]+(obj?' <span style="font-size:11px;color:var(--txt3)">/ '+obj+'</span>':'')+'</div>'+(isAdmin?'<button class="fm-edit" onclick="fmSetKpi(\''+who+'\',\''+r[0]+'\',\''+r[1]+'\')">✏️ objectif</button>':(obj?'':'<div style="font-size:9px;color:var(--txt3)">objectif à définir</div>'))+'</div>';
+  });
+  h+='</div><div style="font-size:10.5px;color:var(--txt3);margin-top:6px">Les chiffres se calculent automatiquement depuis le Journal et le Pipeline. Les objectifs des 45 jours sont fixés par la direction (lettre d’objectifs) et servent à l’entretien de fin de période d’intégration.</div></div>';
+  // Parcours
+  FORMATION_PARCOURS.forEach(function(sec){
+    var sd=0;sec.steps.forEach(function(st){if(f.steps&&f.steps[st.id]&&f.steps[st.id].done)sd++;});
+    h+='<details class="sv-sec"'+(sd<sec.steps.length?' open':'')+'><summary style="color:var(--bx)">'+escH(sec.titre)+' <span style="margin-left:auto;font-size:10px;color:var(--txt3)">'+sd+'/'+sec.steps.length+'</span></summary><div class="sv-in">';
+    sec.steps.forEach(function(st){
+      var dn=f.steps&&f.steps[st.id]&&f.steps[st.id].done,vl=f.valid&&f.valid[st.id];
+      h+='<div class="fm-step'+(dn?' done':'')+'"><label><input type="checkbox"'+(dn?' checked':'')+' onchange="fmToggleStep(\''+who+'\',\''+st.id+'\')"><span class="fm-st">'+escH(st.t)+'</span></label>'+(st.d?'<div class="fm-sd">'+escH(st.d)+'</div>':'')+'<div class="fm-meta">'+(dn?'Fait le '+dateL(f.steps[st.id].at):'')+(vl?' · <span style="color:var(--green)">✓ Validé par Alexis le '+dateL(vl.at)+'</span>':'')+(isAdmin&&dn?' <button class="fm-edit" onclick="fmValidate(\''+who+'\',\''+st.id+'\')">'+(vl?'Retirer la validation':'✓ Valider')+'</button>':'')+'</div></div>';
+    });
+    h+='</div></details>';
+  });
+  // Outils
+  h+='<div class="fm-block"><div class="fm-bt">🧰 Les outils</div>'+FORMATION_OUTILS.map(function(o){return'<div class="fm-tool"><div><strong>'+escH(o.n)+'</strong> — '+escH(o.d)+'</div>'+(o.u?'<a class="bs" href="'+o.u+'" target="_blank">Ouvrir</a>':'')+'</div>';}).join('')+'</div>';
+  // Modèles
+  h+='<div class="fm-block"><div class="fm-bt">📚 Bibliothèque de modèles</div><div style="font-size:12px;color:var(--txt2)">Mandats, offre d’achat, courriers PAP, baux, état des lieux : tout se génère depuis l’onglet Documents, pré-rempli à ton nom.</div><button class="bs gold" style="margin-top:8px" onclick="switchSub(\'docs\',document.getElementById(\'stab-docs\'))">📚 Ouvrir mes documents</button> <a class="bs" style="margin-top:8px" href="https://drive.google.com/file/d/1bGNv3uK31rWrEDLeNXCHoMIe4Rvvqcx7/view" target="_blank">📖 Livret de commercialisation</a></div>';
+  // Règles d'or
+  h+='<div class="fm-block"><div class="fm-bt">⭐ Les engagements Mansion (à connaître par cœur)</div><ul class="fm-list"><li>Une estimation juste, argumentée par les ventes réelles du secteur (DVF) et les comparables.</li><li>12 contacts prospection par jour, saisis dans le Journal le jour même.</li><li>Chaque RDV vendeur porte « R1 » dans l’agenda ; une fiche bien 🏠 est créée si le mandat n’est pas signé.</li><li>Un vendeur sous mandat est appelé tous les 15 jours ; premier rapport promotionnel à 3 semaines.</li><li>Compte-rendu de visite au vendeur sous 24 h.</li><li>Un mandat = un dossier Pipeline avec ses pièces (CNI, titre, taxe foncière, diagnostics).</li><li>Un agent commercial ne signe jamais un mandat au nom de la société.</li></ul></div>';
+  box.innerHTML=h;
 }
 
 // ====== SUIVI VENDEURS ======
