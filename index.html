@@ -378,7 +378,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <button class="bp" id="btn-google" style="display:none;width:100%;margin:0;padding:12px 16px;font-size:14px;" onclick="authGoogle()">Se connecter avec Google</button>
     <div id="login-link-box" style="display:none;flex-direction:column;gap:6px;width:100%;margin-top:6px;">
       <div style="font-size:11px;color:var(--txt3);text-align:center;">ou recevoir un lien de connexion par e-mail</div>
-      <input type="email" id="login-email" autocomplete="email" placeholder="prenom@mansion-aquitaine.fr" style="width:100%;box-sizing:border-box;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:10px;color:var(--txt);font-size:14px;">
+      <input type="email" id="login-email" autocomplete="email" placeholder="adresse du compte Google de votre agenda" style="width:100%;box-sizing:border-box;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:10px;color:var(--txt);font-size:14px;">
       <button onclick="authEmailLink()" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--borderor);background:var(--bg2);color:var(--txt);font-size:13px;cursor:pointer;font-family:inherit;">Envoyer le lien</button>
     </div>
     <button id="btn-switch" style="display:none;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--txt2);font-size:12px;cursor:pointer;font-family:inherit;" onclick="authSignOut()">Changer de compte</button>
@@ -3981,7 +3981,7 @@ function authInit(){
   if(AUTH.isSignInWithEmailLink(location.href)){
     authJustSignedIn=true;
     var em=null;try{em=localStorage.getItem('mansion_email_link');}catch(e){}
-    if(!em)em=prompt('Confirmez votre adresse e-mail professionnelle :');
+    if(!em)em=prompt('Confirmez votre adresse e-mail (celle de votre agenda Google) :');
     if(em){
       AUTH.signInWithEmailLink(em.trim().toLowerCase(),location.href).then(function(){
         try{localStorage.removeItem('mansion_email_link');}catch(e){}
@@ -3992,7 +3992,7 @@ function authInit(){
   AUTH.getRedirectResult().catch(function(e){authErr(authErrText(e));});
   AUTH.onAuthStateChanged(function(u){
     if(authJustSignedIn)return; // la page va se recharger
-    if(!u){currentRole=null;authMsg('Connectez-vous avec votre adresse @mansion-aquitaine.fr');authShow(false);return;}
+    if(!u){currentRole=null;authMsg('Connectez-vous avec le compte Google de votre agenda');authShow(false);return;}
     authShow(true);
     authMsg('Vérification de l\'accès de '+u.email+'…');
     authCheckAccess(u);
@@ -4010,7 +4010,7 @@ function authCheckAccess(u){
 }
 function authDeny(u){
   currentRole=null;authMsg('');
-  authErr('L\'adresse '+u.email+' n\'a pas accès au Vision Board. Demandez à Alexis de vous ajouter, ou changez de compte.');
+  authErr('L\'adresse '+u.email+' n\'a pas accès au Vision Board. Utilisez le compte Google de votre agenda, ou demandez à Alexis de vous ajouter.');
 }
 function authGoogle(){
   if(!AUTH)return;
