@@ -1,5 +1,5 @@
 // Service worker Mansion Aquitaine — cache léger du shell
-var CACHE='mansion-v1';
+var CACHE='mansion-v2';
 self.addEventListener('install',function(e){
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(['./index.html']);}).catch(function(){}));
