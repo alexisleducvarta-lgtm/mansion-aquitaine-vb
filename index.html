@@ -372,8 +372,19 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
   <div style="font-family:Cinzel,Georgia,serif;font-size:26px;letter-spacing:3px;color:var(--bx);text-align:center;">MANSION</div>
   <div style="font-family:Cinzel,Georgia,serif;font-size:13px;letter-spacing:5px;color:var(--or);margin-bottom:6px;text-align:center;">AQUITAINE</div>
   <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:14px;color:var(--txt3);margin-bottom:28px;text-align:center;">Une confiance bâtie pour durer.</div>
-  <div style="font-size:13px;color:var(--txt2);margin-bottom:16px;">Qui êtes-vous ?</div>
-  <div id="login-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;width:100%;max-width:560px;"></div>
+  <!-- LOT 1 SÉCURITÉ : connexion Google ou lien e-mail (plus de PIN) -->
+  <div id="login-auth" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:340px;">
+    <div id="login-auth-status" style="font-size:13px;color:var(--txt2);text-align:center;min-height:18px;">Connexion…</div>
+    <button class="bp" id="btn-google" style="display:none;width:100%;margin:0;padding:12px 16px;font-size:14px;" onclick="authGoogle()">Se connecter avec Google</button>
+    <div id="login-link-box" style="display:none;flex-direction:column;gap:6px;width:100%;margin-top:6px;">
+      <div style="font-size:11px;color:var(--txt3);text-align:center;">ou recevoir un lien de connexion par e-mail</div>
+      <input type="email" id="login-email" autocomplete="email" placeholder="prenom@mansion-aquitaine.fr" style="width:100%;box-sizing:border-box;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:10px;color:var(--txt);font-size:14px;">
+      <button onclick="authEmailLink()" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--borderor);background:var(--bg2);color:var(--txt);font-size:13px;cursor:pointer;font-family:inherit;">Envoyer le lien</button>
+    </div>
+    <button id="btn-switch" style="display:none;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--txt2);font-size:12px;cursor:pointer;font-family:inherit;" onclick="authSignOut()">Changer de compte</button>
+    <div id="login-auth-err" style="font-size:12px;color:var(--red);text-align:center;min-height:14px;"></div>
+  </div>
+  <div id="login-grid" style="display:none;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;width:100%;max-width:560px;"></div>
   <div id="login-pin" style="display:none;flex-direction:column;align-items:center;margin-top:20px;">
     <div style="font-size:11px;color:var(--txt3);margin-bottom:8px;">Code d'accès Alexis</div>
     <div style="display:flex;gap:8px;">
@@ -430,6 +441,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
     <div class="ni" id="nav-nolan" onclick="goNeg('nolan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Nolan</div>
     <div class="ni" id="nav-thibault" onclick="goNeg('thibault',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Thibault</div>
     <div class="ni" id="nav-nicolas" onclick="goNeg('nicolas',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Nicolas</div>
+    <div class="ni" id="nav-louanne" onclick="goNeg('louanne',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Lou-Anne Busson</div>
     <div class="ni" id="nav-laurent" onclick="goNeg('laurent',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Laurent</div>
   </div>
   <div class="sep"></div>
@@ -743,6 +755,7 @@ input,select,textarea,button{font-family:inherit;color:var(--txt);}
 
 <!-- ====== FIREBASE SDK (compat pour fichier unique HTML) ====== -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
@@ -759,6 +772,7 @@ try {
       appId: "1:114949785883:web:2e9d2d62100e578ce46bbe",
       measurementId: "G-LNEF71L8FS"
     });
+    try{ firebase.auth(); }catch(e){ console.warn('Firebase Auth non chargé',e); }
     db = firebase.database();
   } else { console.warn('Firebase SDK non chargé — mode hors-ligne'); }
 } catch(e){ console.warn('Firebase init error:',e); }
@@ -889,14 +903,14 @@ var PALIERS=[{min:0,max:35000,t:40},{min:35000,max:65000,t:45},{min:65000,max:10
 var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:50};
 var ARCHIVED=['thibault','nolan','laurent']; // départs : historique conservé, accès désactivé
 function ACTIVE(){return ALL.filter(function(w){return ARCHIVED.indexOf(w)<0;});}
-var PINS={alexis:'1994',enrik:'1234',swan:'0402',nicolas:'0101',tom:'0202',pauline:'0303',mia:'0502',mazarine:'0303'};
+var PINS={}; // Lot 1 sécurité : codes PIN retirés, connexion Google / lien e-mail (voir LOT 1 SÉCURITÉ)
 var PROG=['pauline','nolan','tom'];
 var SAL=['swan','enrik','mia','mazarine']; // Salariés + alternantes, barème Swan (10/12%)
-var ALL=['swan','enrik','mia','mazarine','tom','pauline','nolan','thibault','nicolas','laurent','alexis'];
-var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a',mia:'#b07aa8',mazarine:'#5aa0b5',tom:'#8a9a3a'};
-var INITS={swan:'SD',enrik:'EE',pauline:'PL',nolan:'NO',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL',mia:'MD',mazarine:'MC',tom:'TC'};
-var NAMES={swan:'Swan Dumas',enrik:'Enrik Enache',pauline:'Pauline',nolan:'Nolan',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc',mia:'Mia Dumas',mazarine:'Mazarine Chapron',tom:'Tom Chevalier'};
-var ROLES={swan:'Salariée · Langon',enrik:'Salarié · Langon',pauline:'Agent commercial',nolan:'Agent commercial',thibault:'Agent commercial',nicolas:'Agent commercial',laurent:'Agent commercial',alexis:'Gérant',mia:'Alternante · Langon',mazarine:'Alternante · Saint-André',tom:'Agent commercial · Saint-André'};
+var ALL=['swan','enrik','mia','mazarine','tom','pauline','nolan','thibault','nicolas','louanne','laurent','alexis'];
+var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a',mia:'#b07aa8',mazarine:'#5aa0b5',tom:'#8a9a3a',louanne:'#b5835a'};
+var INITS={swan:'SD',enrik:'EE',pauline:'PL',nolan:'NO',thibault:'TH',nicolas:'NI',laurent:'LA',alexis:'AL',mia:'MD',mazarine:'MC',tom:'TC',louanne:'LB'};
+var NAMES={swan:'Swan Dumas',enrik:'Enrik Enache',pauline:'Pauline',nolan:'Nolan',thibault:'Thibault',nicolas:'Nicolas',laurent:'Laurent',alexis:'Alexis Leduc',mia:'Mia Dumas',mazarine:'Mazarine Chapron',tom:'Tom Chevalier',louanne:'Lou-Anne Busson'};
+var ROLES={swan:'Salariée · Langon',enrik:'Salarié · Langon',pauline:'Agent commercial',nolan:'Agent commercial',thibault:'Agent commercial',nicolas:'Agent commercial',laurent:'Agent commercial',alexis:'Gérant',mia:'Alternante · Langon',mazarine:'Alternante · Saint-André',tom:'Agent commercial · Saint-André',louanne:'Agent commercial'};
 
 // ====== LOT 2 — CONFIG : identité agence, infos négociateurs, formation ======
 var AGENCE={
@@ -923,7 +937,8 @@ var NEGO_INFO={
   mazarine:{civ:'Madame',tel:'07 86 75 22 33',email:'mazarine@mansion-aquitaine.fr',statut:'alternant',agence:'saint-andre'},
   thibault:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
   nolan:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
-  laurent:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'}
+  laurent:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
+  louanne:{civ:'Madame',tel:'',email:'',statut:'agent',agence:''}
 };
 var AGENCE_ADR={'saint-andre':'69 rue Nationale, 33240 Saint-André-de-Cubzac','langon':'13 allée Jean Jaurès, 33210 Langon'};
 function negoInfo(who){return NEGO_INFO[who]||{civ:'',tel:'',email:'',statut:'agent',agence:'saint-andre'};}
@@ -1010,7 +1025,7 @@ function checkDossDocs(d){
 function mkE(){return{compromis:[],contacts:[],wd:[0,0,0,0,0],wr:[0,0,0,0,0],wm:[0,0,0,0,0]};}
 var D={};ALL.forEach(function(w){D[w]=mkE();});
 var dossiers=[];
-var dirPinCode='1994',dirPinBuf='',dirOpen=false;
+var dirPinCode=null,dirPinBuf='',dirOpen=false;
 var curWho='',curSub='journal';
 var charts={prosp:null,mens:null,dir:null,rep:null};
 var _saving=false; // Flag pour empêcher le listener Firebase de re-render pendant une action
@@ -1699,7 +1714,7 @@ function updDots(pfx,buf){for(var i=0;i<4;i++){var d=document.getElementById(pfx
 
 function dirPin(d){if(dirPinBuf.length>=4)return;dirPinBuf+=d;updDots('dp',dirPinBuf);}
 function dirPinClear(){dirPinBuf=dirPinBuf.slice(0,-1);updDots('dp',dirPinBuf);}
-function dirPinSubmit(){if(dirPinBuf===dirPinCode){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
+function dirPinSubmit(){if(currentRole==='direction'||(dirPinCode&&dirPinBuf===dirPinCode)){dirOpen=true;document.getElementById('dir-pin-ov').style.display='none';document.getElementById('dir-ct').style.display='block';renderDir();}else{document.getElementById('dir-err').textContent='Code incorrect';dirPinBuf='';updDots('dp',dirPinBuf);setTimeout(function(){document.getElementById('dir-err').textContent='';},2000);}}
 function dirLock(){dirOpen=false;document.getElementById('dir-pin-ov').style.display='flex';document.getElementById('dir-ct').style.display='none';dirPinBuf='';updDots('dp',dirPinBuf);}
 
 function switchSub(tab,btn){curSub=tab;document.querySelectorAll('#pg-neg .stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');document.querySelectorAll('#pg-neg .subtab-content').forEach(function(s){s.classList.remove('active');});document.getElementById('stc-'+tab).classList.add('active');if(tab==='journal')renderContacts();else if(tab==='semaine')renderWeek();else if(tab==='compromis')renderComp();else if(tab==='perf')renderPerf();else if(tab==='mensuel')renderMensuel();else if(tab==='reporting')renderReporting();else if(tab==='biens')renderBiens();else if(tab==='registre')renderRegistre();else if(tab==='suivi')renderSuivi();else if(tab==='docs')renderDocs();else if(tab==='formation')renderFormation();}
@@ -3905,7 +3920,8 @@ function loginAs(who){
 }
 function logoutUser(){
   try{localStorage.removeItem('mansion_user');}catch(e){}
-  location.reload();
+  var done=function(){location.reload();};
+  if(AUTH){AUTH.signOut().then(done,done);}else done();
 }
 function applyUserView(){
   var isAdmin=currentUser==='alexis';
@@ -3933,17 +3949,98 @@ function applyUserView(){
   renderPlusSheet();
   setBnActive('journal');
 }
-function initLogin(){
-  renderLoginGrid();
-  var saved=null;
-  try{saved=localStorage.getItem('mansion_user');}catch(e){}
-  if(saved&&ALL.indexOf(saved)>=0&&ARCHIVED.indexOf(saved)<0){
-    // Identité mémorisée, PIN redemandé à chaque ouverture (tout le monde)
-    document.getElementById('login-screen').style.display='flex';
-    selectUser(saved);
-  } else {
-    document.getElementById('login-screen').style.display='flex';
+// ====== LOT 1 SÉCURITÉ : CONNEXION GOOGLE / LIEN E-MAIL + LISTE BLANCHE ======
+// Plus de PIN : chacun se connecte avec son adresse @mansion-aquitaine.fr (compte Google ou lien reçu par e-mail).
+// La liste des personnes autorisées est dans la base, pas dans ce fichier :
+//   acces/{e-mail en minuscules, les "." remplacés par ","} = {who:'swan', role:'salarie', email:'...'}
+// Aucun mot de passe ni code secret ici. La vraie protection = les règles Firebase.
+var AUTH=null,currentRole=null,authJustSignedIn=false;
+function emailKey(e){return String(e||'').trim().toLowerCase().replace(/\./g,',');}
+function authMsg(t){var s=document.getElementById('login-auth-status');if(s)s.textContent=t||'';}
+function authErr(t){var s=document.getElementById('login-auth-err');if(s)s.textContent=t||'';}
+function authShow(signedIn){
+  var g=document.getElementById('btn-google'),l=document.getElementById('login-link-box'),w=document.getElementById('btn-switch');
+  if(g)g.style.display=signedIn?'none':'block';
+  if(l)l.style.display=signedIn?'none':'flex';
+  if(w)w.style.display=signedIn?'block':'none';
+}
+function authErrText(e){
+  var c=(e&&e.code)||'';
+  if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return 'Connexion annulée.';
+  if(c==='auth/network-request-failed')return 'Pas de connexion internet.';
+  if(c==='auth/unauthorized-domain')return 'Ce site n\'est pas autorisé dans Firebase (domaine).';
+  if(c==='auth/invalid-action-code'||c==='auth/expired-action-code')return 'Ce lien a expiré ou a déjà servi. Demandez-en un nouveau.';
+  if(c==='auth/invalid-email')return 'Adresse e-mail invalide.';
+  return 'Connexion impossible ('+(c||'erreur inconnue')+').';
+}
+function authInit(){
+  if(typeof firebase==='undefined'||!firebase.auth){authMsg('Connexion impossible : vérifiez votre réseau puis rechargez la page.');return;}
+  AUTH=firebase.auth();
+  authMsg('Connexion…');
+  // Retour d'un lien de connexion reçu par e-mail
+  if(AUTH.isSignInWithEmailLink(location.href)){
+    authJustSignedIn=true;
+    var em=null;try{em=localStorage.getItem('mansion_email_link');}catch(e){}
+    if(!em)em=prompt('Confirmez votre adresse e-mail professionnelle :');
+    if(em){
+      AUTH.signInWithEmailLink(em.trim().toLowerCase(),location.href).then(function(){
+        try{localStorage.removeItem('mansion_email_link');}catch(e){}
+        location.replace(location.pathname); // adresse nettoyée + rechargement avec la session
+      }).catch(function(e){authJustSignedIn=false;authErr(authErrText(e));history.replaceState(null,'',location.pathname);authShow(false);});
+    }else{authJustSignedIn=false;history.replaceState(null,'',location.pathname);}
   }
+  AUTH.getRedirectResult().catch(function(e){authErr(authErrText(e));});
+  AUTH.onAuthStateChanged(function(u){
+    if(authJustSignedIn)return; // la page va se recharger
+    if(!u){currentRole=null;authMsg('Connectez-vous avec votre adresse @mansion-aquitaine.fr');authShow(false);return;}
+    authShow(true);
+    authMsg('Vérification de l\'accès de '+u.email+'…');
+    authCheckAccess(u);
+  });
+}
+function authCheckAccess(u){
+  if(!db){authErr('Base de données indisponible. Rechargez la page.');return;}
+  db.ref('acces/'+emailKey(u.email)).once('value').then(function(s){
+    var a=s.val();
+    if(!a||!a.who||ALL.indexOf(a.who)<0||ARCHIVED.indexOf(a.who)>=0){authDeny(u);return;}
+    currentRole=a.role||null;
+    authErr('');authMsg('');
+    loginAs(a.who);
+  }).catch(function(){authDeny(u);});
+}
+function authDeny(u){
+  currentRole=null;authMsg('');
+  authErr('L\'adresse '+u.email+' n\'a pas accès au Vision Board. Demandez à Alexis de vous ajouter, ou changez de compte.');
+}
+function authGoogle(){
+  if(!AUTH)return;
+  authErr('');
+  var prov=new firebase.auth.GoogleAuthProvider();
+  prov.setCustomParameters({prompt:'select_account'});
+  authJustSignedIn=true;
+  AUTH.signInWithPopup(prov).then(function(){location.reload();}).catch(function(e){
+    var c=e&&e.code;
+    if(c==='auth/popup-blocked'||c==='auth/operation-not-supported-in-this-environment'){AUTH.signInWithRedirect(prov);return;}
+    authJustSignedIn=false;authErr(authErrText(e));
+  });
+}
+function authEmailLink(){
+  if(!AUTH)return;
+  var em=(document.getElementById('login-email').value||'').trim().toLowerCase();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){authErr('Saisissez votre adresse e-mail.');return;}
+  authErr('');
+  AUTH.sendSignInLinkToEmail(em,{url:location.origin+location.pathname,handleCodeInApp:true}).then(function(){
+    try{localStorage.setItem('mansion_email_link',em);}catch(e){}
+    authMsg('Lien envoyé à '+em+'. Ouvrez-le sur CET appareil (pensez aux courriers indésirables).');
+  }).catch(function(e){authErr(authErrText(e));});
+}
+function authSignOut(){logoutUser();}
+function initLogin(){
+  // Lot 1 sécurité : plus de choix de profil ni de PIN (renderLoginGrid / selectUser conservées mais inutilisées)
+  document.getElementById('login-screen').style.display='flex';
+  var g=document.getElementById('login-grid');if(g)g.style.display='none';
+  var p=document.getElementById('login-pin');if(p)p.style.display='none';
+  authInit();
 }
 // ====== BOTTOM NAV MOBILE ======
 function setBnActive(key){
@@ -4182,7 +4279,7 @@ function renderAgendaPending(who){
 }
 
 // ====== DÉTECTION DE NOUVELLE VERSION ======
-var APP_BUILD='2026-09-16b';
+var APP_BUILD='2026-10-03-lot1';
 (function(){
   if(location.protocol==='file:')return;
   var url=location.pathname.replace(/[^\/]*$/,'')+'index.html';

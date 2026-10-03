@@ -1,0 +1,6 @@
+# Ne jamais publier de sauvegarde ni de donnees
+*.json
+!package.json
+!package-lock.json
+.DS_Store
+.claude/
