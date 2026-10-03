@@ -904,7 +904,7 @@ var TAUX_FIXE={thibault:60,nicolas:60,laurent:60,alexis:50};
 var ARCHIVED=['thibault','nolan','laurent']; // départs : historique conservé, accès désactivé
 function ACTIVE(){return ALL.filter(function(w){return ARCHIVED.indexOf(w)<0;});}
 var PINS={}; // Lot 1 sécurité : codes PIN retirés, connexion Google / lien e-mail (voir LOT 1 SÉCURITÉ)
-var PROG=['pauline','nolan','tom'];
+var PROG=['pauline','nolan','tom','louanne'];
 var SAL=['swan','enrik','mia','mazarine']; // Salariés + alternantes, barème Swan (10/12%)
 var ALL=['swan','enrik','mia','mazarine','tom','pauline','nolan','thibault','nicolas','louanne','laurent','alexis'];
 var COLORS={swan:'#c9a84c',enrik:'#6ab8a8',pauline:'#e07a7f',nolan:'#4a82c0',thibault:'#4a9c5d',nicolas:'#d4856a',laurent:'#c0444a',alexis:'#e8c96a',mia:'#b07aa8',mazarine:'#5aa0b5',tom:'#8a9a3a',louanne:'#b5835a'};
@@ -938,7 +938,7 @@ var NEGO_INFO={
   thibault:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
   nolan:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
   laurent:{civ:'Monsieur',tel:'',email:'',statut:'agent',agence:'saint-andre'},
-  louanne:{civ:'Madame',tel:'',email:'',statut:'agent',agence:''}
+  louanne:{civ:'Madame',tel:'',email:'lou-anne@mansion-aquitaine.fr',statut:'agent',agence:''}
 };
 var AGENCE_ADR={'saint-andre':'69 rue Nationale, 33240 Saint-André-de-Cubzac','langon':'13 allée Jean Jaurès, 33210 Langon'};
 function negoInfo(who){return NEGO_INFO[who]||{civ:'',tel:'',email:'',statut:'agent',agence:'saint-andre'};}
