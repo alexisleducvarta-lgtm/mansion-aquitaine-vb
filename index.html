@@ -2871,13 +2871,17 @@ var suiviCurId=null;
 var IA_URL='https://script.google.com/macros/s/AKfycbz9cSMGqtsCgpNoNUjjcf7icz5rSLOztaXaR7o2jTwN_ko_MiV9Vrs2sYggxcOsDJ5_/exec';
 function askIA(prompt,cb){
   toast('✨ Rédaction en cours...');
-  fetch(IA_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({prompt:prompt})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.error){alert('Erreur IA : '+d.error);cb(null);return;}
-      cb(d.text||'');
-    })
-    .catch(function(e){alert('Relais IA injoignable : '+e.message);cb(null);});
+  // Sécurité : le relais IA vérifie que la demande vient d'un membre connecté (jeton de connexion Google)
+  var envoyer=function(jeton){
+    fetch(IA_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({prompt:prompt,idToken:jeton||''})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.error){alert('Erreur IA : '+d.error);cb(null);return;}
+        cb(d.text||'');
+      })
+      .catch(function(e){alert('Relais IA injoignable : '+e.message);cb(null);});
+  };
+  if(AUTH&&AUTH.currentUser){AUTH.currentUser.getIdToken().then(envoyer,function(){envoyer('');});}else envoyer('');
 }
 function getSuiviDossiers(who){
   return dossiers.filter(function(d){if(d.stage!=='mandat'&&d.stage!=='offre')return false;return d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);});
@@ -4279,7 +4283,7 @@ function renderAgendaPending(who){
 }
 
 // ====== DÉTECTION DE NOUVELLE VERSION ======
-var APP_BUILD='2026-10-03-lot1';
+var APP_BUILD='2026-10-05-relais-ia';
 (function(){
   if(location.protocol==='file:')return;
   var url=location.pathname.replace(/[^\/]*$/,'')+'index.html';
