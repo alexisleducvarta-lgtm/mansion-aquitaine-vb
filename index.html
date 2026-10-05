@@ -3014,7 +3014,19 @@ function suiviAddVisite(useIA){
     askIA(p,function(txt){if(txt){v.iaText=txt;saveDoss();}printCR(v.id);});
   } else printCR(v.id);
 }
+// Fenêtre bloquée par le navigateur (ouverture automatique après la rédaction IA, trop longue) :
+// on affiche un bandeau « Ouvrir » ; le clic de la personne autorise alors la fenêtre.
+function docBloque(ouvrir){
+  var b=document.getElementById('doc-pret');if(b)b.remove();
+  b=document.createElement('div');b.id='doc-pret';
+  b.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;background:#6B2233;color:#F4EFE4;padding:10px 16px;border-radius:30px;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center;font-size:13px;';
+  b.innerHTML='<span>📄 Le document est prêt.</span><button style="background:#C3A35B;border:0;color:#2b1a10;font-weight:600;padding:7px 14px;border-radius:20px;cursor:pointer;">Ouvrir</button><span style="cursor:pointer;opacity:.7;" title="Fermer">✕</span>';
+  b.children[1].onclick=function(){b.remove();ouvrir();};
+  b.children[2].onclick=function(){b.remove();};
+  document.body.appendChild(b);
+}
 function mansionDoc(w,title,subtitle,body){
+  if(!w){docBloque(function(){mansionDoc(window.open('','_blank'),title,subtitle,body);});return;}
   if(typeof legalDoc==='function'){legalDoc(w,{cover:false,kicker:'SUIVI VENDEUR',title:title,subtitle:subtitle,body:body});return;}
   var css='@page{margin:18mm;}body{font-family:Georgia,serif;color:#2B2118;max-width:700px;margin:24px auto;background:#FDFBF6;}h1{font-family:Cinzel,Georgia,serif;color:#6B2233;letter-spacing:3px;text-align:center;font-size:19px;margin-bottom:2px;}.sub{font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;text-align:center;font-size:14px;margin-top:0;}h2{font-family:Cinzel,Georgia,serif;color:#6B2233;font-size:13px;letter-spacing:1px;border-bottom:1px solid #C3A35B;padding-bottom:4px;margin-top:22px;}table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}th,td{border:1px solid #E9E1CF;padding:8px;text-align:left;}th{background:#6B2233;color:#F4EFE4;font-family:Cinzel,Georgia,serif;font-size:11px;}tr:nth-child(even){background:#F4EFE4;}p{font-size:12.5px;line-height:1.55;}.kw{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap;}.kw span{border:1px solid #C3A35B;color:#A8842F;padding:5px 14px;border-radius:16px;font-size:11px;font-family:Cinzel,Georgia,serif;letter-spacing:1px;}.foot{text-align:center;font-family:Cormorant Garamond,Georgia,serif;font-style:italic;color:#A8842F;font-size:12px;margin-top:28px;border-top:1px solid #E9E1CF;padding-top:10px;}.meta{text-align:center;font-size:11px;color:#5C4F40;margin-bottom:6px;}';
   var fonts='https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap';
@@ -4283,7 +4295,7 @@ function renderAgendaPending(who){
 }
 
 // ====== DÉTECTION DE NOUVELLE VERSION ======
-var APP_BUILD='2026-10-05-relais-ia';
+var APP_BUILD='2026-10-05-doc-pret';
 (function(){
   if(location.protocol==='file:')return;
   var url=location.pathname.replace(/[^\/]*$/,'')+'index.html';
