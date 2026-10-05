@@ -2995,13 +2995,43 @@ function renderSuiviPanel(){
   s.calls.forEach(function(c){tl.push({date:c.date,ico:'📞',bg:'var(--greenl)',col:'var(--green)',txt:'<strong>Appel de suivi</strong>'+(c.note?'<br><span style="color:var(--txt2);">'+escH(c.note)+'</span>':''),html:''});});
   s.prix.forEach(function(p){tl.push({date:p.date,ico:'📉',bg:'var(--redl)',col:'var(--red)',txt:'<strong>Baisse de prix</strong> '+fmt(p.ancien)+' → '+fmt(p.nouveau)+(p.motif?'<br><span style="color:var(--txt2);">'+escH(p.motif)+'</span>':''),html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printAvenant('+p.id+')">📄 Avenant</button>'});});
   (s.reports||[]).forEach(function(r){tl.push({date:r.date,ico:'📄',bg:'var(--bxl)',col:'var(--bx)',txt:'<strong>Rapport promotionnel</strong><br><span style="color:var(--txt2);">'+r.vues+' vues · '+r.clics+' clics ('+r.tx+' %) · '+r.contacts+' contacts</span>',html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printRapport('+r.id+')">📄 Ouvrir</button>'});});
-  (s.visites||[]).forEach(function(v){tl.push({date:v.date,ico:'👁️',bg:'var(--bluel)',col:'var(--blue)',txt:'<strong>Visite — '+escH(v.nom)+'</strong><br><span style="color:var(--txt2);">'+escH(v.avis)+(v.note?' · '+escH(v.note):'')+'</span>',html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printCR('+v.id+')">📄 CR</button>'});});
+  (s.visites||[]).forEach(function(v){tl.push({date:v.date,ico:'👁️',bg:'var(--bluel)',col:'var(--blue)',txt:'<strong>Visite — '+escH(v.nom)+'</strong><br><span style="color:var(--txt2);">'+escH(v.avis)+(v.note?' · '+escH(v.note):'')+'</span>',html:'<button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="printCR('+v.id+')">📄 CR</button> <button class="bs" style="font-size:10px;padding:3px 9px;margin-top:5px;" onclick="suiviIAVisite('+v.id+')">'+(v.iaText?'✨ Re-rédiger IA':'✨ Rédiger IA')+'</button>'});});
   s.events.forEach(function(e){tl.push({date:e.date,ico:'📝',bg:'var(--purl)',col:'var(--pur)',txt:'<strong>'+escH(e.type)+'</strong>'+(e.note?'<br><span style="color:var(--txt2);">'+escH(e.note)+'</span>':''),html:''});});
   s.docs.forEach(function(x){tl.push({date:x.date,ico:'📎',bg:'var(--orl)',col:'var(--or)',txt:'<a href="'+x.url+'" target="_blank" style="color:var(--or);"><strong>'+escH(x.type)+'</strong> · '+escH(x.name)+'</a>'+(x.prix?'<br><span style="color:var(--txt2);">Prix proposé '+fmt(x.prix)+'</span>':''),html:''});});
   tl.sort(function(a,b){return b.date.localeCompare(a.date);});
   h+='<div style="font-family:Cinzel,Georgia,serif;font-size:12px;color:var(--bx);letter-spacing:.6px;margin:16px 0 6px;">Historique ('+tl.length+')</div>';
   h+=tl.length?tl.map(function(t){return'<div class="sv-tl"><div class="ic" style="background:'+t.bg+';">'+t.ico+'</div><div style="flex:1;min-width:0;"><div style="font-size:12px;color:var(--txt);line-height:1.45;">'+t.txt+'</div><div style="font-size:10px;color:var(--txt3);margin-top:3px;">'+new Date(t.date+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+'</div>'+t.html+'</div></div>';}).join(''):'<div class="ct-empty">Aucun suivi enregistré — commence par valider un appel</div>';
   document.getElementById('suivi-body').innerHTML=h;
+}
+// Compte-rendu de visite rédigé par l'IA : 3 parties fixes (Avantages, Points relevés, Conclusion)
+function crPromptVisite(d,v){
+  return "Rédige le compte-rendu d'une visite immobilière destiné au vendeur, à partir des notes brutes du négociateur "+
+    "(fautes, abréviations et style oral possibles : reformule proprement, avec tact et professionnalisme, sans rien inventer).\n\n"+
+    "Bien : "+(d.adresse||d.ref)+"\nPrix : "+fmt(d.prixVente||0)+"\nPosition du visiteur à l'issue de la visite : "+v.avis+
+    "\nNotes brutes du négociateur : "+(v.note||'aucune note')+"\n\n"+
+    "Réponds EXACTEMENT en 3 parties, chacune précédée de son titre seul sur une ligne, en majuscules, sans aucun symbole :\n"+
+    "AVANTAGES\n(les qualités du bien appréciées par le visiteur, 1 à 4 phrases ; s'il n'y en a pas : « Le visiteur n'a pas exprimé de point positif particulier. »)\n"+
+    "POINTS RELEVÉS\n(les réserves, objections et points d'attention exprimés, reformulés avec tact, 1 à 4 phrases)\n"+
+    "CONCLUSION\n(le niveau d'intérêt du visiteur et la suite proposée, 1 à 3 phrases)\n\n"+
+    "N'invente aucune information absente des notes. Ne cite pas le nom du visiteur.";
+}
+// Découpe le texte IA en parties ; null si le format attendu n'est pas reconnu (ancien texte)
+function crSections(txt){
+  var titres={'AVANTAGES':'Avantages (qualités)','POINTS RELEVES':'Points relevés','CONCLUSION':'Conclusion'};
+  var out=[],cur=null;
+  String(txt||'').split(/\n+/).forEach(function(l){
+    var t=l.trim();if(!t)return;
+    var k=t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z ]/g,'').trim().toUpperCase();
+    if(titres[k]){cur={titre:titres[k],pars:[]};out.push(cur);}
+    else if(cur)cur.pars.push(t);
+  });
+  return out.length>=2?out:null;
+}
+// Rédiger (ou re-rédiger) avec l'IA le compte-rendu d'une visite déjà enregistrée
+function suiviIAVisite(vid){
+  var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
+  var v=(s.visites||[]).find(function(x){return x.id==vid;});if(!v)return;
+  askIA(crPromptVisite(d,v),function(txt){if(txt){v.iaText=txt;saveDoss();renderSuiviPanel();}printCR(v.id);});
 }
 function suiviAddVisite(useIA){
   var d=dossiers.find(function(x){return x.id==suiviCurId;});if(!d)return;var s=suiviOf(d);
@@ -3010,7 +3040,7 @@ function suiviAddVisite(useIA){
   var v={id:Date.now(),date:fmtDate(new Date()),nom:nom,avis:document.getElementById('vs-avis').value,note:(document.getElementById('vs-note').value||'').trim()};
   s.visites.push(v);saveDoss();renderSuiviPanel();
   if(useIA){
-    var p="Rédige le compte-rendu d'une visite immobilière destiné au vendeur.\n\nBien : "+(d.adresse||d.ref)+"\nPrix : "+fmt(d.prixVente||0)+"\nVisiteur : "+v.nom+"\nPosition à l'issue de la visite : "+v.avis+"\nRetour brut du négociateur : "+(v.note||'aucune note')+"\n\nÉcris 2 paragraphes : (1) déroulé de la visite et retour de l'acquéreur reformulé professionnellement, (2) suite donnée et prochaine étape. Ton sobre, factuel, rassurant pour le vendeur.";
+    var p=crPromptVisite(d,v);
     askIA(p,function(txt){if(txt){v.iaText=txt;saveDoss();}printCR(v.id);});
   } else printCR(v.id);
 }
@@ -3082,7 +3112,9 @@ function printCR(vid){
   var b='<p class="meta">Compte-rendu du '+new Date(v.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' &middot; Conseiller : '+escH(d.neg)+'</p>';
   b+='<h2>Le bien visité</h2><p><strong>'+escH(d.client||d.ref)+'</strong><br>'+escH(d.adresse||d.ref)+(d.prixVente?'<br>Prix de présentation : <strong>'+fmt(d.prixVente)+'</strong>':'')+'</p>';
   b+='<h2>La visite</h2><p>Visiteur : <strong>'+escH(v.nom)+'</strong><br>Position à l&rsquo;issue de la visite : <strong>'+escH(v.avis)+'</strong></p>';
-  if(v.iaText){b+='<h2>Retour de la visite</h2>';v.iaText.split(/\n+/).forEach(function(par){if(par.trim())b+='<p>'+escH(par.trim())+'</p>';});}
+  var sec=v.iaText?crSections(v.iaText):null;
+  if(sec){sec.forEach(function(x){b+='<h2>'+x.titre+'</h2>';x.pars.forEach(function(par){b+='<p>'+escH(par)+'</p>';});});}
+  else if(v.iaText){b+='<h2>Retour de la visite</h2>';v.iaText.split(/\n+/).forEach(function(par){if(par.trim())b+='<p>'+escH(par.trim())+'</p>';});}
   else if(v.note)b+='<h2>Retour de l&rsquo;acquéreur</h2><p>'+escH(v.note)+'</p>';
   if(!v.iaText){
   var suite=v.avis.indexOf('Offre')>=0?'Une offre écrite est attendue. Nous vous la présenterons dès réception avec notre analyse.':v.avis.indexOf('cœur')>=0?'Le visiteur a manifesté un très vif intérêt. Nous poursuivons les échanges afin de concrétiser rapidement.':v.avis.indexOf('réfléchit')>=0?'Le visiteur souhaite prendre le temps de la réflexion. Une relance est programmée sous 48 heures.':'Nous poursuivons la commercialisation et vous tiendrons informé des prochains retours.';
@@ -4295,7 +4327,7 @@ function renderAgendaPending(who){
 }
 
 // ====== DÉTECTION DE NOUVELLE VERSION ======
-var APP_BUILD='2026-10-05-doc-pret';
+var APP_BUILD='2026-10-05-cr-ia';
 (function(){
   if(location.protocol==='file:')return;
   var url=location.pathname.replace(/[^\/]*$/,'')+'index.html';
