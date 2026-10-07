@@ -926,7 +926,9 @@ function ACTIVE(){return ALL.filter(function(w){return ARCHIVED.indexOf(w)<0;});
 function voitArchives(){return currentUser==='alexis'||(typeof currentRole!=='undefined'&&currentRole==='direction');}
 function estArchiveNom(n){return !!n&&ARCHIVED.some(function(w){return NAMES[w]===n;});}
 var PINS={}; // Lot 1 sécurité : codes PIN retirés, connexion Google / lien e-mail (voir LOT 1 SÉCURITÉ)
-var PROG=['pauline','nolan','tom','louanne'];
+var PROG=['nolan']; // barème progressif (historique Nolan)
+// Commission au taux fixe sur les honoraires HORS TAXE (décision d'Alexis du 07/10/2026 : 40 % HT sur HT)
+var TAUX_HT={pauline:40,tom:40,louanne:40};
 var SAL=['swan','enrik','mia','mazarine']; // Salariés + alternantes, barème Swan (10/12%)
 var ALL=['swan','enrik','mia','mazarine','tom','pauline','nolan','thibault','nicolas','louanne','laurent','alexis'];
 var CHAL_PARTICIPANTS=ACTIVE().filter(function(w){return w!=='alexis';}); // Alexis = organisateur, hors classement
@@ -1015,7 +1017,7 @@ var FORMATION_OUTILS=[
   {n:'Canva',d:'Visuels réseaux sociaux et affichettes vitrine (charte : Cinzel / Cormorant Garamond, ivoire, bordeaux, or).',u:'https://www.canva.com'}
 ];
 
-var CONTRATS={swan:'Salariée HT',enrik:'Salarié HT',pauline:'Progressive',nolan:'Progressive',thibault:'60% fixe',nicolas:'60% fixe',laurent:'60% fixe',alexis:'50% fixe'};
+var CONTRATS={swan:'Salariée HT',enrik:'Salarié HT',pauline:'40% HT',tom:'40% HT',louanne:'40% HT',nolan:'Progressive',thibault:'60% fixe',nicolas:'60% fixe',laurent:'60% fixe',alexis:'50% fixe'};
 var MPC={Exclusif:'p-me','Semi-exclusif':'p-mse','Exclusivité morale':'p-mem',Simple:'p-ms'};
 var JNOMS=['Lun','Mar','Mer','Jeu','Ven'];
 var CANAUX=['Pige','Boîtage','Porte à porte','Téléphone','Réseau / Parrainage','Autre'];
@@ -1344,7 +1346,8 @@ function calcProg(who){var ca=0;D[who].compromis.forEach(function(c){ca+=c.ttc*(
 function calcProgPer(c,caB){var part=c.ttc*(c.bin?.5:1),com=0,caS=caB,r=part;for(var i=0;i<PALIERS.length;i++){var p=PALIERS[i],mx=p.max===null?Infinity:p.max;if(caS>=mx)continue;var d2=mx-Math.max(caS,p.min),tr=Math.min(r,d2);if(tr<=0)continue;com+=tr*p.t/100;r-=tr;caS+=tr;if(r<=0)break;}return com;}
 function activePal(ca){var p=PALIERS[0];for(var i=0;i<PALIERS.length;i++){if(ca>=PALIERS[i].min)p=PALIERS[i];}return p;}
 function fixeCom(ttc,bin,t){return ttc*(t/100)*(bin?.5:1);}
-function comForWho(who,c,caB){if(SAL.indexOf(who)>=0)return swanCom(c.ttc,c.type,c.bin);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
+function htCom(ttc,bin,t){return (ttc/TVA)*(t/100)*(bin?.5:1);}
+function comForWho(who,c,caB){if(SAL.indexOf(who)>=0)return swanCom(c.ttc,c.type,c.bin);if(TAUX_HT[who])return htCom(c.ttc,c.bin,TAUX_HT[who]);if(PROG.indexOf(who)>=0)return calcProgPer(c,caB);return fixeCom(c.ttc,c.bin,TAUX_FIXE[who]||50);}
 function getDossiersForWho(who){
   // Récupère les dossiers du Pipeline (étapes Compromis ou Acte) attribués à ce négo
   // Les retourne au format compromis pour réutilisation des calculs
@@ -1394,6 +1397,8 @@ function getStats(who){
   var all=pers.concat(fromPipe);
   if(SAL.indexOf(who)>=0){
     all.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=swanCom(c.ttc,c.type,c.bin);});
+  }else if(TAUX_HT[who]){
+    all.forEach(function(c){ca+=c.ttc*(c.bin?.5:1);com+=htCom(c.ttc,c.bin,TAUX_HT[who]);});
   }else if(PROG.indexOf(who)>=0){
     // Pour les progressifs, on doit recalculer avec la totalité
     var r=calcProgAll(who,all);ca=r.ca;com=r.com;
@@ -2823,7 +2828,7 @@ var DOCS_LIB=[
 var docCurId=null,docCurDoss=null;
 // PDF remplissables (dossier documents/ du dépôt) : un jeu par négociateur, 'agence' = jeu vierge sans conseiller
 var PDF_WHO=['alexis','swan','enrik','pauline','nicolas','tom','mia','mazarine'];
-function docPdfUrl(file,who){return 'documents/'+(PDF_WHO.indexOf(who)>=0?who:'agence')+'/'+file+'.pdf';}
+function docPdfUrl(file,who){return 'documents_mansion/'+(PDF_WHO.indexOf(who)>=0?who:'agence')+'/'+file+'.pdf';}
 function docDossiersFor(who){
   var isAdmin=currentUser==='alexis';
   return dossiers.filter(function(d){return isAdmin||d.neg===NAMES[who]||(d.bin&&d.neg2===NAMES[who]);}).sort(function(a,b){return String(b.createdAt||'').localeCompare(String(a.createdAt||''));});
@@ -4039,7 +4044,7 @@ if(objBox){
   if(objHtml)objBox.innerHTML='<div class="stitle">🎯 Suivi objectifs mensuels</div>'+objHtml;
   else objBox.innerHTML='';
 }
-var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Cinzel,Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/OBJ_FEES*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
+var gh='';stats.forEach(function(a){var c2=COLORS[a.who],tt=TAUX_HT[a.who]?TAUX_HT[a.who]+'% HT':PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');gh+='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:.75rem;cursor:pointer;" onclick="goNeg(\''+a.who+'\',document.getElementById(\'nav-'+a.who+'\'))"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+c2+'22;color:'+c2+';border:1px solid '+c2+'44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;">'+INITS[a.who]+'</div><div><div style="font-size:11px;color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</div><div style="font-size:9px;color:var(--txt3);">'+ROLES[a.who]+'</div></div></div><div style="font-family:Cinzel,Georgia,serif;font-size:17px;color:var(--or);">'+fmt(a.ca)+'</div><div style="font-size:9px;color:var(--txt3);">Com. '+fmt(a.com)+' · '+tt+'</div><div class="bbar" style="margin-top:4px;"><div class="bbarf" style="width:'+Math.min(Math.round(a.ca/OBJ_FEES*100),100)+'%;background:'+c2+';"></div></div></div>';});document.getElementById('dir-grid').innerHTML=gh;var rh='';stats.forEach(function(a,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':''+(i+1);var tt=TAUX_HT[a.who]?TAUX_HT[a.who]+'% HT':PROG.indexOf(a.who)>=0?activePal(a.ca).t+'%':(SAL.indexOf(a.who)>=0?'10-12%':(TAUX_FIXE[a.who]||50)+'%');rh+='<tr><td style="font-size:12px;">'+medal+'</td><td style="color:var(--txt);font-weight:500;">'+NAMES[a.who]+'</td><td style="font-size:10px;color:var(--txt3);">'+CONTRATS[a.who]+'</td><td>'+a.nb+'</td><td style="color:var(--or);font-weight:500;">'+fmt(a.ca)+'</td><td><span class="pill p-or">'+tt+'</span></td><td style="color:var(--green);font-weight:500;">'+fmt(a.com)+'</td></tr>';});document.getElementById('dir-rank').innerHTML=rh;document.getElementById('dir-rf').innerHTML='<tr><td></td><td>TOTAL</td><td></td><td>'+tNb+'</td><td style="color:var(--or);">'+fmt(tCA)+'</td><td></td><td style="color:var(--green);">'+fmt(tCom)+'</td></tr>';if(charts.dir){charts.dir.destroy();charts.dir=null;}var dc=document.getElementById('dir-chart');if(dc){charts.dir=new Chart(dc,{type:'bar',data:{labels:ALL.map(function(w){return NAMES[w].split(' ')[0];}),datasets:[{label:'CA TTC',data:ALL.map(function(w){return Math.round(getStats(w).ca);}),backgroundColor:ALL.map(function(w){return COLORS[w]+'88';}),borderColor:ALL.map(function(w){return COLORS[w];}),borderWidth:1,borderRadius:5},{label:'Com.',data:ALL.map(function(w){return Math.round(getStats(w).com);}),backgroundColor:'rgba(74,156,93,.5)',borderColor:'#4a9c5d',borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmt(v);},color:'#6b5f52'},grid:{color:'rgba(255,255,255,.04)'}},x:{ticks:{color:'#6b5f52'},grid:{display:false}}}}});}}
 
 // --- EXPORT CSV ---
 function exportCSV(){
@@ -4536,6 +4541,7 @@ function tresoToggleParams(){tresoParamsOpen=!tresoParamsOpen;renderTreso();}
 function tresoComOne(who,ttc,type,bin){
   if(!who)return 0;
   if(SAL.indexOf(who)>=0)return swanCom(ttc,type,bin)*(1+((TRESO.patronal||0)/100)); // commission salariée + charges patronales
+  if(TAUX_HT[who])return htCom(ttc,bin,TAUX_HT[who]);
   if(PROG.indexOf(who)>=0){var pal=activePal(getStats(who).ca);return fixeCom(ttc,bin,pal.t);}
   return fixeCom(ttc,bin,TAUX_FIXE[who]||50);
 }
@@ -5451,7 +5457,7 @@ function renderAgendaPending(who){
 }
 
 // ====== DÉTECTION DE NOUVELLE VERSION ======
-var APP_BUILD='2026-10-05-lot1bis';
+var APP_BUILD='2026-10-07-commissions-ht';
 (function(){
   if(location.protocol==='file:')return;
   var url=location.pathname.replace(/[^\/]*$/,'')+'index.html';
